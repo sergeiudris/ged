@@ -8,12 +8,12 @@
 
 
 #_(js/fetch "http://localhost:8600/geoserver/rest/layers.json"
-            (clj->js {"method" "GET"
-             "headers" {
-                        "Authorization" 
-                        (str "Basic " (js/btoa (str "admin" ":" "myawesomegeoserver")))
+            (clj->js {"mode" "cors"
+                      "method" "GET"
+                      "headers" {"Authorization"
+                                 (str "Basic " (js/btoa (str "admin" ":" "myawesomegeoserver")))
                   ;
-                       }}) )
+                                 }}) )
 
 (rf/reg-event-db
  ::inc-module-count
