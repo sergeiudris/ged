@@ -8,7 +8,8 @@
 
 
 #_(js/fetch "http://localhost:8600/geoserver/rest/layers.json"
-            (clj->js {"mode" "cors"
+            (clj->js {
+                      "mode" "cors"
                       "method" "GET"
                       "headers" {"Authorization"
                                  (str "Basic " (js/btoa (str "admin" ":" "myawesomegeoserver")))
