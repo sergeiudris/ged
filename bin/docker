@@ -1,0 +1,38 @@
+#!/bin/bash
+
+stop_all(){
+    docker stop $(docker ps -aq)
+}
+
+rm_all(){
+    docker rm $(docker ps -aq)
+}
+
+stop_rm_all(){
+    stop_all
+    rm_all
+}
+
+rmi_all(){
+    docker rmi $(docker images -q)
+}
+
+
+
+ip(){
+  docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'   "$@"
+}
+
+
+prune(){
+  down
+  docker system prune -a
+  docker volume prune
+
+  # docker image prune # dangling
+  # docker image prune -a # all unused
+  # docker container  prune
+
+}
+
+"$@"

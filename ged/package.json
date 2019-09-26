@@ -1,0 +1,40 @@
+{
+  "name": "ged",
+  "version": "0.1.0",
+  "description": "FIXME: Write a one-line description of your library/project.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "author": "",
+  "license": "MIT",
+  "scripts": {
+    "dev": "npx shadow-cljs -A:dev watch app;",
+    "devcards": "shadow-cljs  -A:dev watch devcards",
+    "all": "shadow-cljs  -A:dev watch app devcards",
+    "info": "shadow-cljs info",
+    "prod": "shadow-cljs -A:prod release app;",
+    "repl": "shadow-cljs cljs-repl app",
+    "stop": "shadow-cljs stop",
+    "server": "shadow-cljs  -A:dev server;",
+    "compile-tests": "shadow-cljs -A:dev compile test;",
+    "test": "karma start --single-run",
+    "clean": "rm -rf target; rm -rf resources/public/js"
+  },
+  "dependencies": {
+    "antd": "3.23.4",
+    "create-react-class": "15.6.3",
+    "highlight.js": "9.15.8",
+    "react": "16.8.6",
+    "react-dom": "16.8.6",
+    "react-flip-move": "3.0.3",
+    "react-highlight.js": "1.0.7",
+    "ol": "5.3.3"
+  },
+  "devDependencies": {
+    "karma": "3.0.0",
+    "karma-chrome-launcher": "2.2.0",
+    "karma-cljs-test": "0.1.0",
+    "shadow-cljs": "2.8.52"
+  }
+}

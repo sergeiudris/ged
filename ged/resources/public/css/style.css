@@ -1,0 +1,62 @@
+/* some style */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  /* color:green; */
+  margin: 0px;
+}
+.bordered {
+  border: 1px solid black;
+}
+
+
+/* ant overrides */
+
+.ant-layout {
+  background: #fff;
+}
+
+.ant-layout-sider, .ant-layout-sider-trigger {
+  border-right: 1px solid #f0f2f5;
+}
+
+.ant-layout-sider .logo {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ant-layout-sider .logo-img {
+  max-height: 32px;
+}
+
+.ant-layout-sider .logo-name {
+  left: 0px;
+  position: relative;
+}
+
+.main-content.ant-layout-content {
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+}
+
+.ant-table-small>.ant-table-content>
+.ant-table-body>table>.ant-table-tbody>tr>td,
+
+.ant-table-small>.ant-table-content>
+.ant-table-scroll>.ant-table-body>table>.ant-table-tbody>tr>td
+{
+  padding: 2px;
+}
+
+.fiber-table-amount-field {
+  margin-right: 16px;
+}
+
+.fiber-example-queries-table-row {
+  cursor: pointer;
+}

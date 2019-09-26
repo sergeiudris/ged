@@ -1,1 +1,1 @@
-# gseditor
+# ged

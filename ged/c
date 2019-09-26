@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# https://github.com/nrepl/nrepl/blob/master/doc/modules/ROOT/pages/usage/server.adoc
+
+build(){
+    clojure -A:fig:local:build
+}
+
+fig_dev(){
+    clojure \
+    -Sdeps '{:deps {nrepl {:mvn/version "0.6.0"} cider/cider-nrepl {:mvn/version "0.21.1"} cider/piggieback {:mvn/version "0.4.1"} figwheel-sidecar {:mvn/version "0.5.18"}}}' \
+    -A:fig:local -m nrepl.cmdline  --middleware "[cider.nrepl/cider-middleware cider.piggieback/wrap-cljs-repl]" --bind "0.0.0.0" --port 7888
+}
+
+fig_clean(){
+    rm -rf target .cpcache
+}
+
+clean(){
+    rm -rf .shadow-cljs node_modules .cpcache resources/public/js-out
+}
+
+shadow(){
+    ./node_modules/.bin/shadow-cljs "$@"
+}
+
+prod(){
+    yarn
+    shadow -A:prod:git release app
+}
+
+main(){
+
+  if [ "$STAGE" != "dev" ]; then
+    shadow -A:dev:git server
+  else 
+    tail -f /dev/null
+  fi 
+
+}
+
+dev(){
+    yarn
+    shadow -A:dev:local watch app
+    # npx shadow-cljs -A:dev:local watch app
+    # yarn dev
+}
+
+prod-local(){
+    yarn
+    shadow -A:prod:local release app
+    # yarn prod
+}
+
+server(){
+    yarn
+    shadow -A:dev:local server
+    # yarn server
+}
+
+
+"$@"
