@@ -12,12 +12,21 @@
    :body "Not found."})
 
 (def rqs (atom nil))
+(def rqs-opts (atom nil))
+(def ex (atom nil))
+
+
 
 (def GEOSERVER_HOST "http://geoserver:8080/geoserver" )
 
 #_(do (pp/pprint @rqs))
 
-()
+#_(do (pp/pprint @rqs-opts))
+
+#_(do (pp/pprint @ex))
+
+
+
 
 #_(prn "---dev-http")
 
@@ -35,7 +44,7 @@
 
 
 (defn handle [{:keys [uri http-roots http-config request-method
-                      server-name server-port headers] :as req}]
+                      server-name server-port headers query-string] :as req}]
   (reset! rqs req)
   (prn uri)
   (cond
@@ -45,15 +54,26 @@
      :body "world!!"}
     
     (str/starts-with? uri "/geoserver")
-    (let [path (subs uri (count "/geoserver") )
-          rawres (client/request
-                  (merge {:method :get
-                          :url (str GEOSERVER_HOST path)}
-                         {
-                          :headers headers
+    (let [path (subs uri (count "/geoserver"))
+          url (str path query-string)
+          req-opts (merge {
+                           :throw-entire-message? true
+                           :throw-exceptions true
+                           :method :get
+                           :url (str GEOSERVER_HOST url)}
+                          {:headers headers
                           ; :basic-auth ["admin" "myawesomegeoserver"]
-                          }))
+                           })
+          rawres (try (client/request     req-opts)
+                      (catch Exception e
+                        (do
+                          (reset! ex e)
+                          {:status 500
+                           :headers {"content-type" "text/html; charset=utf-8"}
+                           :body (str e) }))
+                      )
           hdrs (:headers rawres)]
+      (reset! rqs-opts req-opts)
       (merge
        rawres
        {:headers (merge {"Access-Control-Allow-Origin" "*"

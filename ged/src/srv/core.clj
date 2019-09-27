@@ -24,5 +24,20 @@
   (client/get "http://localhost:8801"
               )
   
+  (client/get
+   "http://geoserver:8080/geoserver/wfs"
+   {:accept :json 
+    :query-params {"service" "wfs"
+                   "version" "2.0.0"
+                   "request" "GetFeature"
+                   "count" 10
+                   "typeNames" "dev:usa_major_cities"
+                   "exceptions" "application/json"
+                   "outputFormat" "application/json"
+                   }}
+   )
+  
+  
+  
   ;
   )

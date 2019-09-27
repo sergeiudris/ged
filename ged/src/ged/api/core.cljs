@@ -20,6 +20,13 @@
                        opts)))
    ))
 
+(defn url-search-params
+  [prms & {:keys [str] :or {str false}}]
+  (let [usp (js/URLSearchParams. (clj->js prms))]
+    (if str
+      (.toString usp)
+      usp)))
+
 (defn fetch-geosrv-edn
   ([path]
    (fetch-geosrv-edn path {}))
@@ -76,3 +83,36 @@
    (fetch-geosrv-edn "/rest/layers.json")
    (.then (fn [r] (js/console.log r)))
    )
+
+; https://docs.geoserver.org/stable/en/user/services/wfs/reference.html
+
+#_(->
+   (js/URLSearchParams. #js {"service" "wfs"
+                             "version" "2.0.0"
+                             "request" "GetFeature"
+                             "count" 10
+                             "typeNames" "dev:usa_major_cities"
+                             "exceptions" "application/json"
+                             "outputFormat" "application/json"})
+   (.toString)
+   )
+
+#_(url-search-params {"service" "wfs"
+                      "version" "2.0.0"
+                      "request" "GetFeature"
+                      "count" 10
+                      "typeNames" "dev:usa_major_cities"
+                      "exceptions" "application/json"
+                      "outputFormat" "application/json"} :str true)
+
+#_(->
+   (fetch-geosrv-edn
+    (str "/wfs?" (url-search-params {"service" "wfs"
+                                     "version" "2.0.0"
+                                     "request" "GetFeature"
+                                     "count" 10
+                                     "typeNames" "dev:usa_major_cities"
+                                     "exceptions" "application/json"
+                                     "outputFormat" "application/json"} :str true))
+    {:method "get"})
+   (.then (fn [r] (js/console.log r))))
