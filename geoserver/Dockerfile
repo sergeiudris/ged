@@ -72,6 +72,8 @@ RUN /scripts/setup.sh \
     && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*  \
     && dpkg --remove --force-depends  unzip
 
-
+ADD tomcat /tmp/tomcat
+RUN cp -rf /tmp/tomcat/* /usr/local/tomcat/
+# COPY tomcat/webapps/geoserver/WEB-INF/web.xml /usr/local/tomcat/webapps/geoserver/WEB-INF/web.xml
 
 CMD ["/scripts/entrypoint.sh"]
