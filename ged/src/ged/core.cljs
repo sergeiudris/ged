@@ -10,7 +10,9 @@
             [ged.config :as config]
             [ged.subs :as subs]
             [ged.view]
-            [tools.core]))
+            [tools.core]
+            [ged.api.geoserver]
+            [ged.api.core]))
 
 #_(sample.lib.logic/example)
 
