@@ -159,28 +159,47 @@
      -->
    </filter>
 
-   <!-- Uncomment following filter to enable CORS 
-   <filter>
-        <filter-name>cross-origin</filter-name>
-        <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>
-       <init-param>
-           <param-name>chainPreflight</param-name>
-           <param-value>false</param-value>
-       </init-param>
-       <init-param>
-           <param-name>allowedOrigins</param-name>
-           <param-value>*</param-value>
-       </init-param>
-       <init-param>
-           <param-name>allowedMethods</param-name>
-           <param-value>GET,POST,PUT,DELETE,HEAD,OPTIONS</param-value>
-       </init-param>
-       <init-param>
-           <param-name>allowedHeaders</param-name>
-           <param-value>*</param-value>
-       </init-param>
-    </filter>
-    -->
+   <!-- Uncomment following filter to enable CORS  -->
+   <!-- <filter>
+      <filter-name>cross-origin</filter-name>
+      <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>
+
+      <init-param>
+          <param-name>chainPreflight</param-name>
+          <param-value>false</param-value>
+      </init-param>
+
+      <init-param>
+           <param-name>allowCredentials</param-name>
+           <param-value>true</param-value>
+      </init-param>
+       
+      <init-param>
+           <param-name>preflightMaxAge</param-name>
+           <param-value>10</param-value>
+      </init-param>
+
+      <init-param>
+          <param-name>allowedOrigins</param-name>
+          <param-value>*</param-value>
+      </init-param>
+
+      <init-param>
+          <param-name>allowedMethods</param-name>
+          <param-value>GET,POST,PUT,DELETE,HEAD,OPTIONS</param-value>
+      </init-param>
+
+      <init-param>
+          <param-name>allowedHeaders</param-name>
+          <param-value>*</param-value>
+      </init-param>
+
+      <init-param>
+          <param-name>exposedHeaders</param-name>
+          <param-value>*</param-value>
+      </init-param>
+    </filter> -->
+   
 
     
     <!-- <filter>
@@ -222,17 +241,17 @@
       <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-   <!-- Uncomment following filter to enable CORS 
-    <filter-mapping>
+   <!-- Uncomment following filter to enable CORS  -->
+    <!-- <filter-mapping>
         <filter-name>cross-origin</filter-name>
         <url-pattern>/*</url-pattern>
-    </filter-mapping>
-     -->
+    </filter-mapping> -->
+    
 
-       <filter-mapping>
-    <filter-name>CorsFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
+    <!-- <filter-mapping>
+      <filter-name>CorsFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping> -->
    
     <filter-mapping>
       <filter-name>FlushSafeFilter</filter-name>
