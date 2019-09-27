@@ -1,5 +1,7 @@
 #--------- Generic stuff all our Dockerfiles should start with so we get caching ------------
 ARG IMAGE_VERSION=8.0-jre8
+# ARG IMAGE_VERSION=7.0-jre8
+
 
 FROM tomcat:$IMAGE_VERSION
 
@@ -72,7 +74,7 @@ RUN /scripts/setup.sh \
     && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*  \
     && dpkg --remove --force-depends  unzip
 
-ADD tomcat /tmp/tomcat
+ADD tomcat/tomcat8 /tmp/tomcat
 RUN cp -rf /tmp/tomcat/* /usr/local/tomcat/
 # COPY tomcat/webapps/geoserver/WEB-INF/web.xml /usr/local/tomcat/webapps/geoserver/WEB-INF/web.xml
 

@@ -36,12 +36,12 @@
   
   <!--Can be true or false (defaults to: false). -->
   <!--When true the JSONP (text/javascript) output format is enabled -->
-
+  <!--
   <context-param>
     <param-name>ENABLE_JSONP</param-name>
     <param-value>true</param-value>
   </context-param>
-
+  -->
     <!-- 
     <context-param>
       <param-name>PROXY_BASE_URL</param-name>
@@ -159,7 +159,7 @@
      -->
    </filter>
 
-   <!-- Uncomment following filter to enable CORS 
+   <!-- Uncomment following filter to enable CORS
    <filter>
         <filter-name>cross-origin</filter-name>
         <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>
@@ -182,8 +182,7 @@
     </filter>
     -->
 
-    
-    <filter>
+      <filter>
     <filter-name>CorsFilter</filter-name>
     <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
     <init-param>
@@ -220,9 +219,6 @@
     </init-param>
   </filter>
 
- 
-
-
     <!-- 
       THIS FILTER MUST BE THE FIRST ONE, otherwise we end up with ruined chars in the input from the GUI
       See the "Note" in the Tomcat character encoding guide:
@@ -233,18 +229,20 @@
       <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-     <filter-mapping>
-    <filter-name>CorsFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
 
-   
-   <!-- Uncomment following filter to enable CORS 
+   <!-- Uncomment following filter to enable CORS
     <filter-mapping>
         <filter-name>cross-origin</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-     -->
+    -->
+       
+<filter-mapping>
+    <filter-name>CorsFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+
    
     <filter-mapping>
       <filter-name>FlushSafeFilter</filter-name>
