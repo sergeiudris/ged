@@ -70,6 +70,7 @@ services:
       - 8888:7888
       - 8800:9500
       - 9630:9630
+      - 8801:8801
     # command: bash c main
     command: tail -f /dev/null
     environment:

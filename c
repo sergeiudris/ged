@@ -3,7 +3,7 @@
 dc(){
 
     docker-compose --compatibility \
-        -f docker-compose.yml \
+        -f dc.yml \
         "$@"
 }
 
