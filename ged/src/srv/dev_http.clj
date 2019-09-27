@@ -3,7 +3,7 @@
   (:require [clojure.java.io :as io]
             [clojure.pprint :as pp]
             [clojure.string :as str]
-   ))
+            #_[srv.server]))
 
 (def not-found
   {:status 404
@@ -13,6 +13,12 @@
 (def rqs (atom nil))
 
 #_(do (pp/pprint @rqs))
+
+#_(prn "---dev-http")
+
+#_(srv.server/run-dev)
+
+
 
 (defn handle [{:keys [uri http-roots http-config] :as req}]
   (reset! rqs req)

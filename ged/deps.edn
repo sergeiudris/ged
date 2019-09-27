@@ -33,8 +33,8 @@
        ;  io.pedestal/pedestal.service {:mvn/version "0.5.7"}
        ;  io.pedestal/pedestal.jetty {:mvn/version "0.5.7"}
        ;  io.pedestal/pedestal.service-tools {:mvn/version "0.5.7"}
-       ;  cheshire {:mvn/version "5.8.1"}
-       ;  slingshot {:mvn/version "0.12.2"}
+        cheshire {:mvn/version "5.8.1"}
+        slingshot {:mvn/version "0.12.2"}
 
 
 

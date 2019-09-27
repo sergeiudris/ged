@@ -5,6 +5,7 @@
             [clj-http.client :as client]
             #_[slingshot.slingshot :refer [throw+ try+]]))
 
+
 (comment
   
   (client/get "http://geoserver:8080" {})
@@ -19,6 +20,9 @@
               {:basic-auth ["admin" "wrongpassword"]})
   
   (dir client)
+  
+  (client/get "http://localhost:8801"
+              )
   
   ;
   )

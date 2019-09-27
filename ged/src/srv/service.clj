@@ -25,7 +25,6 @@
   )
 
 
-
 (comment
 
   (as-> nil x
@@ -147,7 +146,7 @@
               ::http/type :jetty
               ;;::http/host "localhost"
               ::http/host "0.0.0.0"
-              ::http/port 8080
+              ::http/port 8899
               ;; Options to pass to the container (Jetty)
               ::http/container-options {:h2c? true
                                         :h2? false
