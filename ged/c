@@ -54,7 +54,7 @@ prod-local(){
 
 server(){
     yarn
-    shadow -A:dev:local server
+    shadow -A:dev:local:cache server
     # yarn server
 }
 

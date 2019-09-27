@@ -16,6 +16,7 @@
 
 (defn handle [{:keys [uri http-roots http-config] :as req}]
   (reset! rqs req)
+  (prn uri)
   (cond 
     (= uri "/api") 
     {:status 200
