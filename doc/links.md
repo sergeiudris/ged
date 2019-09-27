@@ -12,4 +12,4 @@ https://tomcat.apache.org/tomcat-9.0-doc/manager-howto.html
 
 https://gis.stackexchange.com/questions/210109/enabling-cors-in-geoserver-jetty
 
-
+https://github.com/Esri/arcgis-runtime-samples-data
