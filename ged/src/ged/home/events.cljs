@@ -15,7 +15,7 @@
 #_"http://localhost:8600/geoserver/web/"
 #_"http://localhost:8600/geoserver/web/wicket/bookmarkable/org.geoserver.web.demo.MapPreviewPage?2"
 #_(->
-   (js/fetch "http://localhost:8600"
+   (js/fetch "http://localhost:8801"
              (clj->js {"method" "GET"
                       ; "headers" {"Authorization"
                       ;            (str "Basic " (js/btoa (str "admin" ":" "myawesomegeoserver")))
