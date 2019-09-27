@@ -6,7 +6,14 @@
 
 (comment
   
-  (client/get "http://geoserver:8080" {:basic-auth ["admin" "geoserver"]})
+  (client/get "http://geoserver:8080" {})
+
+  (client/get "http://geoserver:8080/geoserver/rest/layers.json" 
+              {:basic-auth ["admin" "myawesomegeoserver"]})
+  
+  ; fail
+  (client/get "http://geoserver:8080/geoserver/rest/layers.json"
+              {:basic-auth ["admin" "wrongpassword"]})
+  
   ;
   )
-
