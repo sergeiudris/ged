@@ -1,6 +1,33 @@
 (ns ged.api.core
   (:require [clojure.string :as str]))
 
+(defn auth-creds
+  []
+  (str "Basic " (js/btoa (str "admin" ":" "myawesomegeoserver"))))
+
+(defn deep-merge [a & maps]
+  (if (map? a)
+    (apply merge-with deep-merge a maps)
+    (apply merge-with deep-merge maps)))
+
+(defn fetch-geosrv
+  [path opts]
+  (->
+   (js/fetch (str "/geoserver" path)
+             (clj->js (deep-merge
+                       {"method" "GET"
+                        "headers" {"Authorization"  (auth-creds)}}
+                       opts)))
+   ))
+
+(defn fetch-geosrv-edn
+  ([path]
+   (fetch-geosrv-edn path {}))
+  ([path opts]
+   (->
+    (fetch-geosrv path opts)
+    (.then (fn [res] (.json res)))
+    (.then (fn [j] (js->clj j  :keywordize-keys true))))))
 
 ; curl -u admin:myawesomegeoserver -XGET http://localhost:8801/geoserver/rest/layers.json
 
@@ -43,3 +70,9 @@
    (.then (fn [res] (.json res)))
    (.then (fn [j] (js->clj j  :keywordize-keys true)))
    (.then (fn [r] (js/console.log r))))
+
+
+#_(->
+   (fetch-geosrv-edn "/rest/layers.json")
+   (.then (fn [r] (js/console.log r)))
+   )
