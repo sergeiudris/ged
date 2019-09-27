@@ -26,11 +26,13 @@
   
   (client/get
    "http://geoserver:8080/geoserver/wfs"
-   {:accept :json 
+   {
+    ;:accept :json 
     :query-params {"service" "wfs"
                    "version" "2.0.0"
                    "request" "GetFeature"
-                   "count" 10
+                   "count" 1
+                   "startIndex" 2
                    "typeNames" "dev:usa_major_cities"
                    "exceptions" "application/json"
                    "outputFormat" "application/json"
