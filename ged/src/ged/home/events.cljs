@@ -47,8 +47,11 @@
                                  (str "Basic " (js/btoa (str "admin" ":" "myawesomegeoserver")))
                                  }
                        }))
-   (.then (fn [res] (.text res)))
-   (.then (fn [r] (js/console.log r))))
+   (.then (fn [res] (.json res) ))
+   (.then (fn [j] (js->clj j  :keywordize-keys true) ))
+   (.then (fn [r] (js/console.log r)))
+   
+   )
 
 (rf/reg-event-db
  ::inc-module-count
