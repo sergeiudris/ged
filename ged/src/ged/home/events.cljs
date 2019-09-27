@@ -26,6 +26,30 @@
    
    )
 
+#_(->
+   (js/fetch "/hello"
+             (clj->js {"method" "GET"
+                       }))
+   (.then (fn [res] (.text res)))
+   (.then (fn [r] (js/console.log r))))
+
+#_(->
+   (js/fetch "/geoserver/rest/layers.json"
+             (clj->js {"method" "GET"
+                       }))
+   (.then (fn [res] (.text res)))
+   (.then (fn [r] (js/console.log r))))
+
+#_(->
+   (js/fetch "/geoserver/rest/layers.json"
+             (clj->js {"method" "GET"
+                      "headers" {"Authorization"
+                                 (str "Basic " (js/btoa (str "admin" ":" "myawesomegeoserver")))
+                                 }
+                       }))
+   (.then (fn [res] (.text res)))
+   (.then (fn [r] (js/console.log r))))
+
 (rf/reg-event-db
  ::inc-module-count
  (fn-traced [db [_ active-panel]]
