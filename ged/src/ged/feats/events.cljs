@@ -2,7 +2,7 @@
   (:require [re-frame.core :as rf]
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
             [ged.api.geoserver]
-            [ged.feats.core]
+            [ged.feats.core :refer [editor-get-val]]
             [ajax.core :as ajax]))
 
 (rf/reg-event-fx
@@ -41,6 +41,28 @@
  (fn-traced [db [_ val]]
             (assoc db :ged.feats/search-res val)))
 
+(rf/reg-event-fx
+ ::edit-feature
+ (fn [{:keys [db]} [_ eargs]]
+   (let [vl (js/JSON.parse (editor-get-val))]
+     {:dispatch [:ged.events/request
+                 {:method :post
+                  :params {}
+                  :body ""
+                  :headers {"Content-Type" "application/json"
+                            "Authorization"  (ged.api.geoserver/auth-creds)}
+                  :path "/geoserver/wfs"
+                  :response-format (ajax/json-response-format {:keywords? true})
+                  :on-success [::edit-feature-res]
+                  :on-fail [::edit-feature-res]}]
+      :db (merge db {})})))
+
+(rf/reg-event-db
+ ::edit-feature-res
+ (fn-traced [db [_ val]]
+            (assoc db :ged.feats/edit-feature-res val)))
+
+
 (rf/reg-event-db
  ::search-input
  (fn-traced [db [_ eargs]]
@@ -65,3 +87,4 @@
           ; JSON.stringify(jsonDoc, null, '\t')
           ))
      {:db (assoc db key eargs)})))
+
