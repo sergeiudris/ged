@@ -3,7 +3,7 @@
              [re-frame.core :as rf]
              [cljs.repl :as repl]
              [cljs.pprint :as pp]
-             [ged.feats.core]
+             [ged.feats.core :refer [editor-get-val editor-set-str!]]
              ["react-ace/lib/index.js" :default ReactAce]
              ["brace" :as brace]
              ["brace/mode/clojure.js"]
@@ -25,7 +25,10 @@
                   :className "editor-feature"
                     ;  :default-value default-value
                   :value @value
-                  :on-load (fn [edr] (reset! ged.feats.core/editor-feature-ref edr))
+                  :on-load (fn [edr]
+                             (let [vl (editor-get-val)]
+                               (reset! ged.feats.core/editor-feature-ref edr)
+                               (editor-set-str! vl)))
                   :on-change (fn [val evt] (do
                                              #_(js/console.log val)
                                              (reset! value val)
