@@ -63,6 +63,7 @@
             (js/console.log "creating new map..")
             (swap! state assoc :olmap
                    (ol/create-map {:el-id "map-container"}))
+            (.addLayer (get-olmap) (ol/wms-layer "dev:usa_major_cities"))
             (set! (.. js/window -map) (get-olmap)))
           (do
             (js/console.log "setting new map target..")
