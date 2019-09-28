@@ -1,7 +1,7 @@
 (ns ged.feats.events
   (:require [re-frame.core :as rf]
-            [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]])
-  )
+            [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
+            [ged.api.geoserver]))
 
 (rf/reg-event-fx
  ::search
@@ -15,8 +15,15 @@
          limit (or pageSize 10)
          offset (or (* pageSize (dec current)) 0)]
      {:dispatch [:ui.events/request
-                 {:method :get
-                  :params {:s s :limit limit :offset offset}
+                 {:method :post
+                  :params {"service" "wfs"
+                           "version" "2.0.0"
+                           "request" "GetFeature"
+                           "count" limit
+                           "startIndex" offset
+                           "typeNames" "dev:usa_major_cities"
+                           "exceptions" "application/json"
+                           "outputFormat" "application/json"}
                   :path "/usda/search"
                   :on-success [::search-res]
                   :on-fail [::search-res]}]
