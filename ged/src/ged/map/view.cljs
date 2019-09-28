@@ -76,7 +76,8 @@
         (ol/set-target (get-olmap) nil))
       :reagent-render
       (fn [x y z]
-        [:div#map-container {:style {:width "100%"
+        [:div#map-container {:style {
+                                     :width "100%"
                                      :height "100%"
                                      :border "1px solid #dedede"}}])})))
 

@@ -19,11 +19,12 @@
   [opts]
   (OlView.
    (clj->js
-    (merge {
-            :projection "EPSG:3857"
+    (merge {:projection "EPSG:3857"
             :center [0 0]
-            ; :maxZoom 28
+            :maxZoom 28
             :zoom 0
+            ; :center [-11000000, 4600000]
+            ; :zoom 4
             }
            opts))))
 
@@ -33,7 +34,8 @@
   (OlMap.
    (clj->js {:layers [(tile-layer-osm)]
              :target (or target (js/document.getElementById el-id))
-             :view (create-view {})})))
+             :view (create-view {})
+             :pixelRatio 1})))
 
 #_(js/console.log (clj->js {:view (OlView.
                                    {:center [0 0]
