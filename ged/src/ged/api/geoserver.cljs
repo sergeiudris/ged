@@ -25,6 +25,15 @@
                        {"headers" {"Authorization"  (auth-creds)}}
                        opts)))))
 
+(defn fetch-geosrv-edn
+  ([path]
+   (fetch-geosrv-edn path {}))
+  ([path opts]
+   (->
+    (fetch-geosrv path opts)
+    (.then (fn [res] (.json res)))
+    (.then (fn [j] (js->clj j  :keywordize-keys true))))))
+
 (defn wfs-get-features-body
   [{:keys [offset limit featurePrefix featureTypes]}]
   (.writeGetFeature (OlFormatWFS.)
@@ -36,11 +45,28 @@
                       "startIndex" offset
                       "count" limit})))
 
+(defn xml->str
+  [x]
+  (.serializeToString (js/XMLSerializer.) x))
+
 #_(->>
    (wfs-get-features-body {:offset 0
                            :limit 10
                            :featurePrefix "dev"
                            :featureTypes ["usa_major_cities"]})
-   (.serializeToString (js/XMLSerializer.))
-   )
+   (.serializeToString (js/XMLSerializer.)))
+
+#_(->
+   (fetch-geosrv-edn
+    "/wfs"
+    {:method "post"
+     :body (->
+            (wfs-get-features-body {:to-string? true
+                                    :offset 0
+                                    :limit 10
+                                    :featurePrefix "dev"
+                                    :featureTypes ["usa_major_cities"]})
+            (xml->str))})
+   (.then (fn [r] (js/console.log r))))
+
 

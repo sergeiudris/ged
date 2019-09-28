@@ -84,6 +84,8 @@
 
 #_(prn "---dev-http")
 
+#_(not-empty "")
+
 #_(srv.server/run-dev)
 
 #_(->
@@ -98,7 +100,7 @@
 
 
 (defn handle [{:keys [uri http-roots http-config request-method
-                      server-name server-port headers query-string] :as req}]
+                      server-name server-port body headers query-string] :as req}]
   (reset! rqs req)
   (prn uri)
   (cond
@@ -109,13 +111,14 @@
     
     (str/starts-with? uri "/geoserver")
     (let [path (subs uri (count "/geoserver"))
-          url (str path "?" query-string)
+          url (if (not-empty query-string)   (str path "?" query-string) path)
           req-opts {:throw-entire-message? true
                     :throw-exceptions true
                     :method request-method
                     :url (str GEOSERVER_HOST url)
                     ; :as :byte-array
-                    :headers headers
+                    :body body
+                    :headers  (dissoc headers "content-length")
                     ; :basic-auth ["admin" "myawesomegeoserver"]
                     }
           rawres (try (client/request     req-opts)
