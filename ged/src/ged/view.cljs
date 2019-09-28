@@ -11,9 +11,8 @@
             [ged.config :as config]
             [clojure.string]
             [ged.routes]
-            [tools.comp.layout :as layout]
-            ["antd/lib/menu" :default AntMenu]
-            ["antd/lib/icon" :default AntIcon]))
+            [ged.layout :as layout]
+   ))
 
 (defn fn-to-call-on-load []
   (js/console.log "module loaded"))
@@ -120,40 +119,17 @@
   )
 ; (keyword (str (name (:handler matched-route)) "-panel"))
 
-(def ant-menu (r/adapt-react-class AntMenu))
-(def ant-menu-item (r/adapt-react-class (.-Item AntMenu)))
-(def ant-icon (r/adapt-react-class AntIcon))
 
-(defn sidebar-menu
-  []
-  (let [on-select (fn [eargs]
-                    (let [eargs-clj (js->clj eargs :keywordize-keys true)
-                          {:keys [key]} eargs-clj]
-                      (ged.routes/set-path! (str "/" (panel->module-name (keyword key) )) )
-                      #_(rf/dispatch [:ged.events/set-active-panel (keyword key)])))
-        active-panel (rf/subscribe [:ged.subs/active-panel])
-        ]
-    (fn []
-      [ant-menu {:theme "light"
-                 :mode "inline"
-                 :default-selected-keys ["home-panel"]
-                 :selected-keys (if @active-panel [(name @active-panel)] nil)
-                 :on-select on-select}
-       [ant-menu-item {:key "home-panel"}
-        [ant-icon {:type "home"}]
-        [:span "home"]]
-       [ant-menu-item {:key "settings-panel"}
-        [ant-icon {:type "setting"}]
-        [:span "settings"]]
-       #_[ant-menu-item {:key "monitor-panel"}
-        [ant-icon {:type "monitor"}]
-        [:span "monitor"]]
-       ])))
 
 (defn ui
   []
   [layout/ant-layout-sider-2col
-   [sidebar-menu]
+   [layout/sidebar-menu
+    {:on-select (fn [eargs]
+                  (let [eargs-clj (js->clj eargs :keywordize-keys true)
+                        {:keys [key]} eargs-clj]
+                    (ged.routes/set-path! (str "/" (panel->module-name (keyword key))))
+                    #_(rf/dispatch [:ged.events/set-active-panel (keyword key)])))}]
    [main-panel]
    ]
   #_[main-panel])

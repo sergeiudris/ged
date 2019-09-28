@@ -23,6 +23,7 @@ spaces() {
     SPACE=ui
     mkdir -p spaces/$SPACE
     ln -s ../../ged/src/ged spaces/$SPACE/ged
+    ln -s ../../ged/src/tools spaces/$SPACE/tools
     ln -s ../../ged/shadow-cljs.edn spaces/$SPACE/shadow-cljs.edn
     ln -s ../../ged/resources/public/css spaces/$SPACE/css
     ln -s ../../ged/src/srv spaces/$SPACE/srv
