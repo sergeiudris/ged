@@ -43,11 +43,18 @@
                       "featureTypes" featureTypes
                       "outputFormat" "application/json"
                       "startIndex" offset
+                      "maxFeatures" limit
                       "count" limit})))
 
 (defn xml->str
   [x]
   (.serializeToString (js/XMLSerializer.) x))
+
+(defn wfs-get-features-body-str
+  [opts]
+  (->
+   (wfs-get-features-body opts)
+   (xml->str)))
 
 #_(->>
    (wfs-get-features-body {:offset 0
@@ -61,7 +68,7 @@
     "/wfs"
     {:method "post"
      :body (->
-            (wfs-get-features-body {:to-string? true
+            (wfs-get-features-body {
                                     :offset 0
                                     :limit 10
                                     :featurePrefix "dev"

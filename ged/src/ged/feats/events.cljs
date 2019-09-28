@@ -1,7 +1,8 @@
 (ns ged.feats.events
   (:require [re-frame.core :as rf]
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
-            [ged.api.geoserver]))
+            [ged.api.geoserver]
+            [ajax.core :as ajax]))
 
 (rf/reg-event-fx
  ::search
@@ -14,17 +15,18 @@
          {:keys [current pageSize]} pag
          limit (or pageSize 10)
          offset (or (* pageSize (dec current)) 0)]
-     {:dispatch [:ui.events/request
+     {:dispatch [:ged.events/request
                  {:method :post
-                  :params {"service" "wfs"
-                           "version" "2.0.0"
-                           "request" "GetFeature"
-                           "count" limit
-                           "startIndex" offset
-                           "typeNames" "dev:usa_major_cities"
-                           "exceptions" "application/json"
-                           "outputFormat" "application/json"}
-                  :path "/usda/search"
+                  :params {}
+                  :body (ged.api.geoserver/wfs-get-features-body-str
+                         {:offset offset
+                          :limit limit
+                          :featurePrefix "dev"
+                          :featureTypes ["usa_major_cities"]})
+                  :headers {"Content-Type" "application/json"
+                            "Authorization"  (ged.api.geoserver/auth-creds)}
+                  :path "/geoserver/wfs"
+                  :response-format (ajax/json-response-format {:keywords? true})
                   :on-success [::search-res]
                   :on-fail [::search-res]}]
       :db (merge db {:ged.feats/search-input s

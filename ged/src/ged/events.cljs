@@ -38,16 +38,17 @@
  (fn [{:keys [db event] :as ctx} [_ eargs]]
    (let [base-url (get-in db [:ged.core/api :base-url])
          {:keys [method path on-success on-fail 
-                 params body]} eargs
+                 params body headers response-format]} eargs
          uri (str base-url path)]
      {:http-xhrio {:method method
                    :uri uri
-                   :response-format (ajax.edn/edn-response-format)
+                  ;  :response-format (ajax.edn/edn-response-format)
+                   :response-format (or response-format (ajax/json-response-format {:keywords? true})) 
                    #_(ajax/raw-response-format)
                    :on-success on-success
                    :format :edn
                    :body body
-                   :headers {"content-type" "application/edn"}
+                   :headers headers
                   ;  :params {:data "{:hello 'world}"}
                    :params params
                    :on-fail on-fail}

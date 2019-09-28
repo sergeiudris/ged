@@ -6,14 +6,14 @@
 (rf/reg-sub
  ::search-res
  (fn [db _]
-   (:ui.count/search-res db)))
+   (:ged.feats/search-res db)))
 
 (rf/reg-sub
  ::search-input
  (fn [db _]
-   (:ui.count/search-input db)))
+   (:ged.feats/search-input db)))
 
 (rf/reg-sub
  ::search-table-mdata
  (fn [db _]
-   (:ui.count/search-table-mdata db)))
+   (:ged.feats/search-table-mdata db)))

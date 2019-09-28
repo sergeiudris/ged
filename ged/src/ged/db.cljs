@@ -5,7 +5,7 @@
 (defn gen-default-conf
   "Returns the default api conf"
   []
-  (let [api-v1-baseurl "http://localhost:8600"]
+  (let [api-v1-baseurl ""]
     {:api.v1/base-url api-v1-baseurl}))
 
 (defn gen-default-db

@@ -78,10 +78,10 @@
 (def feature-columns
   [{:title "id"
     :key "id"
-    :dataIndex ""}
-   {:title "name"
-    :key "name"
-    :dataIndex "name"}])
+    :dataIndex "id"}
+   {:title "geometry_name"
+    :key "geometry_name"
+    :dataIndex "geometry_name"}])
 
 (def extra-columns
   [{:title "action"
@@ -108,15 +108,15 @@
   (let [search-res (rf/subscribe [:ged.feats.subs/search-res])
         table-mdata (rf/subscribe [:ged.feats.subs/search-table-mdata])]
     (fn []
-      (let [items (:data @search-res)
-            total (:total @search-res)
-            ents
-            items
+      (let [items (:features @search-res)
+            total (:totalFeatures @search-res)
+            ents items
             #_(mapv #(-> % :entity (dissoc :db/id)) items)
             pagination (:pagination @table-mdata)]
+        (js/console.log @search-res)
         [ant-table {:show-header true
                     :size "small"
-                    :row-key "row-key-here"
+                    :row-key :id
                     :columns columns
                     :dataSource ents
                     :on-change (fn [pag fil sor ext]
