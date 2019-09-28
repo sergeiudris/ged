@@ -2,6 +2,7 @@
   (:require [re-frame.core :as rf]
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
             [ged.api.geoserver]
+            [ged.feats.core]
             [ajax.core :as ajax]))
 
 (rf/reg-event-fx
@@ -53,3 +54,14 @@
    (let [key :ged.feats/search-table-mdata]
      {:dispatch [:ged.feats.events/search {}]
       :db (assoc db key eargs)})))
+
+(rf/reg-event-fx
+ ::select-feature
+ (fn [{:keys [db]} [_ eargs]]
+   (let [key :ged.feats/select-feature]
+     (do (.setValue
+          (.-session @ged.feats.core/editor-feature-ref)
+          (js/JSON.stringify eargs nil "\t")
+          ; JSON.stringify(jsonDoc, null, '\t')
+          ))
+     {:db (assoc db key eargs)})))

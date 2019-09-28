@@ -70,3 +70,11 @@ body {
 .fiber-example-queries-table-row {
   cursor: pointer;
 }
+
+.editor-feature {
+  border: 1px solid lightgrey;
+  height: 368px !important;
+  flex: 0 0 auto;
+  width: 50%;
+  /* display: inline-block; */
+}

@@ -6,6 +6,7 @@
              [ged.feats.subs :as subs]
              [ged.feats.events :as events]
              [ged.feats.sample :refer [sample-table]]
+             [ged.feats.editor :refer [editor-feature]]
              ["antd/lib/icon" :default AntIcon]
              ["antd/lib/button" :default AntButton]
              ["antd/lib/button/button-group" :default AntButtonGroup]
@@ -14,6 +15,7 @@
              ["antd/lib/input/Search" :default AntInputSearch]
              ["antd/lib/table" :default AntTable]
              ["antd/lib/auto-complete" :default AntAutoComplete]
+
              #_[ged.core.extra :refer [extra-component]]))
 
 
@@ -94,10 +96,12 @@
                 [ant-button
                  {;:icon "plus"
                   :type "primary"
+
                   :on-click #(rf/dispatch
-                              [:ged.feats.events/add-items
-                               [{:db/id (aget rec "id")}]])}
-                 "add"]]))}
+                              [:ged.feats.events/select-feature
+                               rec])
+                  }
+                 "select"]]))}
    #_{:title ""
       :key "empty"}])
 
@@ -150,6 +154,13 @@
        [:br]
        [table]
        [:br]
-
+       [editor-feature]
+       [:br]
+       [ant-button-group {:size "small"}
+        [ant-button {:style {:width "96px"}}
+         "edit"]
+        [ant-button {:style {:width "96px"}}
+         "create"]]
+       
        #_[ged.feats.sample/sample-table]])))
 
