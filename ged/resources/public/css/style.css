@@ -23,18 +23,28 @@ body {
   border-right: 1px solid #f0f2f5;
 }
 
-.ant-layout-sider .logo {
+ .logo {
   height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  width: 80px;
+  /* height: 31px; */
+  background: rgba(255, 255, 255, 0.2);
+  /* margin: 16px 24px 16px 0; */
+  float: left;
+  margin: 0 32px 0 0 ;
+  /* border-right:1px solid #dedede; */
+
+  color: #000;
 }
 
-.ant-layout-sider .logo-img {
+.logo-img {
   max-height: 32px;
 }
 
-.ant-layout-sider .logo-name {
+.logo-name {
   left: 0px;
   position: relative;
 }

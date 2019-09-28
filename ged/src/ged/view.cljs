@@ -123,8 +123,8 @@
 
 (defn ui
   []
-  [layout/ant-layout-sider-2col
-   [layout/sidebar-menu
+  [layout/layout
+   [layout/menu
     {:on-select (fn [eargs]
                   (let [eargs-clj (js->clj eargs :keywordize-keys true)
                         {:keys [key]} eargs-clj]

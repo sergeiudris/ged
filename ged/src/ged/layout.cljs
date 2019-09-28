@@ -26,12 +26,14 @@
 (def ant-menu-item (r/adapt-react-class (.-Item AntMenu)))
 (def ant-icon (r/adapt-react-class AntIcon))
 
-(defn sidebar-menu
+(defn menu
   [{:keys [on-select]}]
   (let [active-panel (rf/subscribe [:ged.subs/active-panel])]
     (fn []
       [ant-menu {:theme "light"
-                 :mode "inline"
+                 :mode "horizontal"
+                 :size "small"
+                 :style {:lineHeight "32px"}
                  :default-selected-keys ["home-panel"]
                  :selected-keys (if @active-panel [(name @active-panel)] nil)
                  :on-select on-select}
@@ -46,22 +48,32 @@
           [:span "monitor"]]])))
 
 
-(defn ant-layout-sider-2col
+(defn layout
   [menu content]
-  [ant-layout {:style {:min-height "100vh"}}
-   [ant-sider {:collapsible true :theme "light" :default-collapsed true}
+  [ant-layout {:style {:min-height "100vh"
+                       }}
+   #_[ant-sider {:collapsible true :theme "light" :default-collapsed true}
     [:div {:class "logo"}
      [:img {:class "logo-img" :src "./img/logo-4.png"}]
      [:div {:class "logo-name"} "ged"]
      ]
     menu]
-   [ant-layout
-    {:style {:padding-top 24}}
-    #_[ant-layout-header {:style {:background "#fff" :padding 0}}
-     ""
-     ]
-    [ant-layout-content {:class "main-content"
-                         :style {:margin "0 16px"}}
-     content]]
+   [ant-layout-header
+    {:style {:position "fixed"
+             :z-index 1
+             :lineHeight "32px"
+             :height "32px"
+             :padding 0
+             :background "#000" #_"#001529"
+             :width "100%"}}
+    [:a {:href "/"
+         :class "logo"}
+     [:img {:class "logo-img" :src "./img/logo-4.png"}]
+     [:div {:class "logo-name"} "ged"]]
+    menu]
+   [ant-layout-content {:class "main-content"
+                        :style {:margin-top 64
+                                :padding "0 50px"}}
+    content]
    ])
 
