@@ -48,7 +48,7 @@ dev(){
 
 prod-local(){
     yarn
-    shadow -A:prod:local release app
+    shadow -A:prod:local:cache release app
     # yarn prod
 }
 
