@@ -17,6 +17,7 @@
                   "home" :home
                   "settings" :settings
                   "map" :map
+                  "feats" :feats
                   }])
 
 #_(def _ (events/listen history EventType.NAVIGATE

@@ -35,6 +35,7 @@
             :actions nil}
     "settings" {:panel [(resolve 'ged.settings.view/panel)]}
     "map" {:panel [(resolve 'ged.map.view/panel)]}
+    "feats" {:panel [(resolve 'ged.feats.view/panel)]}
     [:div (str "no panel for module: " module-name)]))
 
 (defn module->panel
@@ -85,6 +86,7 @@
     :home-panel [ged.home.view/panel]
     :settings-panel [panel-defered "settings"]
     :map-panel [panel-defered "map"]
+    :feats-panel [panel-defered "feats"]
     [:div (str "no panel: " panel-name)]))
 
 
