@@ -116,3 +116,13 @@
                                      "outputFormat" "application/json"} :str true))
     {:method "get"})
    (.then (fn [r] (js/console.log r))))
+
+#_(->
+   (js/fetch "http://localhost:8600/rest/layers.json"
+             (clj->js {"method" "GET"
+                       "headers" {"Authorization"
+                                  (str "Basic " (js/btoa (str "admin" ":" "myawesomegeoserver")))
+                                  "Sec-Fetch-Mode" "no-cors"}}))
+   (.then (fn [res] (.json res)))
+   (.then (fn [r] (js/console.log r))))
+
