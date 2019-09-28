@@ -15,7 +15,7 @@
   (->
    (js/fetch (str "/geoserver" path)
              (clj->js (deep-merge
-                       {"method" "GET"
+                       {
                         "headers" {"Authorization"  (auth-creds)}}
                        opts)))
    ))

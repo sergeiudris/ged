@@ -55,7 +55,7 @@
     
     (str/starts-with? uri "/geoserver")
     (let [path (subs uri (count "/geoserver"))
-          url (str path query-string)
+          url (str path "?" query-string)
           req-opts (merge {
                            :throw-entire-message? true
                            :throw-exceptions true
