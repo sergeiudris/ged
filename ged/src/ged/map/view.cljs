@@ -6,13 +6,15 @@
              [ged.map.subs :as subs]
              [ged.map.events :as events]
              ["antd/lib/button" :default ant-Button]
-             ["ol/Map" :default OlMap]
-             ["ol/View" :default OlView]
-             ))
+             [ged.map.ol :as ol]))
 
 (def ant-button (r/adapt-react-class ant-Button))
 
-(def state (atom {:map nil}))
+(def state (atom {:olmap nil}))
+
+(defn get-olmap
+  []
+  (:olmap @state))
 
 (defn my-component
   [x y z]
@@ -46,19 +48,7 @@
    (js/document.getElementById
     "map-container"))
 
-
-(defn create-map
-  [{:keys [target]
-    :or {target (js/document.getElementById
-                 "map-container")}}]
-  (OlMap.
-    (clj->js {:layers []
-        :target target
-
-        :view (OlView.
-               {:center [0 0]
-                    :maxZoom 19
-                    :zoom 0})})))
+#_(js/console.log (:map @state))
 
 (defn ol-map
   [x y z]
@@ -67,20 +57,27 @@
      {:display-name "ol-map"
       :component-did-mount
       (fn [this]
-        (when (not (:map @state))
-          (swap! state assoc :map
-                 (create-map {})))
-        (println "component-did-mount"))
+        (println "component-did-mount")
+        (if (not (:olmap @state))
+          (do
+            (js/console.log "creating new map..")
+            (swap! state assoc :olmap
+                   (ol/create-map {:el-id "map-container"})))
+          (do
+            (js/console.log "setting new map target..")
+            (ol/set-target (get-olmap) "map-container"))))
       :component-did-update
       (fn [this old-argv]
         (let [new-argv (rest (r/argv this))]
           (js/console.log new-argv old-argv)))
+      :component-will-unmount
+      (fn [this]
+        (ol/set-target (get-olmap) nil))
       :reagent-render
       (fn [x y z]
         [:div#map-container {:style {:width "100%"
                                      :height "100%"
-                                     :border "1px solid #dedede"
-                                     }} ])})))
+                                     :border "1px solid #dedede"}}])})))
 
 
 
