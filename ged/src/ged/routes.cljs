@@ -16,6 +16,7 @@
 (def routes ["/" {""      :home
                   "home" :home
                   "settings" :settings
+                  "map" :map
                   }])
 
 #_(def _ (events/listen history EventType.NAVIGATE

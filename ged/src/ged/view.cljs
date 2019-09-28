@@ -31,9 +31,10 @@
 (defn- resolve-module
   [module-name]
   (case module-name
-    "home" {:panel [(resolve 'ged.home.view/home-panel)]
+    "home" {:panel [(resolve 'ged.home.view/panel)]
             :actions nil}
-    "settings" {:panel [(resolve 'ged.settings.view/settings-panel)]}
+    "settings" {:panel [(resolve 'ged.settings.view/panel)]}
+    "map" {:panel [(resolve 'ged.map.view/panel)]}
     [:div (str "no panel for module: " module-name)]))
 
 (defn module->panel
@@ -79,21 +80,11 @@
           ;
           )))))
 
-#_(defn- panels [panel-name]
-    (case panel-name
-      :count-panel [count-panel]
-      :query-panel [query-panel]
-      :cred-panel
-      #_[cred-panel-defered "cred"] ; 506kb main.js 123kb cred.js
-      [cred-panel] ; 624kb
-      :entity-panel [entity-panel]
-      :timeline-panel [timeline-panel]
-      [not-found-panel]))
-
 (defn- panels [panel-name]
   (case panel-name
-    :home-panel [ged.home.view/home-panel]
+    :home-panel [ged.home.view/panel]
     :settings-panel [panel-defered "settings"]
+    :map-panel [panel-defered "map"]
     [:div (str "no panel: " panel-name)]))
 
 

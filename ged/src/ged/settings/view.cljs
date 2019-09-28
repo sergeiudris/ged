@@ -26,7 +26,7 @@
   ;
   )
 
-(defn settings-panel []
+(defn panel []
   (let []
     (fn []
       (let []

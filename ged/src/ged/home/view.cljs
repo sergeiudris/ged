@@ -26,7 +26,7 @@
        [:p "count is: " (get @component-state :count)]
        [:button {:on-click #(swap! component-state update-in [:count] inc)} "Increment"]])))
 
-(defn home-panel []
+(defn panel []
   (let [module-count @(rf/subscribe [::subs/module-count])
         base-url @(rf/subscribe [:ged.subs/base-url] )
         ]

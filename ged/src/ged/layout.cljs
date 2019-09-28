@@ -43,6 +43,9 @@
        [ant-menu-item {:key "settings-panel"}
         [ant-icon {:type "setting"}]
         [:span "settings"]]
+       [ant-menu-item {:key "map-panel"}
+        [ant-icon {:type "global"}] #_"compas" #_"environment" #_"global"
+        [:span "map"]]
        #_[ant-menu-item {:key "monitor-panel"}
           [ant-icon {:type "monitor"}]
           [:span "monitor"]]])))
