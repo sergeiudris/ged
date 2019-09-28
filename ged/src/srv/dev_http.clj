@@ -27,12 +27,22 @@
 ; https://stackoverflow.com/questions/13924842/extend-clojure-protocol-to-a-primitive-array
 ; https://github.com/thheller/shadow-cljs/blob/61af1cce91398c77f941a3b057cbb840b384eaf6/src/main/shadow/undertow/impl.clj
 
+(def ut-body (atom nil))
+(def ut-exchange (atom nil))
+
+#_(do (pp/pprint @ut-body))
+#_(do (pp/pprint @ut-exchange))
+
+
 (extend-protocol RespondBody
   #_(Class/forName "[B") #_(class (float-array 0))
 
   (Class/forName "[B")
   (respond [body ^HttpServerExchange exchange]
-    (.send ^Sender (.getResponseSender exchange) body))
+    (do
+      (reset! ut-body body)
+      (reset! ut-exchange exchange)
+      (.send ^Sender (.getResponseSender exchange) body)))
 
   ; String
   ; (respond [body ^HttpServerExchange exchange]
@@ -104,7 +114,7 @@
                     :throw-exceptions true
                     :method request-method
                     :url (str GEOSERVER_HOST url)
-                    :as :byte-array
+                    ; :as :byte-array
                     :headers headers
                     ; :basic-auth ["admin" "myawesomegeoserver"]
                     }

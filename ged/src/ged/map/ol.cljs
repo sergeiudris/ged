@@ -43,12 +43,50 @@
              :view (create-view {})
              :pixelRatio 1})))
 
+(defn to-data-url
+  [url]
+  (->
+   (js/fetch url
+             (clj->js {;"headers" {"Authorization"  (auth-creds)}
+                       :method "get"}))
+   (.then (fn [res] (.blob res)))
+   (.then (fn [blob]
+            (js/Promise.
+             (fn [resolve reject]
+               (let [r (js/FileReader.)]
+                 (do
+                   (set! (.. r -onloadend) #(resolve (. r -result)))
+                   (set! (.. r -onerror) reject)
+                   (.readAsDataURL r blob)))))))))
+  
+
+(defn tile-loader-from-string-body
+  [tile src]
+  (->
+   (to-data-url src)
+   (.then (fn [durl]
+            (js/console.log durl)
+            (set! (.. (.getImage tile) -src) durl))))
+  #_(->
+     (js/fetch src
+               (clj->js {;"headers" {"Authorization"  (auth-creds)}
+                         :method "get"}))
+     (.then (fn [res] (.text res)))
+     (.then (fn [r] (let []
+                      #_(js/console.log r)
+                      #_(set! (.. (.getImage tile) -src) url)
+                      (set! (.. (.getImage tile) -src) (str "data:image/png;" r)))))))
+
 (defn wms-source
   [opts]
   (TileWMS.
    (clj->js
     (deep-merge
-     {:url "/geoserver/wms"
+     {:url
+     #_"http://localhost:8801/geoserver/wms" ; works... unclear how
+      "http://localhost:8600/geoserver/wms"
+      #_"/geoserver/wms"
+      ; :tileLoadFunction tile-loader-from-string-body
       :params {;"LAYERS" "dev:usa_major_cities"
                "TILED" true
                "SRS" "EPSG:3857"
