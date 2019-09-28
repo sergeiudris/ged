@@ -78,7 +78,9 @@
       :reagent-render
       (fn [x y z]
         [:div#map-container {:style {:width "100%"
-                                     :height "80vh"}} ])})))
+                                     :height "100%"
+                                     :border "1px solid #dedede"
+                                     }} ])})))
 
 
 
@@ -86,7 +88,7 @@
   (let [module-count @(rf/subscribe [::subs/module-count])
         base-url @(rf/subscribe [:ged.subs/base-url] )
         ]
-    [:div
+    [:div {:style {:height "100%"}}
      [ol-map 1 2 3]
      ]))
 

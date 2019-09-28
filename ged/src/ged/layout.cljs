@@ -75,8 +75,8 @@
      [:div {:class "logo-name"} "ged"]]
     menu]
    [ant-layout-content {:class "main-content"
-                        :style {:margin-top 64
-                                :padding "0 50px"}}
+                        :style {:margin-top "32px"
+                                :padding "32px 32px 32px 32px"}}
     content]
    ])
 
