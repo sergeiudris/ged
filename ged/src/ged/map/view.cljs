@@ -10,7 +10,7 @@
 
 (def ant-button (r/adapt-react-class ant-Button))
 
-(def state (atom {:olmap nil}))
+(def ^:export state (atom {:olmap nil}))
 
 (defn get-olmap
   []
@@ -62,7 +62,8 @@
           (do
             (js/console.log "creating new map..")
             (swap! state assoc :olmap
-                   (ol/create-map {:el-id "map-container"})))
+                   (ol/create-map {:el-id "map-container"}))
+            (set! (.. js/window -map) (get-olmap)))
           (do
             (js/console.log "setting new map target..")
             (ol/set-target (get-olmap) "map-container"))))
