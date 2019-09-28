@@ -52,7 +52,8 @@
       :params {;"LAYERS" "dev:usa_major_cities"
                "TILED" true
                "SRS" "EPSG:3857"
-               "exceptions" "application/vnd.ogc.se_inimage"
+              ;  "exceptions" "application/vnd.ogc.se_inimage"
+               "exceptions" "application/json"
                "TRANSPARENT" true
                "FORMAT" "image/png"
                "REQUEST" "GetMap"
