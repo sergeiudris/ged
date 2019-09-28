@@ -21,22 +21,22 @@
      :ged.core/active-panel nil
      :ged.core/conf conf
      :ged.core/api {:base-url base-url
-                   :search (str base-url "/usda/search")}
+                    :search (str base-url "/usda/search")}
 
     ; count
 
      :ged.count/search-res {:data []}
      :ged.count/results-visible? true
      :ged.count/search-table-mdata {:pagination {:showSizeChanger false
-                                                :defaultPageSize 5
-                                                :pageSizeOptions  ["5" "10" "20"]
-                                                :position "top"
-                                                :total 0
-                                                :current 1
-                                                :pageSize 5}
-                                   :filters {}
-                                   :sorter {}
-                                   :extra {:currentDataSource []}}
+                                                 :defaultPageSize 5
+                                                 :pageSizeOptions  ["5" "10" "20"]
+                                                 :position "top"
+                                                 :total 0
+                                                 :current 1
+                                                 :pageSize 5}
+                                    :filters {}
+                                    :sorter {}
+                                    :extra {:currentDataSource []}}
      :ged.count/search-input ""
      :ged.count/nutrients-res nil
      :ged.count/items-nutrients-res nil
@@ -51,6 +51,10 @@
 
     ; settings
      :ged.settings/settings {:group "31-50"}
+
+     ; feats
+     :ged.feats/search-res nil
+     :ged.feats/search-input ""
 
     ;
      }))
