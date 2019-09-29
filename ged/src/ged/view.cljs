@@ -69,7 +69,7 @@
           :else
           (do
             (go
-              (<! (timeout (if config/debug? 100 0)))
+              (<! (timeout (if config/debug? 0 0)))
               (-> (loader/load module-name)
                   (.then
                    (fn []

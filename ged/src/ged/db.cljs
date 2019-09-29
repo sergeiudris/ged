@@ -33,6 +33,7 @@
      :ged.feats/select-feature nil
      :ged.feats/tx-res nil
      :ged.feats/search-table-mdata {:pagination {:showSizeChanger false
+                                                 :showQuickJumper true
                                                  :defaultPageSize 5
                                                  :pageSizeOptions  ["5" "10" "20"]
                                                  :position "top"

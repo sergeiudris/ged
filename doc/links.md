@@ -30,6 +30,7 @@ http://localhost:8600/geoserver/rest/workspaces/dev/featuretypes?list=configured
 
 http://localhost:8600/geoserver/rest/workspaces/dev/featuretypes/usa_major_cities
 
+http://localhost:8600/geoserver/rest/workspaces/dev/featuretypes/usa_major_cities.json
 
 #### transaction problems
 
