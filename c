@@ -40,4 +40,11 @@ cat_webxml(){
     dc exec geoserver bash -c "cat /usr/local/tomcat/webapps/geoserver/WEB-INF/web.xml"
 }
 
+prod(){
+
+    docker-compose --compatibility \
+        -f prod.yml \
+        "$@"
+}
+
 "$@"

@@ -20,9 +20,6 @@ services:
 
   geoserver:
     image: kartoza/geoserver:2.15.2
-    build:
-      context: ./geoserver
-      dockerfile: ./Dockerfile
     volumes:
       - geoserver-data:/opt/geoserver/data_dir
       - ./geoserver/.data:/opt/data
@@ -52,20 +49,17 @@ services:
       db:
         condition: service_healthy
 
-  adminer:
-    image: adminer
-    # restart: always
-    ports:
-      - 8700:8080
+  # adminer:
+  #   image: adminer
+  #   # restart: always
+  #   ports:
+  #     - 8700:8080
 
   ged:
-    image: ged
-    volumes:
-      - ./ged:/opt/app
-      - ./:/opt/root
+    image: seeris/ged
     build:
       context: ./ged
-      dockerfile: ./Dockerfile
+      dockerfile: ./prod.Dockerfile
     ports:
       - 8888:7888
       - 8800:9500

@@ -25,7 +25,7 @@ shadow(){
 }
 
 prod(){
-    yarn
+    npm i
     shadow -A:prod:git:cache release app
 }
 
@@ -40,21 +40,20 @@ main(){
 }
 
 dev(){
-    yarn
+    npm i
     shadow -A:dev:local:cache watch app
     # npx shadow-cljs -A:dev:local watch app
     # yarn dev
 }
 
 prod-local(){
-    yarn
+    npm i
     shadow -A:prod:local:cache release app
     # yarn prod
 }
 
 server(){
-    yarn
-    shadow -A:dev:local:cache server
+    shadow-cljs -A:dev:local:cache server
     # yarn server
 }
 
