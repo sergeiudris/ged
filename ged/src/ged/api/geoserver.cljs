@@ -105,13 +105,16 @@
                      inserts  updates deletes
                      (clj->js
                       {"srsName" (or srsName "EPSG:3857")
-                       "featureNS" "http://geoserver:8080/geoserver/web/dev"
+                       "featureNS" "http://www.opengis.net/wfs/dev"
                        "featurePrefix" featurePrefix
                        "featureType" featureType
                        "outputFormat" "application/json"
                        "version" "1.1.0"
-                       "gmlOptions" {"featureType" (str featurePrefix ":" featureType )
-                                     "srsName" (or srsName "EPSG:3857")}})))
+                      ;  "gmlOptions" {"featureType" "wfs_geom"
+                                    ;  "srsName" (or srsName "EPSG:3857")}
+                       }
+                      
+                      )))
 
 (defn wfs-tx-jsons
   [opts]
