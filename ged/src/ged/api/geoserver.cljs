@@ -6,6 +6,8 @@
 
 #_(OlFilter/like "name" "Mississippi*"  )
 
+#_(OlFilter/ilike "name" "Mississippi*")
+
 ; https://openlayers.org/en/v6.0.0/examples/vector-wfs-getfeature.html
 
 (defn auth-creds
@@ -35,16 +37,20 @@
     (.then (fn [j] (js->clj j  :keywordize-keys true))))))
 
 (defn wfs-get-features-body
-  [{:keys [offset limit featurePrefix featureTypes]}]
+  [{:keys [offset limit
+           featurePrefix featureTypes
+           filter]}]
   (.writeGetFeature (OlFormatWFS.)
                     (clj->js
-                     {"srsName" "EPSG:3857"
-                      "featurePrefix" featurePrefix
-                      "featureTypes" featureTypes
-                      "outputFormat" "application/json"
-                      "startIndex" offset
-                      "maxFeatures" limit
-                      "count" limit})))
+                     (merge
+                      {"srsName" "EPSG:3857"
+                       "featurePrefix" featurePrefix
+                       "featureTypes" featureTypes
+                       "outputFormat" "application/json"
+                       "startIndex" offset
+                       "maxFeatures" limit
+                       "count" limit}
+                      (when filter {"filter" filter})))))
 
 (defn xml->str
   [x]
@@ -77,3 +83,33 @@
    (.then (fn [r] (js/console.log r))))
 
 
+(defn jsons->features
+  [jsons]
+  (->
+   (OlFormatGeoJSON.)
+   (.readFeatures (clj->js jsons))))
+
+
+(defn wfs-transaction-body
+  [{:keys [featurePrefix featureTypes srsName
+           inserts updates deletes]
+    ; :or {inserts #js []
+    ;      updates #js []
+    ;      deletes #js []}
+    }]
+  (.writeTransaction (OlFormatWFS.)
+                     inserts updates deletes
+                     (clj->js
+                      {"srsName" (or srsName "EPSG:3857")
+                       "featurePrefix" featurePrefix
+                       "featureTypes" featureTypes
+                       "outputFormat" "application/json"
+                       "version" "1.1.0"})))
+
+(defn wfs-tx-update
+  [jsons opts]
+  (let [fs (jsons->features jsons)]
+    (wfs-transaction-body
+     (merge
+      {:updates fs}
+      opts))))

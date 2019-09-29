@@ -157,7 +157,8 @@
        [editor-feature]
        [:br]
        [ant-button-group {:size "small"}
-        [ant-button {:style {:width "96px"}}
+        [ant-button {:on-click #(rf/dispatch [:ged.feats.events/edit-feature])
+                     :style {:width "96px"}}
          "edit"]
         [ant-button {:style {:width "96px"}}
          "create"]]

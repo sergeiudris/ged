@@ -3,7 +3,8 @@
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
             [ged.api.geoserver]
             [ged.feats.core :refer [editor-get-val]]
-            [ajax.core :as ajax]))
+            [ajax.core :as ajax]
+            ["ol/format/filter" :as olf]))
 
 (rf/reg-event-fx
  ::search
@@ -16,14 +17,18 @@
          {:keys [current pageSize]} pag
          limit (or pageSize 10)
          offset (or (* pageSize (dec current)) 0)]
+     (js/console.log s)
      {:dispatch [:ged.events/request
                  {:method :post
                   :params {}
                   :body (ged.api.geoserver/wfs-get-features-body-str
-                         {:offset offset
-                          :limit limit
-                          :featurePrefix "dev"
-                          :featureTypes ["usa_major_cities"]})
+                         (merge
+                          {:offset offset
+                           :limit limit
+                           :featurePrefix "dev"
+                           :featureTypes ["usa_major_cities"]}
+                          (when (not-empty s)
+                            {:filter (olf/like "NAME" (str "*" s "*") "*" "." "!" false)})))
                   :headers {"Content-Type" "application/json"
                             "Authorization"  (ged.api.geoserver/auth-creds)}
                   :path "/geoserver/wfs"
@@ -48,7 +53,10 @@
      {:dispatch [:ged.events/request
                  {:method :post
                   :params {}
-                  :body ""
+                  :body (ged.api.geoserver/wfs-tx-update
+                         [vl]
+                         {:featurePrefix "dev"
+                          :featureTypes ["usa_major_cities"]})
                   :headers {"Content-Type" "application/json"
                             "Authorization"  (ged.api.geoserver/auth-creds)}
                   :path "/geoserver/wfs"
