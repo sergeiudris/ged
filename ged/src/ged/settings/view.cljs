@@ -54,7 +54,7 @@
                                       (.. % -target -value)])}]]
           [ant-col {:span 4}
            [ant-button
-            {:on-click (fn [])}
+            {:on-click (fn [] (rf/dispatch [:ged.events/apply-server-settings]) )}
             "apply"]]]
          [:br]
          [ant-row
@@ -67,7 +67,7 @@
                                       (.. % -target -value)])}]]
           [ant-col {:span 4}
            [ant-button 
-            {:on-click (fn [])}
+            {:on-click (fn [] (rf/dispatch [:ged.events/apply-server-settings]))}
             "apply"]
            ]
           ]

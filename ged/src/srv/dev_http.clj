@@ -3,8 +3,10 @@
   (:require [clojure.java.io :as io]
             [clojure.pprint :as pp]
             [clojure.string :as str]
+            [clojure.reflect :as r]
             [clj-http.client :as client]
             [shadow.undertow.impl :refer [RespondBody]]
+            [clojure.java.io :as io]
             #_[srv.server])
     (:import (io.undertow.util HeaderMap HeaderValues Headers HttpString)
              (io.undertow.server HttpServerExchange)
@@ -24,13 +26,16 @@
    :headers {"content-type" "text/plain"}
    :body "Not found."})
 
-(def settings (atom {:geoserver-host "http://geoserver:8080"
+(def settings (atom {:proxy-geoserver-host "http://geoserver:8080"
                      :proxy-path "/geoserver"}))
 
 (defn update-settings!
   [m]
+  (prn m)
   (reset! settings
           (merge @settings m)))
+
+
 
 (defn get-proxy-path
   []
@@ -38,7 +43,7 @@
 
 (defn get-geoserver-host
   []
-  (or (:geoserver-host @settings) ""))
+  (or (:proxy-geoserver-host @settings) ""))
 
 ; https://stackoverflow.com/questions/13924842/extend-clojure-protocol-to-a-primitive-array
 ; https://github.com/thheller/shadow-cljs/blob/61af1cce91398c77f941a3b057cbb840b384eaf6/src/main/shadow/undertow/impl.clj
@@ -82,9 +87,22 @@
 (def rawrsp (atom nil))
 
 
-
+(defn prn-methods
+  [inst]
+  (pp/print-table
+   (sort-by :name
+            (filter :exception-types (:members (r/reflect inst))))))
 
 #_(do (pp/pprint @rqs))
+
+#_(slurp (:body @rqs))
+
+#_(prn-methods (:body @rqs))
+
+#_(prn-methods (:shadow.undertow.impl/exchange @rqs))
+
+#_(with-open [^InputStream b (:body @rqs)]
+    (slurp b))
 
 #_(do (pp/pprint @rqs-opts))
 
@@ -119,11 +137,13 @@
   (prn uri)
   (cond
     (= uri "/update-settings")
-    (let [rsp (try (update-settings! (read-string "[]"))
-                   (catch Exception e (.getMessage e)))]
+    (let [bstring (with-open [^InputStream b (:body @rqs)]
+                    (slurp b))
+          r (try (update-settings! (read-string bstring))
+                 (catch Exception e (.getMessage e)))]
       {:status 200
        :headers {"content-type" "text/html; charset=utf-8"}
-       :body (str rsp)})
+       :body (str @settings)})
 
     (= uri "/hello")
     {:status 200
@@ -136,7 +156,7 @@
           req-opts {:throw-entire-message? true
                     :throw-exceptions true
                     :method request-method
-                    :url (str (get-geoserver-host) (get-proxy-path) url)
+                    :url (str (get-geoserver-host) "/geoserver" url)
                     ; :as :byte-array
                     :body body
                     :headers  (dissoc headers "content-length")

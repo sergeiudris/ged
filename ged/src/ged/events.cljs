@@ -6,7 +6,9 @@
    #_[vimsical.re-frame.cofx.inject :as inject]
    [ajax.core :as ajax]
    [ajax.edn]
-   [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]))
+   [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
+   ["antd/lib/message" :default AntMessage]
+   ))
 
 (rf/reg-event-db
  ::initialize-db
@@ -17,6 +19,13 @@
  ::set-active-panel
  (fn-traced [db [_ active-panel]]
             (assoc db :ged.core/active-panel active-panel)))
+
+(rf/reg-event-fx
+ ::ant-message
+ (fn [{:keys [db]} [_ ea]]
+   (let [msg (:msg ea)]
+     (.info AntMessage msg 0.5)
+     {:db db})))
 
 (rf/reg-event-db
  ::set-re-pressed-example
@@ -32,14 +41,14 @@
 (rf/reg-event-fx
  ::apply-server-settings
  (fn [{:keys [db]} [_ eargs]]
-   (let [geoserver-host (:ged.settings/geoserver-host db)
+   (let [geoserver-host (:ged.settings/proxy-geoserver-host db)
          proxy-path (:ged.settings/proxy-path db)
-         body (str  {:geoserver-host geoserver-host
+         body (str  {:proxy-geoserver-host geoserver-host
                      :proxy-path proxy-path})]
      {:dispatch [:ged.events/request
                  {:method :post
                   :body body
-                  :headers {"Content-Type" "text/html; charset=utf-8"}
+                  :headers {"Content-Type" "application/json" #_"text/html; charset=utf-8"}
                   ; :path "/geoserver/wfs?exceptions=application/json&outputFormat=application/json"
                   :path "/update-settings"
                   :response-format
@@ -49,11 +58,11 @@
                   :on-fail [::apply-server-settings-res]}]
       :db (merge db {})})))
 
-(rf/reg-event-db
- :apply-server-settings-res
- (fn-traced [db [_ eargs]]
-            (js/console.log eargs)
-            db))
+(rf/reg-event-fx
+ ::apply-server-settings-res
+ (fn [{:keys [db]} [_ eargs]]
+   {:dispatch [::ant-message {:msg "settings applied"}]
+    :db db}))
 
 ; edn deprecated
 ; https://github.com/JulianBirch/cljs-ajax/blob/master/docs/formats.md#edn
