@@ -123,6 +123,7 @@
         [ant-table {:show-header true
                     :size "small"
                     :row-key :id
+                    :className "feats-table"
                     :columns columns
                     :dataSource ents
                     :on-change (fn [pag fil sor ext]

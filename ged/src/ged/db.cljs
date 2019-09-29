@@ -23,40 +23,29 @@
      :ged.core/api {:base-url base-url
                     :search (str base-url "/usda/search")}
 
-    ; count
 
-     :ged.count/search-res {:data []}
-     :ged.count/results-visible? true
-     :ged.count/search-table-mdata {:pagination {:showSizeChanger false
+      ; dbquery
+     :ged.dbquery/example-queries-res nil
+
+      ; feats
+     :ged.feats/search-res nil
+     :ged.feats/search-input ""
+     :ged.feats/select-feature nil
+     :ged.feats/tx-res nil
+     :ged.feats/search-table-mdata {:pagination {:showSizeChanger false
                                                  :defaultPageSize 5
                                                  :pageSizeOptions  ["5" "10" "20"]
                                                  :position "top"
                                                  :total 0
                                                  :current 1
-                                                 :pageSize 5}
+                                                 :pageSize 10}
                                     :filters {}
                                     :sorter {}
                                     :extra {:currentDataSource []}}
-     :ged.count/search-input ""
-     :ged.count/nutrients-res nil
-     :ged.count/items-nutrients-res nil
-     :ged.count/items-nutrients {}
-     :ged.count/added-items {}
-     :ged.count/added-items-ids []
-     :ged.count/nhi-dri-res nil
-     :ged.count/nutrients nil
-
-    ; dbquery
-     :ged.dbquery/example-queries-res nil
-
     ; settings
      :ged.settings/settings {:group "31-50"}
 
-     ; feats
-     :ged.feats/search-res nil
-     :ged.feats/search-input ""
-     :ged.feats/select-feature nil
-     :ged.feats/tx-res nil
+
 
     ;
      }))
