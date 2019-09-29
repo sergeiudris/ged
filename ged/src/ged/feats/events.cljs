@@ -1,14 +1,23 @@
 (ns ged.feats.events
   (:require [re-frame.core :as rf]
+            [clojure.repl :as repl]
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
             [ged.api.geoserver]
             [ged.feats.core :refer [editor-get-val
                                     editor-set-json!
                                     editor-response-set-json!
-                                    editor-request-set!]]
+                                    editor-request-set!
+                                    prettify-xml
+                                    ]]
             [ajax.core :as ajax]
             [clojure.data.xml :as xml]
             ["ol/format/filter" :as olf]))
+
+#_(repl/dir xml)
+
+#_(xml/indent)
+
+
 
 (rf/reg-event-fx
  ::search
@@ -28,10 +37,9 @@
                  :featurePrefix "dev"
                  :featureTypes ["usa_major_cities"]}
                 (when (not-empty s)
-                  {:filter (olf/like "NAME" (str "*" s "*") "*" "." "!" false)})))
-         ]
+                  {:filter (olf/like "NAME" (str "*" s "*") "*" "." "!" false)})))]
      (js/console.log "search for: " s)
-     (editor-request-set! body)
+     (editor-request-set! (prettify-xml body))
      {:dispatch [:ged.events/request
                  {:method :post
                   :params {}
@@ -56,14 +64,16 @@
 (rf/reg-event-fx
  ::update-feature
  (fn [{:keys [db]} [_ eargs]]
-   (let [vl (js/JSON.parse (editor-get-val))]
+   (let [vl (js/JSON.parse (editor-get-val))
+         body (ged.api.geoserver/wfs-tx-jsons-str
+               {:updates [vl]
+                :featurePrefix "dev"
+                :featureType "usa_major_cities"})]
      (js/console.log vl)
+     (editor-request-set! (prettify-xml body))
      {:dispatch [:ged.events/request
                  {:method :post
-                  :body (ged.api.geoserver/wfs-tx-jsons-str
-                         {:updates [vl]
-                          :featurePrefix "dev"
-                          :featureType "usa_major_cities"})
+                  :body body
                   :headers {"Content-Type" "application/json"
                             "Authorization"  (ged.api.geoserver/auth-creds)}
                   :path "/geoserver/wfs?exceptions=application/json"
