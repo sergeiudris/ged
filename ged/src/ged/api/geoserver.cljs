@@ -105,7 +105,7 @@
                      inserts  updates deletes
                      (clj->js
                       {"srsName" (or srsName "EPSG:3857")
-                       "featureNS" "http://geoserver:8080/geoserver/wfs"
+                       "featureNS" "http://geoserver:8080/geoserver/web/dev"
                        "featurePrefix" featurePrefix
                        "featureType" featureType
                        "outputFormat" "application/json"

@@ -6,6 +6,9 @@
 
 (def editor-response-ref (atom nil))
 
+(def editor-request-ref (atom nil))
+
+
 
 (defn editor-get-val
   []
@@ -33,3 +36,9 @@
 (defn editor-response-set-json!
   [json]
   (set-json! editor-response-ref json))
+
+(defn editor-request-set!
+  [vl]
+  (.setValue
+   (.-session @editor-request-ref)
+   vl))

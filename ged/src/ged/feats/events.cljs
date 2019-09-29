@@ -2,10 +2,12 @@
   (:require [re-frame.core :as rf]
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
             [ged.api.geoserver]
-            [ged.feats.core :refer [editor-get-val 
+            [ged.feats.core :refer [editor-get-val
                                     editor-set-json!
-                                    editor-response-set-json!]]
+                                    editor-response-set-json!
+                                    editor-request-set!]]
             [ajax.core :as ajax]
+            [clojure.data.xml :as xml]
             ["ol/format/filter" :as olf]))
 
 (rf/reg-event-fx
@@ -18,19 +20,22 @@
          pag (:pagination table-mdata)
          {:keys [current pageSize]} pag
          limit (or pageSize 10)
-         offset (or (* pageSize (dec current)) 0)]
+         offset (or (* pageSize (dec current)) 0)
+         body (ged.api.geoserver/wfs-get-features-body-str
+               (merge
+                {:offset offset
+                 :limit limit
+                 :featurePrefix "dev"
+                 :featureTypes ["usa_major_cities"]}
+                (when (not-empty s)
+                  {:filter (olf/like "NAME" (str "*" s "*") "*" "." "!" false)})))
+         ]
      (js/console.log "search for: " s)
+     (editor-request-set! body)
      {:dispatch [:ged.events/request
                  {:method :post
                   :params {}
-                  :body (ged.api.geoserver/wfs-get-features-body-str
-                         (merge
-                          {:offset offset
-                           :limit limit
-                           :featurePrefix "dev"
-                           :featureTypes ["usa_major_cities"]}
-                          (when (not-empty s)
-                            {:filter (olf/like "NAME" (str "*" s "*") "*" "." "!" false)})))
+                  :body body
                   :headers {"Content-Type" "application/json"
                             "Authorization"  (ged.api.geoserver/auth-creds)}
                   :path "/geoserver/wfs?exceptions=application/json"

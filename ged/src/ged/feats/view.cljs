@@ -6,7 +6,9 @@
              [ged.feats.subs :as subs]
              [ged.feats.events :as events]
              [ged.feats.sample :refer [sample-table]]
-             [ged.feats.editor :refer [editor-feature editor-response]]
+             [ged.feats.editor :refer [editor-feature 
+                                       editor-request
+                                       editor-response]]
              ["antd/lib/icon" :default AntIcon]
              ["antd/lib/button" :default AntButton]
              ["antd/lib/button/button-group" :default AntButtonGroup]
@@ -156,6 +158,7 @@
        [:br]
        [:section {:class "editors-container" }
         [editor-feature]
+        [editor-request]
         [editor-response]
         ]
        [:br]
