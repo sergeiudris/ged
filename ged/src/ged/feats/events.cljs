@@ -7,9 +7,9 @@
                                     editor-set-json!
                                     editor-response-set!
                                     editor-request-set!
-                                    prettify-xml
-                                    ]]
+                                    prettify-xml]]
             [ajax.core :as ajax]
+            [clojure.string :as str]
             [clojure.data.xml :as xml]
             ["ol/format/filter" :as olf]))
 
@@ -22,7 +22,12 @@
 (rf/reg-event-fx
  ::search
  (fn [{:keys [db]} [_ eargs]]
-   (let [input (:ged.feats/search-input db)
+   (let [ftype-input (:ged.feats/feature-type-input db)
+         [fpref ftype] (try (str/split ftype-input \:)
+                            (catch js/Error e
+                              (do (js/console.warn e)
+                                  ["undefined:undefined"])))
+         input (:ged.feats/search-input db)
          s (or (:input eargs) input)
          table-mdata (:ged.feats/search-table-mdata db)
          total (get-in db [:ged.feats/search-res :total])
@@ -34,8 +39,8 @@
                (merge
                 {:offset offset
                  :limit limit
-                 :featurePrefix "dev"
-                 :featureTypes ["usa_major_cities"]}
+                 :featurePrefix fpref
+                 :featureTypes [ftype]}
                 (when (not-empty s)
                   {:filter (olf/like "NAME" (str "*" s "*") "*" "." "!" false)})))]
      (js/console.log "search for: " s)
@@ -64,12 +69,17 @@
 (rf/reg-event-fx
  ::tx-feature
  (fn [{:keys [db]} [_ eargs]]
-   (let [tx-type (:tx-type eargs)
+   (let [ftype-input (:ged.feats/feature-type-input db)
+         [fpref ftype] (try (str/split ftype-input \:)
+                            (catch js/Error e
+                              (do (js/console.warn e)
+                                  ["undefined:undefined"])))
+         tx-type (:tx-type eargs)
          vl (js/JSON.parse (editor-get-val))
          body (ged.api.geoserver/wfs-tx-jsons-str
-               { tx-type [vl]
-                :featurePrefix "dev"
-                :featureType "usa_major_cities"})]
+               {tx-type [vl]
+                :featurePrefix fpref
+                :featureType ftype})]
      (editor-request-set! (prettify-xml body))
      {:dispatch [:ged.events/request
                  {:method :post
@@ -111,5 +121,11 @@
  (fn [{:keys [db]} [_ eargs]]
    (let [key :ged.feats/select-feature]
      (do (editor-set-json! eargs))
+     {:db (assoc db key eargs)})))
+
+(rf/reg-event-fx
+ ::feature-type-input
+ (fn [{:keys [db]} [_ eargs]]
+   (let [key :ged.feats/feature-type-input]
      {:db (assoc db key eargs)})))
 

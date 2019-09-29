@@ -79,6 +79,20 @@
          :suffix (r/as-element [auto-complete-suffix
                                 {:on-click #(on-search (:input @state))}])}]])))
 
+(defn feature-type-input
+  []
+  (let [sref (rf/subscribe
+               [:ged.feats.subs/feature-type-input])]
+    (fn []
+      [ant-input {:style {:width "30%"}
+                  :value @sref
+                  :on-change
+                  (fn [ev]
+                    (rf/dispatch
+                     [:ged.feats.events/feature-type-input
+                      (.. ev -target -value)]))
+                  :placeholder "topp:states"}])))
+
 (def feature-columns
   [{:title "id"
     :key "id"
@@ -143,6 +157,8 @@
                                             ; :on-change #(js/console.log %1 %2)
                                         })}]))))
 
+
+
 (defn panel
   []
   #_(js/console.log 'count-panel-fn)
@@ -152,7 +168,10 @@
     (fn []
       [:section
        #_[search]
-       [auto-complete {}]
+       [:div
+        [auto-complete {}]
+        [feature-type-input]
+        ]
        #_[buttons]
        [:br]
        [table]

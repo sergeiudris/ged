@@ -43,6 +43,8 @@
                                     :filters {}
                                     :sorter {}
                                     :extra {:currentDataSource []}}
+     :ged.feats/feature-type-input "dev:usa_major_cities"
+     
     ; settings
      :ged.settings/settings {:group "31-50"}
 

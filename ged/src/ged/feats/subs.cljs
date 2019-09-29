@@ -17,3 +17,8 @@
  ::search-table-mdata
  (fn [db _]
    (:ged.feats/search-table-mdata db)))
+
+(rf/reg-sub
+ ::feature-type-input
+ (fn [db _]
+   (:ged.feats/feature-type-input db)))
