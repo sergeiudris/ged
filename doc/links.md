@@ -31,7 +31,16 @@ http://localhost:8600/geoserver/rest/workspaces/dev/featuretypes?list=configured
 http://localhost:8600/geoserver/rest/workspaces/dev/featuretypes/usa_major_cities
 
 
+
+
 #### creating layers
 
 https://docs.geoserver.org/latest/en/api/#/latest/en/api/1.0.0/featuretypes.yaml
+
+
+#### wfs
+
+http://localhost:8600/geoserver/wfs?service=wfs&version=1.1.0&request=GetCapabilities
+
+http://localhost:8600/geoserver/wfs?service=wfs&version=1.1.0&request=DescribeFeatureType&typeNames=dev:usa_major_cities
 

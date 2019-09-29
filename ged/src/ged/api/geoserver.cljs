@@ -89,8 +89,12 @@
     (->
      (OlFormatGeoJSON.)
      (.readFeatures
-      #js {"type" "FeatureCollection"
-           "features" (clj->js jsons)}))))
+      (clj->js 
+       {"type" "FeatureCollection"
+        "crs" {"properties" {"name" "urn:ogc:def:crs:EPSG::3857"}}
+        "features" jsons}
+       )
+      ))))
 
 
 (defn wfs-transaction-body
