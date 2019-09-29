@@ -56,7 +56,7 @@
      :ged.feats/search-res nil
      :ged.feats/search-input ""
      :ged.feats/select-feature nil
-     :ged.feats/edit-feature-res nil
+     :ged.feats/tx-res nil
 
     ;
      }))

@@ -157,11 +157,13 @@
        [editor-feature]
        [:br]
        [ant-button-group {:size "small"}
-        [ant-button {:on-click #(rf/dispatch [:ged.feats.events/edit-feature])
-                     :style {:width "96px"}}
-         "edit"]
         [ant-button {:style {:width "96px"}}
-         "create"]]
-       
+         "insert"]
+        [ant-button {:on-click #(rf/dispatch [:ged.feats.events/update-feature])
+                     :style {:width "96px"}}
+         "update"]
+        [ant-button {:style {:width "96px"}}
+         "delete"]]
+
        #_[ged.feats.sample/sample-table]])))
 

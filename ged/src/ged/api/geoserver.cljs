@@ -85,31 +85,46 @@
 
 (defn jsons->features
   [jsons]
-  (->
-   (OlFormatGeoJSON.)
-   (.readFeatures (clj->js jsons))))
+  (when jsons
+    (->
+     (OlFormatGeoJSON.)
+     (.readFeatures
+      #js {"type" "FeatureCollection"
+           "features" (clj->js jsons)}))))
 
 
 (defn wfs-transaction-body
-  [{:keys [featurePrefix featureTypes srsName
+  [{:keys [featurePrefix featureType srsName
            inserts updates deletes]
     ; :or {inserts #js []
     ;      updates #js []
     ;      deletes #js []}
     }]
+  (js/console.log inserts updates  deletes)
   (.writeTransaction (OlFormatWFS.)
-                     inserts updates deletes
+                     inserts  updates deletes
                      (clj->js
                       {"srsName" (or srsName "EPSG:3857")
+                       "featureNS" "http://geoserver:8080/geoserver/wfs"
                        "featurePrefix" featurePrefix
-                       "featureTypes" featureTypes
+                       "featureType" featureType
                        "outputFormat" "application/json"
-                       "version" "1.1.0"})))
+                       "version" "1.1.0"
+                       "gmlOptions" {"featureType" (str featurePrefix ":" featureType )
+                                     "srsName" (or srsName "EPSG:3857")}})))
 
-(defn wfs-tx-update
-  [jsons opts]
-  (let [fs (jsons->features jsons)]
+(defn wfs-tx-jsons
+  [opts]
+  (let []
     (wfs-transaction-body
      (merge
-      {:updates fs}
-      opts))))
+      opts
+      {:inserts (jsons->features (:inserts opts))
+       :updates (jsons->features (:updates opts))
+       :deletes (jsons->features (:deletes opts))}))))
+
+(defn wfs-tx-jsons-str
+  [opts]
+  (->
+   (wfs-tx-jsons  opts)
+   (xml->str)))

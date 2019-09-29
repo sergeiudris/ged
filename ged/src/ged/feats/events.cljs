@@ -17,7 +17,7 @@
          {:keys [current pageSize]} pag
          limit (or pageSize 10)
          offset (or (* pageSize (dec current)) 0)]
-     (js/console.log s)
+     (js/console.log "search for: " s)
      {:dispatch [:ged.events/request
                  {:method :post
                   :params {}
@@ -47,28 +47,29 @@
             (assoc db :ged.feats/search-res val)))
 
 (rf/reg-event-fx
- ::edit-feature
+ ::update-feature
  (fn [{:keys [db]} [_ eargs]]
    (let [vl (js/JSON.parse (editor-get-val))]
+     (js/console.log vl)
      {:dispatch [:ged.events/request
                  {:method :post
                   :params {}
-                  :body (ged.api.geoserver/wfs-tx-update
-                         [vl]
-                         {:featurePrefix "dev"
-                          :featureTypes ["usa_major_cities"]})
+                  :body (ged.api.geoserver/wfs-tx-jsons-str
+                         {:updates [vl]
+                          :featurePrefix "dev"
+                          :featureType "usa_major_cities"})
                   :headers {"Content-Type" "application/json"
                             "Authorization"  (ged.api.geoserver/auth-creds)}
                   :path "/geoserver/wfs"
                   :response-format (ajax/json-response-format {:keywords? true})
-                  :on-success [::edit-feature-res]
-                  :on-fail [::edit-feature-res]}]
+                  :on-success [::tx-res]
+                  :on-fail [::tx-res]}]
       :db (merge db {})})))
 
 (rf/reg-event-db
- ::edit-feature-res
+ ::tx-res
  (fn-traced [db [_ val]]
-            (assoc db :ged.feats/edit-feature-res val)))
+            (assoc db :ged.feats/tx-res val)))
 
 
 (rf/reg-event-db
