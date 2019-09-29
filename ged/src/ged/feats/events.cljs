@@ -2,7 +2,9 @@
   (:require [re-frame.core :as rf]
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
             [ged.api.geoserver]
-            [ged.feats.core :refer [editor-get-val]]
+            [ged.feats.core :refer [editor-get-val 
+                                    editor-set-json!
+                                    editor-response-set-json!]]
             [ajax.core :as ajax]
             ["ol/format/filter" :as olf]))
 
@@ -31,7 +33,7 @@
                             {:filter (olf/like "NAME" (str "*" s "*") "*" "." "!" false)})))
                   :headers {"Content-Type" "application/json"
                             "Authorization"  (ged.api.geoserver/auth-creds)}
-                  :path "/geoserver/wfs"
+                  :path "/geoserver/wfs?exceptions=application/json"
                   :response-format (ajax/json-response-format {:keywords? true})
                   :on-success [::search-res]
                   :on-fail [::search-res]}]
@@ -53,14 +55,13 @@
      (js/console.log vl)
      {:dispatch [:ged.events/request
                  {:method :post
-                  :params {}
                   :body (ged.api.geoserver/wfs-tx-jsons-str
                          {:updates [vl]
                           :featurePrefix "dev"
                           :featureType "usa_major_cities"})
                   :headers {"Content-Type" "application/json"
                             "Authorization"  (ged.api.geoserver/auth-creds)}
-                  :path "/geoserver/wfs"
+                  :path "/geoserver/wfs?exceptions=application/json"
                   :response-format (ajax/json-response-format {:keywords? true})
                   :on-success [::tx-res]
                   :on-fail [::tx-res]}]
@@ -68,8 +69,9 @@
 
 (rf/reg-event-db
  ::tx-res
- (fn-traced [db [_ val]]
-            (assoc db :ged.feats/tx-res val)))
+ (fn [db [_ eargs]]
+   (do (editor-response-set-json! eargs))
+   (assoc db :ged.feats/tx-res eargs)))
 
 
 (rf/reg-event-db
@@ -90,10 +92,6 @@
  ::select-feature
  (fn [{:keys [db]} [_ eargs]]
    (let [key :ged.feats/select-feature]
-     (do (.setValue
-          (.-session @ged.feats.core/editor-feature-ref)
-          (js/JSON.stringify eargs nil "\t")
-          ; JSON.stringify(jsonDoc, null, '\t')
-          ))
+     (do (editor-set-json! eargs))
      {:db (assoc db key eargs)})))
 

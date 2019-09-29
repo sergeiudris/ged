@@ -38,7 +38,7 @@
  (fn [{:keys [db event] :as ctx} [_ eargs]]
    (let [base-url (get-in db [:ged.core/api :base-url])
          {:keys [method path on-success on-fail 
-                 params body headers response-format]} eargs
+                 params url-params body headers response-format]} eargs
          uri (str base-url path)]
      {:http-xhrio {:method method
                    :uri uri
@@ -51,6 +51,7 @@
                    :headers headers
                   ;  :params {:data "{:hello 'world}"}
                    :params params
+                   :url-params url-params
                    :on-fail on-fail}
       :db db}
      ;

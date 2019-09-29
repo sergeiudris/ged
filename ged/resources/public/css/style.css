@@ -75,6 +75,18 @@ body {
   border: 1px solid lightgrey;
   height: 368px !important;
   flex: 0 0 auto;
-  width: 50%;
   /* display: inline-block; */
+}
+
+.editor-response {
+  border: 1px solid lightgrey;
+  height: 368px !important;
+  flex: 0 0 auto;
+  margin-left: 32px;
+}
+
+.editors-container {
+  display: flex;
+  /* align-items: center; */
+  /* justify-content: left; */
 }

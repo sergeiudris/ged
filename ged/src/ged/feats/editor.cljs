@@ -23,6 +23,7 @@
                   :mode "json"
                   :theme "github"
                   :className "editor-feature"
+                  :width "40vw"
                     ;  :default-value default-value
                   :value @value
                   :on-load (fn [edr]
@@ -36,3 +37,26 @@
                   :editor-props {
                                  "$blockScrolling" js/Infinity
                                  }}])))
+
+
+(defn editor-response
+  []
+  (let [default-value ""
+        value (r/atom default-value)]
+    (fn []
+      [react-ace {:name "editor-response"
+                  :mode "json"
+                  :theme "github"
+                  :className "editor-response"
+                  :width "32vw"
+                    ;  :default-value default-value
+                  :value @value
+                  :on-load (fn [edr]
+                             (let [vl (editor-get-val)]
+                               (reset! ged.feats.core/editor-response-ref edr)
+                               (editor-set-str! vl)))
+                  :on-change (fn [val evt] (do
+                                             #_(js/console.log val)
+                                             (reset! value val)
+                                             #_(rf/dispatch [:ui.dbquery.events/editor-val val])))
+                  :editor-props {"$blockScrolling" js/Infinity}}])))

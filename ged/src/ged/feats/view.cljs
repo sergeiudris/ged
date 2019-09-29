@@ -6,7 +6,7 @@
              [ged.feats.subs :as subs]
              [ged.feats.events :as events]
              [ged.feats.sample :refer [sample-table]]
-             [ged.feats.editor :refer [editor-feature]]
+             [ged.feats.editor :refer [editor-feature editor-response]]
              ["antd/lib/icon" :default AntIcon]
              ["antd/lib/button" :default AntButton]
              ["antd/lib/button/button-group" :default AntButtonGroup]
@@ -154,7 +154,10 @@
        [:br]
        [table]
        [:br]
-       [editor-feature]
+       [:section {:class "editors-container" }
+        [editor-feature]
+        [editor-response]
+        ]
        [:br]
        [ant-button-group {:size "small"}
         [ant-button {:style {:width "96px"}}
@@ -164,6 +167,8 @@
          "update"]
         [ant-button {:style {:width "96px"}}
          "delete"]]
+       [:br]
+       
 
        #_[ged.feats.sample/sample-table]])))
 
