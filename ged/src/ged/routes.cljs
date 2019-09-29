@@ -42,7 +42,7 @@
 (defn- dispatch-route [matched-route]
   (let [panel-name (keyword (str (name (:handler matched-route)) "-panel"))
         url (:url matched-route)]
-    (prn "matched-route: " matched-route)
+    #_(prn "matched-route: " matched-route)
     #_(r/after-render clerk/after-render!)
     (rf/dispatch [::events/set-active-panel panel-name])
     #_(clerk/navigate-page! url)))

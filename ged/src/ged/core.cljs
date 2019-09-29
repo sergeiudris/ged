@@ -37,7 +37,7 @@
   (mount-root))
 
 (defn ^:dev/after-load after-load []
-  (js/console.log "--after load")
+  #_(js/console.log "--after load")
   (mount-root))
 
 ; (defonce _ (main))
