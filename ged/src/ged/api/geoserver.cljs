@@ -109,7 +109,7 @@
                      inserts  updates deletes
                      (clj->js
                       {"srsName" (or srsName "EPSG:3857")
-                       "featureNS" "featureNS"
+                       "featureNS" featureNS
                        "featurePrefix" featurePrefix
                        "featureType" featureType
                        "outputFormat" "application/json"
