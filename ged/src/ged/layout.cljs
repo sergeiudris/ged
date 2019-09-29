@@ -37,18 +37,19 @@
                  :default-selected-keys ["home-panel"]
                  :selected-keys (if @active-panel [(name @active-panel)] nil)
                  :on-select on-select}
-       [ant-menu-item {:key "home-panel"}
-        [ant-icon {:type "home"}]
-        [:span "home"]]
-       [ant-menu-item {:key "settings-panel"}
-        [ant-icon {:type "setting"}]
-        [:span "settings"]]
+       #_[ant-menu-item {:key "home-panel"}
+          [ant-icon {:type "home"}]
+          [:span "home"]]
+
        [ant-menu-item {:key "map-panel"}
         [ant-icon {:type "global"}] #_"compas" #_"environment" #_"global"
         [:span "map"]]
        [ant-menu-item {:key "feats-panel"}
         [ant-icon {:type "table"}] #_"compas" #_"environment" #_"global"
         [:span "feats"]]
+       [ant-menu-item {:key "settings-panel"}
+        [ant-icon {:type "setting"}]
+        [:span "settings"]]
        #_[ant-menu-item {:key "monitor-panel"}
           [ant-icon {:type "monitor"}]
           [:span "monitor"]]])))

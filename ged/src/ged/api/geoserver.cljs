@@ -97,7 +97,9 @@
 
 
 (defn wfs-transaction-body
-  [{:keys [featurePrefix featureType srsName
+  [{:keys [featurePrefix featureType
+           featureNS
+           srsName
            inserts updates deletes]
     ; :or {inserts #js []
     ;      updates #js []
@@ -107,7 +109,7 @@
                      inserts  updates deletes
                      (clj->js
                       {"srsName" (or srsName "EPSG:3857")
-                       "featureNS" "http://www.opengis.net/wfs/dev"
+                       "featureNS" "featureNS"
                        "featurePrefix" featurePrefix
                        "featureType" featureType
                        "outputFormat" "application/json"

@@ -51,7 +51,7 @@
 #_(js/console.log (:map @state))
 
 (defn ol-map
-  [x y z]
+  [geoserver-host y z]
   (let []
     (r/create-class
      {:display-name "ol-map"
@@ -63,8 +63,8 @@
             (js/console.log "creating new map..")
             (swap! state assoc :olmap
                    (ol/create-map {:el-id "map-container"}))
-            (.addLayer (get-olmap) (ol/wms-layer "dev:usa_major_cities"))
-            (.addLayer (get-olmap) (ol/wms-layer "dev:usa_major_cities_2"))
+            (.addLayer (get-olmap) (ol/wms-layer geoserver-host "dev:usa_major_cities"))
+            (.addLayer (get-olmap) (ol/wms-layer geoserver-host "dev:usa_major_cities_2"))
             (set! (.. js/window -map) (get-olmap)))
           (do
             (js/console.log "setting new map target..")
@@ -77,7 +77,7 @@
       (fn [this]
         (ol/set-target (get-olmap) nil))
       :reagent-render
-      (fn [x y z]
+      (fn [geoserver-host y z]
         [:div#map-container {:style {
                                      :width "100%"
                                      :height "100%"
@@ -87,9 +87,8 @@
 
 (defn panel []
   (let [module-count @(rf/subscribe [::subs/module-count])
-        base-url @(rf/subscribe [:ged.subs/base-url] )
-        ]
+        base-url @(rf/subscribe [:ged.subs/base-url])
+        geoserver-host @(rf/subscribe [:ged.subs/geoserver-host])]
     [:div {:style {:height "100%"}}
-     [ol-map 1 2 3]
-     ]))
+     [ol-map geoserver-host 2 3]]))
 

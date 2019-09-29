@@ -22,3 +22,8 @@
  ::feature-type-input
  (fn [db _]
    (:ged.feats/feature-type-input db)))
+
+(rf/reg-sub
+ ::feature-ns
+ (fn [db _]
+   (:ged.feats/feature-ns db)))

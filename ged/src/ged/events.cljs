@@ -29,6 +29,32 @@
             (let [kw :ged.core/module-count]
               (assoc db kw (inc (kw db))))))
 
+(rf/reg-event-fx
+ ::apply-server-settings
+ (fn [{:keys [db]} [_ eargs]]
+   (let [geoserver-host (:ged.settings/geoserver-host db)
+         proxy-path (:ged.settings/proxy-path db)
+         body (str  {:geoserver-host geoserver-host
+                     :proxy-path proxy-path})]
+     {:dispatch [:ged.events/request
+                 {:method :post
+                  :body body
+                  :headers {"Content-Type" "text/html; charset=utf-8"}
+                  ; :path "/geoserver/wfs?exceptions=application/json&outputFormat=application/json"
+                  :path "/update-settings"
+                  :response-format
+                  (ajax/raw-response-format)
+                  ; (ajax/json-response-format {:keywords? true})
+                  :on-success [::apply-server-settings-res]
+                  :on-fail [::apply-server-settings-res]}]
+      :db (merge db {})})))
+
+(rf/reg-event-db
+ :apply-server-settings-res
+ (fn-traced [db [_ eargs]]
+            (js/console.log eargs)
+            db))
+
 ; edn deprecated
 ; https://github.com/JulianBirch/cljs-ajax/blob/master/docs/formats.md#edn
 (rf/reg-event-fx
@@ -56,6 +82,8 @@
       :db db}
      ;
      )))
+
+
 
 (rf/reg-event-db
  :http-no-on-failure

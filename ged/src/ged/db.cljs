@@ -44,11 +44,13 @@
                                     :sorter {}
                                     :extra {:currentDataSource []}}
      :ged.feats/feature-type-input "dev:usa_major_cities"
-     
+     :ged.feats/feature-ns "http://www.opengis.net/wfs/dev"
+
     ; settings
      :ged.settings/settings {:group "31-50"}
-
-
+     :ged.settings/proxy-path "/geoserver"
+     :ged.settings/proxy-geoserver-host "http://geoserver:8080"
+     :ged.settings/geoserver-host "http://localhost:8600"
 
     ;
      }))

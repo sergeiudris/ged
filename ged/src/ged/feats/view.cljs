@@ -66,7 +66,7 @@
                       (on-search (.. evt -target -value))))]
     (fn [_]
       [ant-auto-complete
-       {:style {:width "50%"}
+       {:style {:width "32%"}
         :size "default"
         :placeholder "search"
         :on-search on-change
@@ -84,7 +84,7 @@
   (let [sref (rf/subscribe
                [:ged.feats.subs/feature-type-input])]
     (fn []
-      [ant-input {:style {:width "30%"}
+      [ant-input {:style {:width "16%" :margin "0 0 0 8px"}
                   :value @sref
                   :on-change
                   (fn [ev]
@@ -92,6 +92,20 @@
                      [:ged.feats.events/feature-type-input
                       (.. ev -target -value)]))
                   :placeholder "topp:states"}])))
+
+(defn feature-ns
+  []
+  (let [sref (rf/subscribe
+              [:ged.feats.subs/feature-ns])]
+    (fn []
+      [ant-input {:style {:width "16%" :margin "0 0 0 8px"}
+                  :value @sref
+                  :on-change
+                  (fn [ev]
+                    (rf/dispatch
+                     [:ged.feats.events/feature-ns
+                      (.. ev -target -value)]))
+                  :placeholder "http://www.opengis.net/wfs/dev"}])))
 
 (def feature-columns
   [{:title "id"
@@ -133,7 +147,6 @@
             ents items
             #_(mapv #(-> % :entity (dissoc :db/id)) items)
             pagination (:pagination @table-mdata)]
-        (js/console.log @search-res)
         [ant-table {:show-header true
                     :size "small"
                     :row-key :id
@@ -171,6 +184,7 @@
        [:div
         [auto-complete {}]
         [feature-type-input]
+        [feature-ns]
         ]
        #_[buttons]
        [:br]

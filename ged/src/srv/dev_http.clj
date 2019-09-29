@@ -24,6 +24,22 @@
    :headers {"content-type" "text/plain"}
    :body "Not found."})
 
+(def settings (atom {:geoserver-host "http://geoserver:8080"
+                     :proxy-path "/geoserver"}))
+
+(defn update-settings!
+  [m]
+  (reset! settings
+          (merge @settings m)))
+
+(defn get-proxy-path
+  []
+  (or (:proxy-path @settings) ""))
+
+(defn get-geoserver-host
+  []
+  (or (:geoserver-host @settings) ""))
+
 ; https://stackoverflow.com/questions/13924842/extend-clojure-protocol-to-a-primitive-array
 ; https://github.com/thheller/shadow-cljs/blob/61af1cce91398c77f941a3b057cbb840b384eaf6/src/main/shadow/undertow/impl.clj
 
@@ -68,8 +84,6 @@
 
 
 
-(def GEOSERVER_HOST "http://geoserver:8080/geoserver" )
-
 #_(do (pp/pprint @rqs))
 
 #_(do (pp/pprint @rqs-opts))
@@ -104,18 +118,25 @@
   (reset! rqs req)
   (prn uri)
   (cond
+    (= uri "/update-settings")
+    (let [rsp (try (update-settings! (read-string "[]"))
+                   (catch Exception e (.getMessage e)))]
+      {:status 200
+       :headers {"content-type" "text/html; charset=utf-8"}
+       :body (str rsp)})
+
     (= uri "/hello")
     {:status 200
      :headers {"content-type" "text/html; charset=utf-8"}
      :body "world!!"}
-    
-    (str/starts-with? uri "/geoserver")
-    (let [path (subs uri (count "/geoserver"))
+
+    (str/starts-with? uri (get-proxy-path))
+    (let [path (subs uri (count (get-proxy-path)))
           url (if (not-empty query-string)   (str path "?" query-string) path)
           req-opts {:throw-entire-message? true
                     :throw-exceptions true
                     :method request-method
-                    :url (str GEOSERVER_HOST url)
+                    :url (str (get-geoserver-host) (get-proxy-path) url)
                     ; :as :byte-array
                     :body body
                     :headers  (dissoc headers "content-length")
@@ -137,7 +158,7 @@
         ; :body "hello"
         :headers {"Access-Control-Allow-Origin" "*"
                   "Access-Control-Allow-Headers" "*" #_"content-type"}}))
-    
+
     :else
     (let [accept (get-in req [:headers "accept"])]
       (if (and accept (not (str/includes? accept "text/html")))

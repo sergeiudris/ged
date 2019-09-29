@@ -78,13 +78,13 @@
                       (set! (.. (.getImage tile) -src) (str "data:image/png;" r)))))))
 
 (defn wms-source
-  [opts]
+  [geoserver-host opts]
   (TileWMS.
    (clj->js
     (deep-merge
      {:url
      #_"http://localhost:8801/geoserver/wms" ; works... unclear how
-      "http://localhost:8600/geoserver/wms"
+      (str geoserver-host "/geoserver/wms")
       #_"/geoserver/wms"
       ; :tileLoadFunction tile-loader-from-string-body
       :params {;"LAYERS" "dev:usa_major_cities"
@@ -101,14 +101,14 @@
      opts))))
 
 (defn wms-layer
-  ([ids]
-   (wms-layer {} {:params  {"LAYERS" ids}}))
-  ([opts src-opts]
-  (OlTileLayer.
-   (clj->js
-    (deep-merge
-     {:source (wms-source src-opts)}
-     opts)))))
+  ([geoserver-host ids]
+   (wms-layer geoserver-host {} {:params  {"LAYERS" ids}}))
+  ([geoserver-host opts src-opts]
+   (OlTileLayer.
+    (clj->js
+     (deep-merge
+      {:source (wms-source geoserver-host src-opts)}
+      opts)))))
 
 
 

@@ -26,3 +26,19 @@
  (fn [_ _] [ (rf/subscribe [::api])])
  (fn [[ api] _]
    (get-in api [:base-url])))
+
+
+(rf/reg-sub
+ ::proxy-path
+ (fn [db _]
+   (:ged.settings/proxy-path db)))
+
+(rf/reg-sub
+ ::proxy-geoserver-host
+ (fn [db _]
+   (:ged.settings/proxy-geoserver-host db)))
+
+(rf/reg-sub
+ ::geoserver-host
+ (fn [db _]
+   (:ged.settings/geoserver-host db)))

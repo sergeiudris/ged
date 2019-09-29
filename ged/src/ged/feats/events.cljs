@@ -17,8 +17,6 @@
 
 #_(xml/indent)
 
-
-
 (rf/reg-event-fx
  ::search
  (fn [{:keys [db]} [_ eargs]]
@@ -32,6 +30,7 @@
          table-mdata (:ged.feats/search-table-mdata db)
          total (get-in db [:ged.feats/search-res :total])
          pag (:pagination table-mdata)
+         proxy-path (:ged.settings/proxy-path db)
          {:keys [current pageSize]} pag
          limit (or pageSize 10)
          offset (or (* pageSize (dec current)) 0)
@@ -43,7 +42,6 @@
                  :featureTypes [ftype]}
                 (when (not-empty s)
                   {:filter (olf/like "NAME" (str "*" s "*") "*" "." "!" false)})))]
-     (js/console.log "search for: " s)
      (editor-request-set! (prettify-xml body))
      {:dispatch [:ged.events/request
                  {:method :post
@@ -51,7 +49,7 @@
                   :body body
                   :headers {"Content-Type" "application/json"
                             "Authorization"  (ged.api.geoserver/auth-creds)}
-                  :path "/geoserver/wfs?exceptions=application/json&outputFormat=application/json"
+                  :path (str proxy-path "/wfs")
                   :response-format (ajax/json-response-format {:keywords? true})
                   :on-success [::search-res]
                   :on-fail [::search-res]}]
@@ -74,10 +72,13 @@
                             (catch js/Error e
                               (do (js/console.warn e)
                                   ["undefined:undefined"])))
+         fns (:ged.feats/feature-ns db)
          tx-type (:tx-type eargs)
+         proxy-path (:ged.settings/proxy-path db)
          vl (js/JSON.parse (editor-get-val))
          body (ged.api.geoserver/wfs-tx-jsons-str
                {tx-type [vl]
+                :featureNS fns 
                 :featurePrefix fpref
                 :featureType ftype})]
      (editor-request-set! (prettify-xml body))
@@ -87,7 +88,7 @@
                   :headers {"Content-Type" "application/json"
                             "Authorization"  (ged.api.geoserver/auth-creds)}
                   ; :path "/geoserver/wfs?exceptions=application/json&outputFormat=application/json"
-                  :path "/geoserver/wfs"
+                  :path (str proxy-path "/wfs")
                   :response-format 
                   (ajax/raw-response-format)
                   ; (ajax/json-response-format {:keywords? true})
@@ -127,5 +128,11 @@
  ::feature-type-input
  (fn [{:keys [db]} [_ eargs]]
    (let [key :ged.feats/feature-type-input]
+     {:db (assoc db key eargs)})))
+
+(rf/reg-event-fx
+ ::feature-ns
+ (fn [{:keys [db]} [_ eargs]]
+   (let [key :ged.feats/feature-ns]
      {:db (assoc db key eargs)})))
 
