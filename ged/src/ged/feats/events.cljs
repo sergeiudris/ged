@@ -5,7 +5,7 @@
             [ged.api.geoserver]
             [ged.feats.core :refer [editor-get-val
                                     editor-set-json!
-                                    editor-response-set-json!
+                                    editor-response-set!
                                     editor-request-set!
                                     prettify-xml
                                     ]]
@@ -46,7 +46,7 @@
                   :body body
                   :headers {"Content-Type" "application/json"
                             "Authorization"  (ged.api.geoserver/auth-creds)}
-                  :path "/geoserver/wfs?exceptions=application/json"
+                  :path "/geoserver/wfs?exceptions=application/json&outputFormat=application/json"
                   :response-format (ajax/json-response-format {:keywords? true})
                   :on-success [::search-res]
                   :on-fail [::search-res]}]
@@ -70,15 +70,17 @@
                { tx-type [vl]
                 :featurePrefix "dev"
                 :featureType "usa_major_cities"})]
-     (js/console.log vl)
      (editor-request-set! (prettify-xml body))
      {:dispatch [:ged.events/request
                  {:method :post
                   :body body
                   :headers {"Content-Type" "application/json"
                             "Authorization"  (ged.api.geoserver/auth-creds)}
-                  :path "/geoserver/wfs?exceptions=application/json"
-                  :response-format (ajax/json-response-format {:keywords? true})
+                  ; :path "/geoserver/wfs?exceptions=application/json&outputFormat=application/json"
+                  :path "/geoserver/wfs"
+                  :response-format 
+                  (ajax/raw-response-format)
+                  ; (ajax/json-response-format {:keywords? true})
                   :on-success [::tx-res]
                   :on-fail [::tx-res]}]
       :db (merge db {})})))
@@ -86,7 +88,7 @@
 (rf/reg-event-db
  ::tx-res
  (fn [db [_ eargs]]
-   (do (editor-response-set-json! eargs))
+   (do (editor-response-set! (prettify-xml eargs) ))
    (assoc db :ged.feats/tx-res eargs)))
 
 

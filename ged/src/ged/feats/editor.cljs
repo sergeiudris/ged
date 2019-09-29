@@ -46,16 +46,14 @@
         value (r/atom default-value)]
     (fn []
       [react-ace {:name "editor-response"
-                  :mode "json"
+                  :mode "xml"
                   :theme "github"
                   :className "editor-response"
                   :width "32vw"
                     ;  :default-value default-value
                   :value @value
                   :on-load (fn [edr]
-                             (let [vl (editor-get-val)]
-                               (reset! ged.feats.core/editor-response-ref edr)
-                               (editor-set-str! vl)))
+                             (reset! ged.feats.core/editor-response-ref edr))
                   :on-change (fn [val evt] (do
                                              #_(js/console.log val)
                                              (reset! value val)

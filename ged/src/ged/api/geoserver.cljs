@@ -103,7 +103,6 @@
     ;      updates #js []
     ;      deletes #js []}
     }]
-  (js/console.log inserts updates  deletes)
   (.writeTransaction (OlFormatWFS.)
                      inserts  updates deletes
                      (clj->js
