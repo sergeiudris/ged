@@ -166,10 +166,11 @@
        [ant-button-group {:size "small"}
         [ant-button {:style {:width "96px"}}
          "insert"]
-        [ant-button {:on-click #(rf/dispatch [:ged.feats.events/update-feature])
+        [ant-button {:on-click #(rf/dispatch [:ged.feats.events/tx-feature {:tx-type :updates}])
                      :style {:width "96px"}}
          "update"]
-        [ant-button {:style {:width "96px"}}
+        [ant-button {:on-click #(rf/dispatch [:ged.feats.events/tx-feature {:tx-type :deletes}])
+                     :style {:width "96px"}}
          "delete"]]
        [:br]
        

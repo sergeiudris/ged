@@ -62,11 +62,12 @@
             (assoc db :ged.feats/search-res val)))
 
 (rf/reg-event-fx
- ::update-feature
+ ::tx-feature
  (fn [{:keys [db]} [_ eargs]]
-   (let [vl (js/JSON.parse (editor-get-val))
+   (let [tx-type (:tx-type eargs)
+         vl (js/JSON.parse (editor-get-val))
          body (ged.api.geoserver/wfs-tx-jsons-str
-               {:updates [vl]
+               { tx-type [vl]
                 :featurePrefix "dev"
                 :featureType "usa_major_cities"})]
      (js/console.log vl)
