@@ -21,7 +21,7 @@
             (assoc db :ged.core/active-panel active-panel)))
 
 (rf/reg-event-fx
- ::ant-message
+ :ant-message
  (fn [{:keys [db]} [_ ea]]
    (let [msg (:msg ea)]
      (.info AntMessage msg 0.5)
@@ -61,7 +61,7 @@
 (rf/reg-event-fx
  ::apply-server-settings-res
  (fn [{:keys [db]} [_ eargs]]
-   {:dispatch [::ant-message {:msg "settings applied"}]
+   {:dispatch [:ant-message {:msg "settings applied"}]
     :db db}))
 
 ; edn deprecated

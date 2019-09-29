@@ -1,14 +1,16 @@
-FROM fiber.base2
+FROM ubuntu:18.04
+
+RUN apt-get update && \
+    apt-get install -y openjdk-8-jdk
+
+WORKDIR /tmp
+
+RUN curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash - && \
+    sudo apt-get install -y nodejs 
 
 WORKDIR /opt/app
 
-RUN git clone https://github.com/seeris/fiber /opt/root && \
-    cd /opt/root/ && \
-    git checkout 8c942a6fb092330efa54dbd0ab1b0731b20bab01
-
 COPY deps.edn .
-RUN clojure -A:cache:git -Stree
-COPY . .
-RUN bash c prod
+RUN clojure -A:cache -Stree
 
-EXPOSE 9500 7888 9630
+EXPOSE 9500 7888 9630 8801 8899
