@@ -6,9 +6,11 @@
              [ged.map.subs :as subs]
              [ged.map.events :as events]
              ["antd/lib/button" :default ant-Button]
+             ["antd/lib/button/button-group" :default AntButtonGroup]
              [ged.map.ol :as ol]))
 
 (def ant-button (r/adapt-react-class ant-Button))
+(def ant-button-group (r/adapt-react-class AntButtonGroup))
 
 (def ^:export state (atom {:olmap nil}))
 
@@ -84,11 +86,24 @@
                                      :border "1px solid #dedede"}}])})))
 
 
+(defn buttons
+  []
+  (let []
+    (fn []
+      [:section {:style {:position "absolute" :left 64 :top 40}}
+       [ant-button-group {:size "small"}
+        [ant-button {:icon "reload"
+                     :title "refetch layers"
+                     :on-click #(rf/dispatch [:ged.map.events/update-wms-layers])}]]
+       ]
+      ))
+  )
 
 (defn panel []
   (let [module-count @(rf/subscribe [::subs/module-count])
         base-url @(rf/subscribe [:ged.subs/base-url])
         geoserver-host @(rf/subscribe [:ged.subs/geoserver-host])]
     [:div {:style {:height "100%"}}
+     [buttons]
      [ol-map geoserver-host 2 3]]))
 
