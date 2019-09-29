@@ -31,6 +31,10 @@ http://localhost:8600/geoserver/rest/workspaces/dev/featuretypes?list=configured
 http://localhost:8600/geoserver/rest/workspaces/dev/featuretypes/usa_major_cities
 
 
+#### transaction problems
+
+dont't return bbox with every feature, otherwise update transaction fails
+https://gis.stackexchange.com/questions/123694/geoserver-2-5-2-how-do-i-enable-the-geojson-bbox-property
 
 
 #### creating layers

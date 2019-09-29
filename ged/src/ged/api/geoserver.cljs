@@ -87,14 +87,13 @@
   [jsons]
   (when jsons
     (->
-     (OlFormatGeoJSON.)
+     (OlFormatGeoJSON.
+      #js {;"geometryName" "the_geom"
+           "extractGeometryName" true
+           })
      (.readFeatures
-      (clj->js 
-       {"type" "FeatureCollection"
-        "crs" {"properties" {"name" "urn:ogc:def:crs:EPSG::3857"}}
-        "features" jsons}
-       )
-      ))))
+      #js {"type" "FeatureCollection"
+           "features" (clj->js jsons)}))))
 
 
 (defn wfs-transaction-body
@@ -114,11 +113,14 @@
                        "featureType" featureType
                        "outputFormat" "application/json"
                        "version" "1.1.0"
-                      ;  "gmlOptions" {"featureType" "wfs_geom"
-                                    ;  "srsName" (or srsName "EPSG:3857")}
-                       }
-                      
-                      )))
+                      ;  "gmlOptions" { 
+                      ;                "featureNS" "http://www.opengis.net/wfs/dev"
+                      ;                "featureType" (str featurePrefix ":" featureType )
+                      ;                "srsName" (or srsName "EPSG:3857")
+                                     
+                      ;                }
+                       
+                       })))
 
 (defn wfs-tx-jsons
   [opts]
@@ -134,4 +136,6 @@
   [opts]
   (->
    (wfs-tx-jsons  opts)
-   (xml->str)))
+   (xml->str)
+   #_(str/replace "<Name>geometry</Name>" "<Name>the_geom</Name>")
+   ))
