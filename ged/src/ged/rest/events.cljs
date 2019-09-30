@@ -7,7 +7,7 @@
                                    editor-set-json!
                                    editor-response-set!
                                    editor-request-set!
-                                   ]]
+                                   editor-response-set-json!]]
             [ajax.core :as ajax]
             [clojure.string :as str]
             [clojure.data.xml :as xml]
@@ -113,12 +113,49 @@
      {:dispatch [:ged.rest.events/search {}]
       :db (assoc db key eargs)})))
 
+(defn href->path
+  [href]
+  (-> (str/split href "/geoserver") (second)))
+
 (rf/reg-event-fx
  ::select-feature
- (fn [{:keys [db]} [_ eargs]]
-   (let [key :ged.rest/select-feature]
-     (do (editor-set-json! eargs))
-     {:db (assoc db key eargs)})))
+ (fn [{:keys [db]} [_ ea]]
+   (let [href (:href (js->clj ea :keywordize-keys true))]
+     (if href
+       (let [path (href->path href)
+             proxy-path (:ged.settings/proxy-path db)]
+         {:dispatch [:ged.events/request
+                     {:method :get
+                      :headers {"Content-Type" "application/json"
+                            ; "Authorization"  (ged.api.geoserver/auth-creds)
+                                }
+                      :path (str proxy-path path)
+                      :response-format
+                      #_(ajax/raw-response-format)
+                      (ajax/json-response-format {:keywords? true})
+                      :on-success [::select-feature-succ]
+                      :on-fail [::select-feature-fail]}]
+          :db (merge db {})})
+       (do
+         (do (editor-set-json! ea))
+         {:db (assoc db :ged.rest/select-feature ea)}))
+     )))
 
+(rf/reg-event-fx
+ ::select-feature-succ
+ (fn [{:keys [db]} [_ ea ]]
+   (js/console.log ea)
+   (do (editor-set-json! ea))
+   {:db db}))
 
+(rf/reg-event-db
+ ::select-feature-fail
+ (fn [db [_ ea]]
+   (do (editor-response-set-json! ea))
+   db))
+
+#_(str/split 
+   "http://localhost:8800/geoserver/rest/workspaces/dev/featuretypes/ne_10m_admin_0_countries.json"
+   "/geoserver"
+   )
 

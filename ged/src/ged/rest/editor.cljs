@@ -20,11 +20,11 @@
   (let [default-value ""
         value (r/atom default-value)]
     (fn []
-      [react-ace {:name "editor-feature"
+      [react-ace {:name "rest-editor-data"
                   :mode "json"
                   :theme "github"
-                  :className "editor-feature"
-                  :width "32vw"
+                  :className "rest-editor-data"
+                  :width "64vw"
                     ;  :default-value default-value
                   :value @value
                   :on-load (fn [edr]
@@ -45,10 +45,10 @@
   (let [default-value ""
         value (r/atom default-value)]
     (fn []
-      [react-ace {:name "editor-response"
+      [react-ace {:name "rest-editor-response"
                   :mode "xml"
                   :theme "github"
-                  :className "editor-response"
+                  :className "rest-editor-response"
                   :width "32vw"
                     ;  :default-value default-value
                   :value @value

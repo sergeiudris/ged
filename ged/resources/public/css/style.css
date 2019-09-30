@@ -98,6 +98,24 @@ body {
   /* justify-content: left; */
 }
 
+.rest-editor-data {
+  border: 1px solid lightgrey;
+  height: 50vh !important;
+  flex: 0 0 auto;
+  /* display: inline-block; */
+}
+
+.rest-editor-response {
+  border: 1px solid lightgrey;
+  height: 50vh !important;
+  flex: 0 0 auto;
+  margin-left: 8px;
+}
+
 .feats-table {
   min-height: 374px;
+}
+
+.rest-table {
+  height: 28vh;
 }

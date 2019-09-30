@@ -152,20 +152,20 @@
        [:br]
        [:section {:class "editors-container"}
         [editor-data]
-        [editor-request]
+        ; [editor-request]
         [editor-response]]
        [:br]
        [ant-button-group {:size "small"}
         [ant-button {:on-click
-                     #(rf/dispatch [:ged.rest.events/tx-feature {:tx-type :inserts}])
+                     #(rf/dispatch [:ged.rest.events/tx-feature {:tx-type :post}])
                      :style {:width "96px"}}
-         "insert"]
+         "post"]
         [ant-button {:on-click
-                     #(rf/dispatch [:ged.rest.events/tx-feature {:tx-type :updates}])
+                     #(rf/dispatch [:ged.rest.events/tx-feature {:tx-type :put}])
                      :style {:width "96px"}}
-         "update"]
+         "put"]
         [ant-button {:on-click
-                     #(rf/dispatch [:ged.rest.events/tx-feature {:tx-type :deletes}])
+                     #(rf/dispatch [:ged.rest.events/tx-feature {:tx-type :delete}])
                      :style {:width "96px"}}
          "delete"]]
        [:br]
