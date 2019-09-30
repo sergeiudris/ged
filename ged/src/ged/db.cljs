@@ -58,7 +58,25 @@
 
      :ged.map/checked-layer-ids ["dev:usa_major_cities"
                                  "dev:usa_major_cities_2"]
-     
+
+     ; rest
+     :ged.rest/search-res nil
+     :ged.rest/search-input ""
+     :ged.rest/select-feature nil
+     :ged.rest/tx-res nil
+     :ged.rest/search-table-mdata {:pagination {:showSizeChanger false
+                                                :showQuickJumper true
+                                                :defaultPageSize 5
+                                                :pageSizeOptions  ["5" "10" "20"]
+                                                :position "top"
+                                                :total 0
+                                                :current 1
+                                                :pageSize 10}
+                                   :filters {}
+                                   :sorter {}
+                                   :extra {:currentDataSource []}}
+
+
     ;
      }))
 

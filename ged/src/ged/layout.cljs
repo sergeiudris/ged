@@ -47,9 +47,9 @@
        [ant-menu-item {:key "feats-panel"}
         [ant-icon {:type "table"}] #_"compas" #_"environment" #_"global"
         [:span "feats"]]
-       [ant-menu-item {:key "ftype-panel"}
-        [ant-icon {:type "profile"}]
-        [:span "ftype"]]
+       [ant-menu-item {:key "rest-panel"}
+        [ant-icon {:type "swap"}]
+        [:span "rest"]]
        [ant-menu-item {:key "settings-panel"}
         [ant-icon {:type "setting"}]
         [:span "settings"]]

@@ -40,8 +40,9 @@
          :auth {:entries [ged.auth.view]
                 :depends-on #{:main}}
 
-         :ftype {:entries [ged.ftype.view]
-                 :depends-on #{:main}}}
+         :rest {:entries [ged.rest.view]
+                :depends-on #{:main}}
+         }
 
         :compiler-options
         {:infer-externs    :auto

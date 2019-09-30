@@ -36,7 +36,7 @@
     "settings" {:panel [(resolve 'ged.settings.view/panel)]}
     "map" {:panel [(resolve 'ged.map.view/panel)]}
     "feats" {:panel [(resolve 'ged.feats.view/panel)]}
-    "ftype" {:panel [(resolve 'ged.ftype.view/panel)]}
+    "rest" {:panel [(resolve 'ged.rest.view/panel)]}
     "auth" {:panel [(resolve 'ged.auth.view/panel)]}
     [:div (str "no panel for module: " module-name)]))
 
@@ -90,8 +90,8 @@
     :map-panel [panel-defered "map"]
     :feats-panel [panel-defered "feats"]
     :auth-panel [panel-defered "auth"]
-    :ftype-panel [panel-defered "ftype"]
-    [:div (str "no panel: " panel-name)]))
+    :rest-panel [panel-defered "rest"]
+    [:div (str panel-name "  not found" )]))
 
 
 (defn show-panel [panel-name]

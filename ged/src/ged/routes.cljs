@@ -18,7 +18,7 @@
                   "settings" :settings
                   "map" :map
                   "feats" :feats
-                  "ftype" :ftype
+                  "rest" :rest
                   "auth" :auth}])
 
 #_(def _ (events/listen history EventType.NAVIGATE
@@ -41,7 +41,11 @@
    (bidi/match-route routes url)))
 
 (defn- dispatch-route [matched-route]
-  (let [panel-name (keyword (str (name (:handler matched-route)) "-panel"))
+  (js/console.log matched-route)
+  (let [handler (:handler matched-route)
+        panel-name (if handler
+                     (keyword (str (name handler) "-panel"))
+                     (:url matched-route))
         url (:url matched-route)]
     #_(prn "matched-route: " matched-route)
     #_(r/after-render clerk/after-render!)
