@@ -16,7 +16,7 @@ current status: development only
 # start geoserver and ged
 bash c up
 
-# login to ged and start dev server
+# open shell into ged container and start dev server
 bash c term ged
 bash c dev
 

@@ -119,3 +119,10 @@ body {
 .rest-table {
   height: 28vh;
 }
+
+.ol-zoom {
+  top: .5em;
+  /* left: .5em; */
+  right: .5em !important;
+  left: initial !important;
+}

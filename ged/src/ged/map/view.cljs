@@ -112,7 +112,7 @@
   []
   (let []
     (fn []
-      [:section {:style {:position "absolute" :right 32 :top 40}}
+      [:section {:style {:position "absolute" :left 32 :top 40}}
        [ant-button-group {:size "small"}
         [ant-button {:icon "reload"
                      :title "refetch layers"
