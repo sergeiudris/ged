@@ -132,6 +132,7 @@
   [olmap id]
   (->>
    (.getLayers olmap)
+   (.getArray)
    (filter (fn [lr] (= (.get lr "id") id)))
    (first)))
 

@@ -93,7 +93,9 @@
         (let [ids @ids-ref
               host @geoserver-host]
           (doseq [id ids]
-            (ol/add-layer (get-olmap) host id)))
+            (when (not (ol/id->layer (get-olmap) id))
+              (ol/add-layer (get-olmap) host id))
+            ))
         )
       :component-did-update
       (fn [this old-argv]

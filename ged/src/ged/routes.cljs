@@ -13,7 +13,7 @@
            goog.history.EventType
            goog.Uri))
 
-(def routes ["/" {""      :home
+(def routes ["/" {""      :map
                   "home" :home
                   "settings" :settings
                   "map" :map

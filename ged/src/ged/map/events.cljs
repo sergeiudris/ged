@@ -1,8 +1,8 @@
 (ns ged.map.events
   (:require [re-frame.core :as rf]
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
-            [ged.map.core]
-            [ged.map.ol])
+            [ged.map.core :refer [get-olmap]]
+            [ged.map.ol :as ol])
   )
 
 (rf/reg-event-db
@@ -16,6 +16,20 @@
 (rf/reg-event-fx
  ::refetch-wms-layers
  (fn [{:keys [db]} [_ ea]]
-   (let []
-     (js/console.log ea)
-     {:db db})))
+   (let [lrs (.getArray  (.getLayers (get-olmap)))]
+     (doseq [lr  lrs]
+       (when (.get lr "id")
+         (do
+           (.updateParams (.getSource lr) #js {:r (Math/random)}))))
+     {:db db})
+   #_{:db db}
+   ))
+
+(rf/reg-event-fx
+ ::refetch-wms-layer
+ (fn [{:keys [db]} [_ ea]]
+   (let [lr (ol/id->layer (get-olmap) ea)]
+     (when lr
+       (do (.updateParams (.getSource lr) #js {:r (Math/random)}))))
+   {:db db}
+   #_{:db db}))

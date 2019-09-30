@@ -79,7 +79,7 @@
          vl (js/JSON.parse (editor-get-val))
          body (ged.api.geoserver/wfs-tx-jsons-str
                {tx-type [vl]
-                :featureNS fns 
+                :featureNS fns
                 :featurePrefix fpref
                 :featureType ftype})]
      (editor-request-set! (prettify-xml body))
@@ -91,18 +91,28 @@
                             }
                   ; :path "/geoserver/wfs?exceptions=application/json&outputFormat=application/json"
                   :path (str proxy-path "/wfs")
-                  :response-format 
+                  :response-format
                   (ajax/raw-response-format)
                   ; (ajax/json-response-format {:keywords? true})
-                  :on-success [::tx-res]
-                  :on-fail [::tx-res]}]
+                  :on-success [::tx-res-succ (str fpref ":" ftype)]
+                  :on-fail [::tx-res-fail]}]
       :db (merge db {})})))
 
+(rf/reg-event-fx
+ ::tx-res-succ
+ (fn [{:keys [db]} [_ id ea]]
+   (do (editor-response-set! (prettify-xml ea) ))
+   {:dispatch [:ged.map.events/refetch-wms-layer id]
+    :db (assoc db :ged.feats/tx-res ea)}
+   ))
+
 (rf/reg-event-db
- ::tx-res
+ ::tx-res-fail
  (fn [db [_ eargs]]
-   (do (editor-response-set! (prettify-xml eargs) ))
+   (do (editor-response-set! (prettify-xml eargs)))
    (assoc db :ged.feats/tx-res eargs)))
+
+
 
 
 (rf/reg-event-db

@@ -34,31 +34,6 @@
       (let []
         [:section
          #_[:div "auth"]
-         [ant-row
-          [ant-col {:span 3} "username"]
-          [ant-col {:span 8}
-           [ant-input {:value @proxy-path
-                       :on-change
-                       #(js/console.log (.. % -target -value))}]]
-          ]
-         [:br]
-         [ant-row
-          [ant-col {:span 3} "password"]
-          [ant-col {:span 8}
-           [ant-input {:value @proxy-geoserver-host
-                       :on-change
-                       #(js/console.log (.. % -target -value))}]]]
-         
-         [:br]
-         [ant-row
-          [ant-col {:span 4}
-           [ant-button
-            {:on-click (fn [] (rf/dispatch [:ged.events/apply-server-settings]))}
-            "login"]]
-          [ant-col {:span 4}
-           [ant-button
-            {:on-click (fn [] (rf/dispatch [:ged.events/apply-server-settings]))}
-            "logout"]]]
          ;
          ]
         ;
