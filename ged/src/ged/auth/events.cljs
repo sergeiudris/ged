@@ -15,7 +15,8 @@
  (fn [{:keys [db]} [_ ea]]
    (let [username (:username ea)
          password (:password ea)]
-     {:db
+     {:dispatch [:ant-message {:msg "credentials applied"}]
+      :db
       (merge db {:ged.core/username username
                  :ged.core/password password})})))
 
