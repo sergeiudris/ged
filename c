@@ -50,6 +50,8 @@ prod(){
 tagpush(){
     docker tag seeris/ged seeris/ged:dev
     docker push seeris/ged:dev
+    docker push seeris/ged
+
 }
 
 "$@"
