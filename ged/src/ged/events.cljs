@@ -1,5 +1,6 @@
 (ns ged.events
   (:require
+   [clojure.string :as str]
    [re-frame.core :as rf]
    [day8.re-frame.http-fx]
    [ged.db ]
@@ -7,6 +8,7 @@
    [ajax.core :as ajax]
    [ajax.edn]
    [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
+   [ged.api.core :refer [basic-creds]]
    ["antd/lib/message" :default AntMessage]
    ))
 
@@ -72,18 +74,25 @@
  ;[(rf/inject-cofx ::inject/sub [:entity-request-data])]
  (fn [{:keys [db event] :as ctx} [_ eargs]]
    (let [base-url (get-in db [:ged.core/api :base-url])
-         {:keys [method path on-success on-fail 
+         {:keys [method path on-success on-fail
                  params url-params body headers response-format]} eargs
-         uri (str base-url path)]
+         uri (str base-url path)
+         proxy-path (:ged.settings/proxy-path db)
+         geoserver-req? (str/starts-with? uri proxy-path)
+         uname (:ged.core/username db)
+         pass (:ged.core/password db)
+         ]
      {:http-xhrio {:method method
                    :uri uri
                   ;  :response-format (ajax.edn/edn-response-format)
-                   :response-format (or response-format (ajax/json-response-format {:keywords? true})) 
+                   :response-format (or response-format (ajax/json-response-format {:keywords? true}))
                    #_(ajax/raw-response-format)
                    :on-success on-success
                    :format :edn
                    :body body
-                   :headers headers
+                   :headers (merge headers
+                                   (when geoserver-req?
+                                     {"Authorization" (basic-creds uname pass)}))
                   ;  :params {:data "{:hello 'world}"}
                    :params params
                    :url-params url-params

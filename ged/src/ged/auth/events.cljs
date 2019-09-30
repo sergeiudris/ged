@@ -6,6 +6,16 @@
 
 (rf/reg-event-db
  ::set
- (fn-traced [db [_ key vl]]
+ (fn-traced [db [_ ea]]
             (let []
-              (assoc db key vl))))
+              db)))
+
+(rf/reg-event-fx
+ ::login
+ (fn [{:keys [db]} [_ ea]]
+   (let [username (:username ea)
+         password (:password ea)]
+     {:db
+      (merge db {:ged.core/username username
+                 :ged.core/password password})})))
+

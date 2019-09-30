@@ -23,6 +23,8 @@
      :ged.core/api {:base-url base-url
                     :search (str base-url "/usda/search")}
 
+     :ged.core/username "admin"
+     :ged.core/password "myawesomegeoserver"
 
       ; dbquery
      :ged.dbquery/example-queries-res nil
@@ -51,6 +53,10 @@
      :ged.settings/proxy-path "/geoserver"
      :ged.settings/proxy-geoserver-host "http://geoserver:8080"
      :ged.settings/geoserver-host "http://localhost:8600"
+
+     ; auth
+
+
 
     ;
      }))

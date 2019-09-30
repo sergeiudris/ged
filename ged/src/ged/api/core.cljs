@@ -1,6 +1,10 @@
 (ns ged.api.core
   (:require [clojure.string :as str]))
 
+(defn basic-creds
+  [uname pass]
+  (str "Basic " (js/btoa (str uname ":" pass))))
+
 (defn auth-creds
   []
   (str "Basic " (js/btoa (str "admin" ":" "myawesomegeoserver"))))

@@ -49,3 +49,9 @@ http://localhost:8600/geoserver/wfs?service=wfs&version=1.1.0&request=GetCapabil
 
 http://localhost:8600/geoserver/wfs?service=wfs&version=1.1.0&request=DescribeFeatureType&typeNames=dev:usa_major_cities
 
+
+
+# geoserver auth
+
+is stateless, credentials on every request
+- https://docs.geoserver.org/stable/en/user/security/auth/owsrest.html

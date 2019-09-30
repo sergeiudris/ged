@@ -48,7 +48,8 @@
                   :params {}
                   :body body
                   :headers {"Content-Type" "application/json"
-                            "Authorization"  (ged.api.geoserver/auth-creds)}
+                            ; "Authorization"  (ged.api.geoserver/auth-creds)
+                            }
                   :path (str proxy-path "/wfs")
                   :response-format (ajax/json-response-format {:keywords? true})
                   :on-success [::search-res]
@@ -86,7 +87,8 @@
                  {:method :post
                   :body body
                   :headers {"Content-Type" "application/json"
-                            "Authorization"  (ged.api.geoserver/auth-creds)}
+                            ; "Authorization"  (ged.api.geoserver/auth-creds)
+                            }
                   ; :path "/geoserver/wfs?exceptions=application/json&outputFormat=application/json"
                   :path (str proxy-path "/wfs")
                   :response-format 

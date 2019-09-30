@@ -42,3 +42,13 @@
  ::geoserver-host
  (fn [db _]
    (:ged.settings/geoserver-host db)))
+
+(rf/reg-sub
+ ::username
+ (fn [db _]
+   (:ged.core/username db)))
+
+(rf/reg-sub
+ ::password
+ (fn [db _]
+   (:ged.core/password db)))

@@ -20,44 +20,48 @@
 (def ant-select (r/adapt-react-class AntSelect))
 (def ant-select-option (r/adapt-react-class (.-Option AntSelect)))
 (def ant-input (r/adapt-react-class AntInput))
+(def ant-input-password (r/adapt-react-class (.-Password AntInput)))
+
 (def ant-button (r/adapt-react-class AntButton))
 
 
 (defn panel []
-  (let [ 
-        proxy-path (rf/subscribe [:ged.subs/proxy-path])
-        proxy-geoserver-host (rf/subscribe [:ged.subs/proxy-geoserver-host])
-        geoserver-host (rf/subscribe [:ged.subs/geoserver-host ] )
-        ]
+  (let [username (rf/subscribe [:ged.subs/username])
+        password (rf/subscribe [:ged.subs/password])
+        uname (r/atom nil)
+        pass (r/atom nil)]
     (fn []
       (let []
         [:section
          #_[:div "auth"]
          [ant-row
-          [ant-col {:span 3} "username"]
+          [ant-col {:span 4} "username"]
           [ant-col {:span 8}
-           [ant-input {:value @proxy-path
+           [ant-input {:value (or @uname @username)
                        :on-change
-                       #(js/console.log (.. % -target -value))}]]
-          ]
+                       #(reset! uname (.. % -target -value))}]]]
          [:br]
          [ant-row
-          [ant-col {:span 3} "password"]
+          [ant-col {:span 4} "password"]
           [ant-col {:span 8}
-           [ant-input {:value @proxy-geoserver-host
-                       :on-change
-                       #(js/console.log (.. % -target -value))}]]]
+           [ant-input-password {:visibilityToggle true
+                                :value (or @pass @password)
+                                :on-change
+                                #(reset! pass (.. % -target -value))}]]]
+
+         [:br]
          
-         [:br]
          [ant-row
-          [ant-col {:span 4}
-           [ant-button
-            {:on-click (fn [] (rf/dispatch [:ged.events/apply-server-settings]))}
-            "login"]]
-          [ant-col {:span 4}
-           [ant-button
-            {:on-click (fn [] (rf/dispatch [:ged.events/apply-server-settings]))}
-            "logout"]]]
+          [ant-col {:span 12}
+           [ant-row {:type "flex" :justify "end"}
+            [ant-col {:span 3 :style {:text-align "right"}}
+             [ant-button
+              {:title "Geoserver auth is stateless, credentials will be used in every request"
+               :on-click (fn [] (rf/dispatch
+                                 [:ged.auth.events/login
+                                  {:username (or @uname @username)
+                                   :password (or @pass @password)}]))}
+              "apply"]]]]]
          ;
          ]
         ;
