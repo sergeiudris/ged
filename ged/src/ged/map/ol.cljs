@@ -26,11 +26,12 @@
   (OlView.
    (clj->js
     (merge {:projection "EPSG:3857"
-            :center [0 0]
             :maxZoom 28
-            :zoom 0
-            ; :center [-11000000, 4600000]
-            ; :zoom 4
+
+            ; :center [0 0]
+            ; :zoom 0
+            :center [-11000000, 4600000]
+            :zoom 4
             }
            opts))))
 

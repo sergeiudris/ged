@@ -57,7 +57,10 @@
      ; map
 
      :ged.map/checked-layer-ids ["dev:usa_major_cities"
-                                 "dev:usa_major_cities_2"]
+                                 "dev:usa_major_highways"
+                                 #_"dev:world_cities"
+                                 #_"dev:world_continents"
+                                 ]
 
      ; rest
      :ged.rest/fetch-selected-url-res nil
@@ -76,8 +79,8 @@
                                    :filters {}
                                    :sorter {}
                                    :extra {:currentDataSource []}}
-      :ged.rest/selected-item-href nil
-      :ged.rest/selected-item-path nil
+     :ged.rest/selected-item-href nil
+     :ged.rest/selected-item-path nil
 
 
     ;
