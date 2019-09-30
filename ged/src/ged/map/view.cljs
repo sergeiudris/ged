@@ -7,16 +7,15 @@
              [ged.map.events :as events]
              ["antd/lib/button" :default ant-Button]
              ["antd/lib/button/button-group" :default AntButtonGroup]
-             [ged.map.ol :as ol]))
+             [ged.map.ol :as ol]
+             [ged.map.core :refer [get-olmap] :as core]))
 
 (def ant-button (r/adapt-react-class ant-Button))
 (def ant-button-group (r/adapt-react-class AntButtonGroup))
 
-(def ^:export state (atom {:olmap nil}))
 
-(defn get-olmap
-  []
-  (:olmap @state))
+
+
 
 (defn my-component
   [x y z]
@@ -53,20 +52,19 @@
 #_(js/console.log (:map @state))
 
 (defn ol-map
-  [geoserver-host y z]
+  [x y z]
   (let []
     (r/create-class
      {:display-name "ol-map"
       :component-did-mount
       (fn [this]
         (println "component-did-mount")
-        (if (not (:olmap @state))
+        (if (not (get-olmap))
           (do
             (js/console.log "creating new map..")
-            (swap! state assoc :olmap
-                   (ol/create-map {:el-id "map-container"}))
-            (.addLayer (get-olmap) (ol/wms-layer geoserver-host "dev:usa_major_cities"))
-            (.addLayer (get-olmap) (ol/wms-layer geoserver-host "dev:usa_major_cities_2"))
+            (core/set-map (ol/create-map {:el-id "map-container"}))
+            #_(.addLayer (get-olmap) (ol/wms-layer geoserver-host "dev:usa_major_cities"))
+            #_(.addLayer (get-olmap) (ol/wms-layer geoserver-host "dev:usa_major_cities_2"))
             (set! (.. js/window -map) (get-olmap)))
           (do
             (js/console.log "setting new map target..")
@@ -79,22 +77,45 @@
       (fn [this]
         (ol/set-target (get-olmap) nil))
       :reagent-render
-      (fn [geoserver-host y z]
-        [:div#map-container {:style {
-                                     :width "100%"
+      (fn [x y z]
+        [:div#map-container {:style {:width "100%"
                                      :height "100%"
                                      :border "1px solid #dedede"}}])})))
+
+(defn ol-map-layers
+  []
+  (let [geoserver-host (rf/subscribe [:ged.subs/geoserver-host])
+        ids-ref (rf/subscribe [:ged.map.subs/checked-layer-ids])]
+    (r/create-class
+     {:display-name "ol-map-layers"
+      :component-did-mount
+      (fn [this]
+        (let [ids @ids-ref
+              host @geoserver-host]
+          (doseq [id ids]
+            (ol/add-layer (get-olmap) host id)))
+        )
+      :component-did-update
+      (fn [this old-argv]
+        (let [new-argv (rest (r/argv this))]
+          (js/console.log new-argv old-argv)))
+      :component-will-unmount
+      (fn [this])
+      :reagent-render
+      (fn []
+        nil)})))
 
 
 (defn buttons
   []
   (let []
     (fn []
-      [:section {:style {:position "absolute" :left 64 :top 40}}
+      [:section {:style {:position "absolute" :right 32 :top 40}}
        [ant-button-group {:size "small"}
         [ant-button {:icon "reload"
                      :title "refetch layers"
-                     :on-click #(rf/dispatch [:ged.map.events/update-wms-layers])}]]
+                     :on-click (fn []
+                                 (rf/dispatch [:ged.map.events/refetch-wms-layers]))}]]
        ]
       ))
   )
@@ -102,8 +123,9 @@
 (defn panel []
   (let [module-count @(rf/subscribe [::subs/module-count])
         base-url @(rf/subscribe [:ged.subs/base-url])
-        geoserver-host @(rf/subscribe [:ged.subs/geoserver-host])]
+        ]
     [:div {:style {:height "100%"}}
      [buttons]
-     [ol-map geoserver-host 2 3]]))
+     [ol-map 1 2 3]
+     [ol-map-layers]]))
 

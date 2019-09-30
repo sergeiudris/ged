@@ -101,8 +101,8 @@
      opts))))
 
 (defn wms-layer
-  ([geoserver-host ids]
-   (wms-layer geoserver-host {} {:params  {"LAYERS" ids}}))
+  ([geoserver-host id]
+   (wms-layer geoserver-host {:id id} {:params  {"LAYERS" id}}))
   ([geoserver-host opts src-opts]
    (OlTileLayer.
     (clj->js
@@ -126,3 +126,23 @@
 (defn set-target
   [olmap el-id]
   (.setTarget olmap (js/document.getElementById el-id)))
+
+
+(defn id->layer
+  [olmap id]
+  (->>
+   (.getLayers olmap)
+   (filter (fn [lr] (= (.get lr "id") id)))
+   (first)))
+
+(defn update-wms-layer
+  [olmap id]
+  (js/console.log "update wms layer:" id)
+  (->
+   (id->layer olmap id)
+   (.getSource)
+   (.updateParams #js {})))
+
+(defn add-layer
+  [olmap geoserver-host id]
+  (.addLayer olmap (wms-layer geoserver-host id)))

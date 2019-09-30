@@ -54,10 +54,11 @@
      :ged.settings/proxy-geoserver-host "http://geoserver:8080"
      :ged.settings/geoserver-host "http://localhost:8600"
 
-     ; auth
+     ; map
 
-
-
+     :ged.map/checked-layer-ids ["dev:usa_major_cities"
+                                 "dev:usa_major_cities_2"]
+     
     ;
      }))
 
