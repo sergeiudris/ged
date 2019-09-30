@@ -18,7 +18,8 @@
                   "settings" :settings
                   "map" :map
                   "feats" :feats
-                  }])
+                  "ftype" :ftype
+                  "auth" :auth}])
 
 #_(def _ (events/listen history EventType.NAVIGATE
                       (fn [e]

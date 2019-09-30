@@ -1,8 +1,7 @@
-(ns ged.settings.events
+(ns ged.auth.events
   (:require [re-frame.core :as rf]
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
-            [goog.dom]
-            [ged.settings.core]))
+            [goog.dom]))
 
 
 (rf/reg-event-db

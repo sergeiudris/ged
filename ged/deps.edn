@@ -1,51 +1,43 @@
 {:paths ["src" "resources"]
- :deps {org.clojure/clojure         {:mvn/version "1.10.1"}
-        org.clojure/clojurescript {:mvn/version "1.10.520"}
-        reagent {:mvn/version "0.8.1"}
-        reagent-utils {:mvn/version "0.3.3"}
-        re-frame {:mvn/version "0.10.9"}
+ :deps {}
+ :aliases {:dev {:extra-deps {org.clojure/clojure         {:mvn/version "1.10.1"}
+                              org.clojure/clojurescript {:mvn/version "1.10.520"}
+                              reagent {:mvn/version "0.8.1"}
+                              reagent-utils {:mvn/version "0.3.3"}
+                              re-frame {:mvn/version "0.10.9"}
        ;  re-frame-utils {:mvn/version "0.1.0"}
-        re-com {:mvn/version "2.5.0"}
-        garden {:mvn/version "1.3.9"}
-        ns-tracker {:mvn/version "0.4.0"}
-        re-pressed {:mvn/version "0.3.0"}
-        binaryage/devtools {:mvn/version "0.9.10"}
-        day8.re-frame/re-frame-10x {:mvn/version "0.4.2"}
-        day8.re-frame/tracing {:mvn/version "0.5.3"}
-        day8.re-frame/http-fx {:mvn/version "0.1.6"}
+                              re-com {:mvn/version "2.5.0"}
+                              garden {:mvn/version "1.3.9"}
+                              ns-tracker {:mvn/version "0.4.0"}
+                              re-pressed {:mvn/version "0.3.0"}
+                              binaryage/devtools {:mvn/version "0.9.10"}
+                              day8.re-frame/re-frame-10x {:mvn/version "0.4.2"}
+                              day8.re-frame/tracing {:mvn/version "0.5.3"}
+                              day8.re-frame/http-fx {:mvn/version "0.1.6"}
         ; day8.re-frame/tracing-stubs {:mvn/version "0.5.3"}
 
-        org.clojure/data.xml {:mvn/version "0.2.0-alpha6"}
-        
-        bidi {:mvn/version "2.1.6"}
+                              org.clojure/data.xml {:mvn/version "0.2.0-alpha6"}
+
+                              bidi {:mvn/version "2.1.6"}
        ;  venantius/accountant {:mvn/version "0.2.4"}
-        pez/clerk {:mvn/version "1.0.0"}
+                              pez/clerk {:mvn/version "1.0.0"}
 
-        kibu/pushy {:mvn/version "0.3.8"}
-        com.andrewmcveigh/cljs-time {:mvn/version "0.5.2"}
-        cljs-ajax {:mvn/version "0.7.3"}
-        proto-repl {:mvn/version "0.3.1"}
+                              kibu/pushy {:mvn/version "0.3.8"}
+                              com.andrewmcveigh/cljs-time {:mvn/version "0.5.2"}
+                              cljs-ajax {:mvn/version "0.7.3"}
+                              proto-repl {:mvn/version "0.3.1"}
 
-        thheller/shadow-cljs {:mvn/version "2.8.52"}
-        
         ; server
 
-        clj-http {:mvn/version "3.10.0"}
+                              clj-http {:mvn/version "3.10.0"}
        ;  io.pedestal/pedestal.service {:mvn/version "0.5.7"}
        ;  io.pedestal/pedestal.jetty {:mvn/version "0.5.7"}
        ;  io.pedestal/pedestal.service-tools {:mvn/version "0.5.7"}
-        cheshire {:mvn/version "5.8.1"}
-        slingshot {:mvn/version "0.12.2"}
-
-
-
-        ;
-        }
- :aliases {:cache {:extra-deps
-                   {;local libs deps for caching during docker build
-                    org.clojure/test.check {:mvn/version "0.10.0"}}}
-           :dev {:extra-deps {;       thheller/shadow-cljs        {:mvn/version "2.6.4"}
-                              }}
+                              cheshire {:mvn/version "5.8.1"}
+                              slingshot {:mvn/version "0.12.2"}}}
+           :shadow {:extra-deps {thheller/shadow-cljs {:mvn/version "2.8.52"}}}
+           :server {:extra-deps {thheller/shadow-cljs {:mvn/version "2.8.52"}
+                                 clj-http {:mvn/version "3.10.0"}}}
            :local {:extra-deps {;ged {:local/root "/opt/root/..."}
                                 }}
            :git {:extra-deps {;   ged  {:git/url "https://github.com/seeris/ged"

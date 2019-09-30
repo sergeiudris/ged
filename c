@@ -3,7 +3,7 @@
 dc(){
 
     docker-compose --compatibility \
-        -f dc.yml \
+        -f dev.yml \
         "$@"
 }
 
@@ -45,6 +45,11 @@ prod(){
     docker-compose --compatibility \
         -f prod.yml \
         "$@"
+}
+
+tagpush(){
+    docker tag seeris/ged seeris/ged:dev
+    docker push seeris/ged:dev
 }
 
 "$@"

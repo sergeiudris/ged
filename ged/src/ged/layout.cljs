@@ -47,9 +47,15 @@
        [ant-menu-item {:key "feats-panel"}
         [ant-icon {:type "table"}] #_"compas" #_"environment" #_"global"
         [:span "feats"]]
+       [ant-menu-item {:key "ftype-panel"}
+        [ant-icon {:type "profile"}]
+        [:span "ftype"]]
        [ant-menu-item {:key "settings-panel"}
         [ant-icon {:type "setting"}]
         [:span "settings"]]
+       [ant-menu-item {:key "auth-panel"}
+        [ant-icon {:type "user"}]
+        [:span "auth"]]
        #_[ant-menu-item {:key "monitor-panel"}
           [ant-icon {:type "monitor"}]
           [:span "monitor"]]])))

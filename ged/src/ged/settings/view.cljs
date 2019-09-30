@@ -5,7 +5,6 @@
              [cljs.pprint :as pp]
              [ged.settings.events]
              [ged.settings.subs]
-             [ged.settings.spec]
              [ged.settings.core]
              ["antd/lib/row" :default AntRow]
              ["antd/lib/col" :default AntCol]

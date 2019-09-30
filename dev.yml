@@ -52,11 +52,11 @@ services:
       db:
         condition: service_healthy
 
-  # adminer:
-  #   image: adminer
-  #   # restart: always
-  #   ports:
-  #     - 8700:8080
+  adminer:
+    image: adminer
+    # restart: always
+    ports:
+      - 8700:8080
 
   ged:
     image: ged

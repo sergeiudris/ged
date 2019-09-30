@@ -50,6 +50,6 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - && \
 WORKDIR /opt/app
 
 COPY deps.edn .
-RUN clojure -A:cache -Stree
+RUN clojure -A:shadow:dev -Stree
 
 EXPOSE 9500 7888 9630 8801 8899

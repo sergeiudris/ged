@@ -35,6 +35,12 @@
          :map {:entries [ged.map.view]
                :depends-on #{:main}}
          :feats {:entries [ged.feats.view]
+                 :depends-on #{:main}}
+
+         :auth {:entries [ged.auth.view]
+                :depends-on #{:main}}
+
+         :ftype {:entries [ged.ftype.view]
                  :depends-on #{:main}}}
 
         :compiler-options

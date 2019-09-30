@@ -26,22 +26,18 @@ shadow(){
 
 prod(){
     npm i
-    shadow -A:prod:git:cache release app
+    shadow -A:shadow:dev:prod release app
 }
 
 main(){
 
-  if [ "$STAGE" != "dev" ]; then
-    shadow -A:dev:git server
-  else 
-    tail -f /dev/null
-  fi 
+  server
 
 }
 
 dev(){
     npm i
-    shadow -A:dev:local:cache watch app
+    shadow -A:shadow:dev watch app
     # npx shadow-cljs -A:dev:local watch app
     # yarn dev
 }
@@ -53,7 +49,7 @@ prod-local(){
 }
 
 server(){
-    shadow-cljs -A:dev:local:cache server
+    shadow-cljs -A:shadow:server server
     # yarn server
 }
 
