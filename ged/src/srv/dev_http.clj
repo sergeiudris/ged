@@ -168,7 +168,7 @@
                           (reset! ex e)
                           {:status 500
                            :headers {"content-type" "text/html; charset=utf-8"}
-                           :body (str e)})))
+                           :body (str (.getMessage e))})))
           hdrs (:headers rawres)]
       (reset! rawrsp rawres)
       (reset! rqs-opts req-opts)

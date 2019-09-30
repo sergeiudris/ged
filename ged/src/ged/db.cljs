@@ -76,6 +76,8 @@
                                    :filters {}
                                    :sorter {}
                                    :extra {:currentDataSource []}}
+      :ged.rest/selected-item-href nil
+      :ged.rest/selected-item-path nil
 
 
     ;

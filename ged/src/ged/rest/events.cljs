@@ -53,48 +53,33 @@
 (rf/reg-event-fx
  ::tx-feature
  (fn [{:keys [db]} [_ eargs]]
-   (let [ftype-input (:ged.rest/feature-type-input db)
-         [fpref ftype] (try (str/split ftype-input \:)
-                            (catch js/Error e
-                              (do (js/console.warn e)
-                                  ["undefined:undefined"])))
-         fns (:ged.rest/feature-ns db)
-         tx-type (:tx-type eargs)
+   (let [tx-type (:tx-type eargs)
          proxy-path (:ged.settings/proxy-path db)
          vl (js/JSON.parse (editor-get-val))
-         body (ged.api.geoserver/wfs-tx-jsons-str
-               {tx-type [vl]
-                :featureNS fns
-                :featurePrefix fpref
-                :featureType ftype})]
+         path (:ged.rest/selected-item-path db)
+         body (js/JSON.stringify vl)]
      #_(do (editor-request-set! (prettify-xml body)))
      {:dispatch [:ged.events/request
-                 {:method :post
+                 {:method tx-type
                   :body body
                   :headers {"Content-Type" "application/json"
                             ; "Authorization"  (ged.api.geoserver/auth-creds)
                             }
                   ; :path "/geoserver/wfs?exceptions=application/json&outputFormat=application/json"
-                  :path (str proxy-path "/wfs")
+                  :path (str proxy-path path)
                   :response-format
-                  (ajax/raw-response-format)
-                  ; (ajax/json-response-format {:keywords? true})
-                  :on-success [::tx-res-succ (str fpref ":" ftype)]
-                  :on-fail [::tx-res-fail]}]
+                  #_(ajax/raw-response-format)
+                  (ajax/json-response-format {:keywords? true})
+                  :on-success [::tx-res]
+                  :on-fail [::tx-res]}]
       :db (merge db {})})))
 
 (rf/reg-event-fx
- ::tx-res-succ
+ ::tx-res
  (fn [{:keys [db]} [_ id ea]]
-   #_(do (editor-response-set! (prettify-xml ea)))
-   {:dispatch [:ged.map.events/refetch-wms-layer id]
-    :db (assoc db :ged.rest/tx-res ea)}))
+   (do (editor-response-set-json! ea))
+   {:db (assoc db :ged.rest/tx-res ea)}))
 
-(rf/reg-event-db
- ::tx-res-fail
- (fn [db [_ eargs]]
-   #_(do (editor-response-set! (prettify-xml eargs)))
-   (assoc db :ged.rest/tx-res eargs)))
 
 
 
@@ -135,7 +120,8 @@
                       (ajax/json-response-format {:keywords? true})
                       :on-success [::select-feature-succ]
                       :on-fail [::select-feature-fail]}]
-          :db (merge db {})})
+          :db (merge db {:ged.rest/selected-item-href href
+                         :ged.rest/selected-item-path path})})
        (do
          (do (editor-set-json! ea))
          {:db (assoc db :ged.rest/select-feature ea)}))
@@ -143,15 +129,14 @@
 
 (rf/reg-event-fx
  ::select-feature-succ
- (fn [{:keys [db]} [_ ea ]]
-   (js/console.log ea)
-   (do (editor-set-json! ea))
+ (fn [{:keys [db]} [_ ea]]
+   (do (editor-set-json! (clj->js ea)))
    {:db db}))
 
 (rf/reg-event-db
  ::select-feature-fail
  (fn [db [_ ea]]
-   (do (editor-response-set-json! ea))
+   (do (editor-response-set-json! (clj->js ea)))
    db))
 
 #_(str/split 
