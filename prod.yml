@@ -66,8 +66,8 @@ services:
       - 9630:9630
       - 8801:8801
       - 8899:8899
-    # command: bash c main
-    command: tail -f /dev/null
+    command: bash c main
+    # command: tail -f /dev/null
     environment:
       - STAGE=dev
     stdin_open: true
