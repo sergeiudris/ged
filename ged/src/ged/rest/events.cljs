@@ -17,53 +17,38 @@
 
 #_(xml/indent)
 
+(rf/reg-event-db
+ ::selected-url
+ (fn-traced [db [_ ea]]
+            #_(do (editor-response-set-json! ea))
+            (assoc db :ged.rest/selected-url ea)))
+
 (rf/reg-event-fx
- ::search
+ ::fetch-selected-url
  (fn [{:keys [db]} [_ eargs]]
-   (let [ftype-input (:ged.rest/feature-type-input db)
-         [fpref ftype] (try (str/split ftype-input \:)
-                            (catch js/Error e
-                              (do (js/console.warn e)
-                                  ["undefined:undefined"])))
-         input (:ged.rest/search-input db)
-         s (or (:input eargs) input)
-         table-mdata (:ged.rest/search-table-mdata db)
-         total (get-in db [:ged.rest/search-res :total])
-         pag (:pagination table-mdata)
-         proxy-path (:ged.settings/proxy-path db)
-         {:keys [current pageSize]} pag
-         limit (or pageSize 10)
-         offset (or (* pageSize (dec current)) 0)
-         body (ged.api.geoserver/wfs-get-features-body-str
-               (merge
-                {:offset offset
-                 :limit limit
-                 :featurePrefix fpref
-                 :featureTypes [ftype]}
-                (when (not-empty s)
-                  {:filter (olf/like "NAME" (str "*" s "*") "*" "." "!" false)})))]
+   (let [proxy-path (:ged.settings/proxy-path db)
+         selected-url (:ged.rest/selected-url db)
+         ]
      #_(do (editor-request-set! (prettify-xml body)))
      {:dispatch [:ged.events/request
-                 {:method :post
+                 {:method :get
                   :params {}
-                  :body body
                   :headers {"Content-Type" "application/json"
                             ; "Authorization"  (ged.api.geoserver/auth-creds)
                             }
-                  :path (str proxy-path "/wfs")
-                  :response-format (ajax/json-response-format {:keywords? true})
-                  :on-success [::search-res]
-                  :on-fail [::search-res]}]
-      :db (merge db {:ged.rest/search-input s
-                     :ged.rest/search-table-mdata
-                     (if (:input eargs)
-                       (merge table-mdata {:pagination (merge pag {:current 1})})
-                       table-mdata)})})))
+                  :path (str proxy-path selected-url)
+                  :response-format
+                  (ajax/json-response-format {:keywords? true})
+                  #_(ajax/raw-response-format)
+                  :on-success [::fetch-selected-url-res]
+                  :on-fail [::fetch-selected-url-res]}]
+      :db (merge db {})})))
 
 (rf/reg-event-db
- ::search-res
- (fn-traced [db [_ val]]
-            (assoc db :ged.rest/search-res val)))
+ ::fetch-selected-url-res
+ (fn-traced [db [_ ea]]
+            #_(do (editor-response-set-json! ea))
+            (assoc db :ged.rest/fetch-selected-url-res ea)))
 
 (rf/reg-event-fx
  ::tx-feature

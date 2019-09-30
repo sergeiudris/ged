@@ -7,12 +7,15 @@
              [ged.rest.subs]
              [ged.rest.core]
              [ged.rest.editor :refer [editor-data
-                                       editor-request
-                                       editor-response]]
+                                      editor-request
+                                      editor-response]]
+             ["antd/lib/row" :default AntRow]
+             ["antd/lib/col" :default AntCol]
              ["antd/lib/icon" :default AntIcon]
              ["antd/lib/button" :default AntButton]
              ["antd/lib/button/button-group" :default AntButtonGroup]
              ["antd/lib/input" :default AntInput]
+             ["antd/lib/select" :default AntSelect]
              ["antd/lib/progress" :default AntProgress]
              ["antd/lib/input/Search" :default AntInputSearch]
              ["antd/lib/table" :default AntTable]
@@ -23,85 +26,51 @@
 (def ant-button (r/adapt-react-class AntButton))
 (def ant-button-group (r/adapt-react-class AntButtonGroup))
 (def ant-input (r/adapt-react-class AntInput))
+(def ant-select (r/adapt-react-class AntSelect))
+(def ant-select-option (r/adapt-react-class (.-Option AntSelect)))
+(def ant-row (r/adapt-react-class AntRow))
+(def ant-col (r/adapt-react-class AntCol))
+
 (def ant-input-search (r/adapt-react-class AntInputSearch))
 (def ant-auto-complete (r/adapt-react-class AntAutoComplete))
 (def ant-auto-complete-option (r/adapt-react-class (.-Option AntAutoComplete)))
 (def ant-table (r/adapt-react-class AntTable))
 
 
-(defn auto-complete-suffix
-  [{:keys [on-click]}]
-  [ant-button
-   {:class "search-btn"
-    :style {:margin-right "-12px"}
-    :size "default"
-    :on-click on-click
-    :type "default"}
-   [ant-icon {:type "search"}]])
 
-(defn auto-complete
-  [{:keys []}]
-  (let [state (r/atom {:input ""})
-        on-select (fn [s]
-                    (prn "selected " s))
-        on-search (fn [s]
-                    (rf/dispatch [:ged.rest.events/search {:input s}]))
-        on-change (fn [s]
-                    #_(prn "s:" (.. evt -target -value))
-                    (swap! state assoc :input s))
-        on-key-up (fn [evt]
-                    (when (= (.-key evt) "Enter")
-                      (on-search (.. evt -target -value))))]
-    (fn [_]
-      [ant-auto-complete
-       {:style {:width "32%"}
-        :size "default"
-        :placeholder "search"
-        :on-search on-change
-        :on-select on-select
-        :option-label-prop "text"}
-       [ant-input
-        {:value (:input @state)
-         :on-press-enter on-key-up
-        ;  :on-key-up on-key-up
-         :suffix (r/as-element [auto-complete-suffix
-                                {:on-click #(on-search (:input @state))}])}]])))
 
-(defn feature-type-input
+(defn select-endpoint
   []
-  (let [sref (rf/subscribe
-              [:ged.rest.subs/feature-type-input])]
+  (let [selected-url (rf/subscribe [:ged.rest.subs/selected-url])
+        on-select (fn [ev]
+                    (js/console.log ev)
+                    (rf/dispatch [:ged.rest.events/selected-url ev]))]
     (fn []
-      [ant-input {:style {:width "16%" :margin "0 0 0 8px"}
-                  :value @sref
-                  :on-change
-                  (fn [ev]
-                    (rf/dispatch
-                     [:ged.rest.events/feature-type-input
-                      (.. ev -target -value)]))
-                  :placeholder "topp:states"}])))
+      [ant-select {:value @selected-url
+                   :on-select on-select
+                   :style {:width "100%"}}
+       [ant-select-option
+        {:value "/rest/workspaces/dev/featuretypes.json"}
+        "/rest/workspaces/dev/featuretypes.json"]
+       [ant-select-option
+        {:value "/rest/workspaces/dev/datastores/pgdb/featuretypes.json"}
+        "/rest/workspaces/dev/datastores/pgdb/featuretypes.json"]
+       ])))
 
-(defn feature-ns
+(defn btn-fetch
   []
-  (let [sref (rf/subscribe
-              [:ged.rest.subs/feature-ns])]
-    (fn []
-      [ant-input {:style {:width "16%" :margin "0 0 0 8px"}
-                  :value @sref
-                  :on-change
-                  (fn [ev]
-                    (rf/dispatch
-                     [:ged.rest.events/feature-ns
-                      (.. ev -target -value)]))
-                  :placeholder "http://www.opengis.net/wfs/dev"}])))
+  [ant-button 
+   {:icon "reload"
+    :on-click #(rf/dispatch [:ged.rest.events/fetch-selected-url])
+    }
+   ]
+  )
 
-(def feature-columns
-  [{:title "id"
-    :key "id"
-    :dataIndex "id"}
-   {:title "geometry_name"
-    :key "geometry_name"
-    :dataIndex "geometry_name"}])
+(def base-columns
+  [{:title "name"
+    :key "name"
+    :dataIndex "name"}
+   ])
 
 (def extra-columns
   [{:title "action"
@@ -122,21 +91,23 @@
    #_{:title ""
       :key "empty"}])
 
-(def columns (vec (concat feature-columns extra-columns)))
+(def columns (vec (concat base-columns extra-columns)))
+
+(def row-key :name)
 
 (defn table
   []
-  (let [search-res (rf/subscribe [:ged.rest.subs/search-res])
+  (let [lst (rf/subscribe [:ged.rest.subs/fetch-selected-url-list])
         table-mdata (rf/subscribe [:ged.rest.subs/search-table-mdata])]
     (fn []
-      (let [items (:features @search-res)
-            total (:totalFeatures @search-res)
+      (let [items @lst
+            total (count items)
             ents items
             #_(mapv #(-> % :entity (dissoc :db/id)) items)
             pagination (:pagination @table-mdata)]
         [ant-table {:show-header true
                     :size "small"
-                    :row-key :id
+                    :row-key row-key
                     :className "rest-table"
                     :columns columns
                     :dataSource ents
@@ -169,7 +140,10 @@
       [:section
        #_[search]
        [:div
-        [auto-complete {}]
+        [ant-row
+         [ant-col {:span 10} [select-endpoint]]
+         [ant-col {:span 2} [btn-fetch]]
+         ]
         #_[feature-type-input]
         #_[feature-ns]]
        #_[buttons]

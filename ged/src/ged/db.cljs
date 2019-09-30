@@ -60,18 +60,19 @@
                                  "dev:usa_major_cities_2"]
 
      ; rest
-     :ged.rest/search-res nil
-     :ged.rest/search-input ""
-     :ged.rest/select-feature nil
+     :ged.rest/fetch-selected-url-res nil
+     :ged.rest/selected-url "/rest/workspaces/dev/featuretypes.json"
+     :ged.rest/select-item nil
      :ged.rest/tx-res nil
-     :ged.rest/search-table-mdata {:pagination {:showSizeChanger false
-                                                :showQuickJumper true
-                                                :defaultPageSize 5
-                                                :pageSizeOptions  ["5" "10" "20"]
-                                                :position "top"
-                                                :total 0
-                                                :current 1
-                                                :pageSize 10}
+     :ged.rest/search-table-mdata {:pagination false
+                                   #_{:showSizeChanger false
+                                      :showQuickJumper false
+                                      :defaultPageSize 5
+                                      :pageSizeOptions  ["5" "10" "20"]
+                                      :position "top"
+                                      :total 0
+                                      :current 1
+                                      :pageSize 10}
                                    :filters {}
                                    :sorter {}
                                    :extra {:currentDataSource []}}

@@ -20,10 +20,10 @@
   (let [default-value ""
         value (r/atom default-value)]
     (fn []
-      [react-ace {:name "ged-rest-editor-data"
+      [react-ace {:name "editor-feature"
                   :mode "json"
                   :theme "github"
-                  :className "ged-rest-editor-data"
+                  :className "editor-feature"
                   :width "32vw"
                     ;  :default-value default-value
                   :value @value

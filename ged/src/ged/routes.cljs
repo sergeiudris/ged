@@ -41,7 +41,6 @@
    (bidi/match-route routes url)))
 
 (defn- dispatch-route [matched-route]
-  (js/console.log matched-route)
   (let [handler (:handler matched-route)
         panel-name (if handler
                      (keyword (str (name handler) "-panel"))

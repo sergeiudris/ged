@@ -4,14 +4,18 @@
 
 
 (rf/reg-sub
- ::search-res
+ ::fetch-selected-url-list
  (fn [db _]
-   (:ged.rest/search-res db)))
+   (let [res (:ged.rest/fetch-selected-url-res db)]
+     (cond
+       (:featureTypes res)
+       (get-in res [:featureTypes :featureType])))))
 
 (rf/reg-sub
- ::search-input
+ ::selected-url
  (fn [db _]
-   (:ged.rest/search-input db)))
+   (:ged.rest/selected-url db)))
+
 
 (rf/reg-sub
  ::search-table-mdata
