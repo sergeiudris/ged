@@ -11,3 +11,8 @@
  ::checked-layer-ids
  (fn [db _]
    (:ged.map/checked-layer-ids db)))
+
+(rf/reg-sub
+ ::tab-button
+ (fn [db _]
+   (:ged.map/tab-button db)))

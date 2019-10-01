@@ -2,7 +2,8 @@
   (:require [re-frame.core :as rf]
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
             [ged.map.core :refer [get-olmap]]
-            [ged.map.ol :as ol])
+            [ged.map.ol :as ol]
+            [ged.local-storage :as ls])
   )
 
 (rf/reg-event-db
@@ -32,3 +33,13 @@
        (do (.updateParams (.getSource lr) #js {:r (Math/random)}))))
    {:db db}
    #_{:db db}))
+
+
+(rf/reg-event-db
+ ::tab-button
+ (fn-traced [db [_ ea]]
+            (let [vl   (keyword ea)
+                  mkey :ged.map/tab-button
+                  nxdb (assoc db mkey vl)]
+              (do (ls/assoc-in-store! [mkey] vl))
+              nxdb)))

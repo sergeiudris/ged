@@ -7,11 +7,19 @@
              [ged.map.events :as events]
              ["antd/lib/button" :default ant-Button]
              ["antd/lib/button/button-group" :default AntButtonGroup]
+             ["antd/lib/radio" :default AntRadio]
+             ["antd/lib/icon" :default AntIcon]
+   
              [ged.map.ol :as ol]
              [ged.map.core :refer [get-olmap] :as core]))
 
 (def ant-button (r/adapt-react-class ant-Button))
 (def ant-button-group (r/adapt-react-class AntButtonGroup))
+(def ant-radio (r/adapt-react-class AntRadio))
+(def ant-radio-group (r/adapt-react-class (.-Group AntRadio)))
+(def ant-radio-button (r/adapt-react-class (.-Button AntRadio)))
+(def ant-icon (r/adapt-react-class AntIcon))
+
 
 
 
@@ -108,11 +116,11 @@
         nil)})))
 
 
-(defn buttons
+(defn action-buttons
   []
   (let []
     (fn []
-      [:section {:style {:position "absolute" :left 32 :top 40}}
+      [:section {:style {:position "absolute" :right 32 :top 40}}
        [ant-button-group {:size "small"}
         [ant-button {:icon "reload"
                      :title "refetch layers"
@@ -122,12 +130,39 @@
       ))
   )
 
+(defn tab-buttons
+  []
+  (let [tab (rf/subscribe [:ged.map.subs/tab-button]) ]
+    (fn []
+      [:section {:style {:position "absolute" :left 32 :top 40}}
+       [ant-radio-group {:value @tab
+                         :on-change (fn [ev]
+                                      (rf/dispatch
+                                       [:ged.map.events/tab-button
+                                        (.. ev -target -value)]))
+                         :size "small"}
+        [ant-radio-button {:value "selected-layers"
+                           :title "selected layers"}
+         [ant-icon {:type "profile"} ]
+         ]
+        [ant-radio-button {:value "all-layers"
+                           :title "all layers"}
+         [ant-icon {:type "unordered-list"}]
+         ]
+        [ant-radio-button {:value "wfs-search"
+                           :title "wfs search"}
+         [ant-icon {:type "search"}]
+         ]
+        
+        ]])))
+
 (defn panel []
   (let [module-count @(rf/subscribe [::subs/module-count])
         base-url @(rf/subscribe [:ged.subs/base-url])
         ]
     [:div {:style {:height "100%"}}
-     [buttons]
+     [action-buttons]
+     [tab-buttons]
      [ol-map 1 2 3]
      [ol-map-layers]]))
 
