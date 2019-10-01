@@ -7,10 +7,32 @@
    (:ged.core/module-count db)))
 
 
+
+
+(rf/reg-sub
+ ::selected-layers-checked
+ (fn [db _]
+   (js/console.log db)
+   (:ged.map/selected-layers-checked db)
+   ))
+
+(rf/reg-sub
+ ::all-layers-checked
+ (fn [db _]
+   (:ged.map/all-layers-checked db)))
+
 (rf/reg-sub
  ::checked-layer-ids
- (fn [db _]
-   (:ged.map/checked-layer-ids db)))
+ (fn [qv _]
+   [(rf/subscribe  [::all-layers-checked])
+    (rf/subscribe  [::selected-layers-checked])])
+ (fn [[all selected] _]
+   (let []
+     (js/console.log selected)
+     (->>
+      (concat all selected)
+      (distinct)
+      (vec)))))
 
 (rf/reg-sub
  ::tab-button
@@ -43,3 +65,11 @@
  (fn [db _]
    (let [data (:ged.map/fetch-all-layers-res db)]
      (get-in data [:layers :layer]))))
+
+(rf/reg-sub
+ ::selected-layers
+ (fn [db _]
+   (let [ids (:ged.map/selected-layers-ids db)]
+     (mapv (fn [id]
+             {:name id
+              :href nil}) ids))))

@@ -64,6 +64,13 @@
 
      :ged.map/tab-button nil
      :ged.map/fetch-all-layers-res nil
+     
+     :ged.map/selected-layers-ids ["dev:usa_major_cities"
+                                   "dev:usa_major_highways"
+                                   #_"dev:world_cities"
+                                   #_"dev:world_continents"]
+     :ged.map/selected-layers-checked []
+     :ged.map/all-layers-checked []
 
      ; rest
      :ged.rest/fetch-selected-url-res nil

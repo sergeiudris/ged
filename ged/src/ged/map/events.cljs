@@ -71,3 +71,29 @@
  ::fetch-all-layers-res
  (fn-traced [{:keys [db]} [_ ea]]
             {:db (assoc db :ged.map/fetch-all-layers-res ea)}))
+
+(rf/reg-event-fx
+ ::selected-layers-checked
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [key :ged.map/selected-layers-checked
+                  nx (assoc db key ea)]
+              (do (ls/assoc-in-store! [key] (key nx)))
+              {:db nx})))
+
+(rf/reg-event-fx
+ ::all-layers-checked
+ (fn-traced [{:keys [db]} [_ ea]]
+            {:db (assoc db :ged.map/all-layers-checked ea)}))
+
+(rf/reg-event-fx
+ ::add-selected-layers-ids
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [key :ged.map/selected-layers-ids
+                  old-vl (key db)
+                  nx (assoc db key
+                            (->> (concat old-vl ea)
+                                 (distinct)
+                                 (vec)))]
+              (do (ls/assoc-in-store! key (key nx)))
+              {:db nx})))
+

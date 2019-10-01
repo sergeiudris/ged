@@ -70,6 +70,7 @@
       (fn [this]
         (let [ids @ids-ref
               host @geoserver-host]
+          (js/console.log "view ids" ids)
           (doseq [id ids]
             (when (not (ol/id->layer (get-olmap) id))
               (ol/add-layer (get-olmap) host id)))))
@@ -132,6 +133,8 @@
                        :icon "search"}]]])
       )))
 
+;all layers 
+
 (def all-layers-base-colums
   [{:title "name"
     :key :name
@@ -193,15 +196,74 @@
           ;                             )}
              :pagination false}]])))))
 
+; selected layers
+
+(def selected-layers-base-colums
+  [{:title "name"
+    :key :name
+    :dataIndex :name}])
+
+(def selected-layers-extra-columns
+  [{:title ""
+    :key "action"
+    :width "64px"
+    :render
+    (fn [txt rec idx]
+      (r/as-element
+       [ant-button
+        {:size "small"
+         :icon "menu"
+         :on-click #(rf/dispatch
+                     [:ged.feats.events/select-feature
+                      rec])}]))}])
+
+(def selected-layers-colums
+  (vec (concat selected-layers-base-colums
+               selected-layers-extra-columns)))
+
 (defn selected-layers
   []
-  (let [avisible (rf/subscribe [:ged.map.subs/selected-layers-visible])]
+  (let [avisible (rf/subscribe [:ged.map.subs/selected-layers-visible])
+        alayers (rf/subscribe [:ged.map.subs/selected-layers])
+        achecked (rf/subscribe [:ged.map.subs/selected-layers-checked])
+        ]
     (fn []
-      (let [visible? @avisible]
+      (let [visible? @avisible
+            data @alayers
+            checked @achecked]
         (when visible?
           [:section {:class "all-layers-container"}
-           "selcted layers"
-           ])))))
+           [ant-row "selected layers"]
+           [ant-row
+            [ant-col {:style {:text-align "right"}}
+             [ant-button-group {:size "small"}
+              #_[ant-button {:icon "reload" :title "update"
+                           :on-click
+                           #(rf/dispatch
+                             [:ged.map.events/fetch-all-layers])}]]]]
+           [ant-table
+            {:show-header true
+             :size "small"
+             :row-key :name
+             :className ""
+             :columns selected-layers-colums
+             :dataSource data
+             :on-change (fn [pag fil sor ext]
+                          (rf/dispatch [:ged.feats.events/search-table-mdata
+                                        (js->clj {:pagination pag
+                                                  :filters fil
+                                                  :sorter sor
+                                                  :extra ext} :keywordize-keys true)]))
+             :scroll {;  :x "max-content" 
+                                ;  :y 256
+                      }
+             :rowSelection {:selectedRowKeys checked
+                            :on-change (fn [keys rows ea]
+                                         (rf/dispatch
+                                          [:ged.map.events/selected-layers-checked keys])
+                                         #_(js/console.log keys rows ea))}
+             :pagination false}]])))))
+
 
 (defn wfs-search
   []
