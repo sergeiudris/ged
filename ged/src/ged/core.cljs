@@ -12,7 +12,14 @@
             [ged.view]
             [tools.core]
             [ged.api.geoserver]
-            [ged.api.core]))
+            [ged.api.core]
+            [devtools.core :as devtools]
+            [ged.local-storage]))
+
+(devtools/install!)
+(enable-console-print!)
+
+#_(prn "3")
 
 #_(sample.lib.logic/example)
 

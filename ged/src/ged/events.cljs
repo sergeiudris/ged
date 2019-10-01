@@ -1,9 +1,9 @@
 (ns ged.events
   (:require
    [clojure.string :as str]
-   [re-frame.core :as rf]
+   [re-frame.core :refer [reg-event-db reg-event-fx inject-cofx path after] :as rf]
    [day8.re-frame.http-fx]
-   [ged.db ]
+   [ged.db :refer [default-db todos->local-store]]
    #_[vimsical.re-frame.cofx.inject :as inject]
    [ajax.core :as ajax]
    [ajax.edn]
