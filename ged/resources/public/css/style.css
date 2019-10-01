@@ -126,3 +126,7 @@ body {
   right: .5em !important;
   left: initial !important;
 }
+
+.tab-buttons-container .ant-btn   {
+  margin-left: 0 !important;
+}

@@ -120,8 +120,9 @@
   []
   (let []
     (fn []
-      [:section {:style {:position "absolute" :right 32 :top 40}}
-       [ant-button-group {:size "small"}
+      [:section {
+                 :style {:position "absolute" :left 0 :top "30vh"}}
+       [ant-button-group {:size "default"}
         [ant-button {:icon "reload"
                      :title "refetch layers"
                      :on-click (fn []
@@ -130,37 +131,52 @@
       ))
   )
 
+(defn active->button-type
+  [active?]
+  (if active? "primary" "default"))
+
+(defn key->button-type
+  [btn-key key]
+  (active->button-type (= btn-key key)))
+
 (defn tab-buttons
   []
-  (let [tab (rf/subscribe [:ged.map.subs/tab-button]) ]
+  (let [atab (rf/subscribe [:ged.map.subs/tab-button]) ]
     (fn []
-      [:section {:style {:position "absolute" :left 32 :top 40}}
-       [ant-radio-group {:value @tab
-                         :on-change (fn [ev]
-                                      (rf/dispatch
-                                       [:ged.map.events/tab-button
-                                        (.. ev -target -value)]))
-                         :size "small"}
-        [ant-radio-button {:value "selected-layers"
-                           :title "selected layers"}
-         [ant-icon {:type "profile"} ]
-         ]
-        [ant-radio-button {:value "all-layers"
-                           :title "all layers"}
-         [ant-icon {:type "unordered-list"}]
-         ]
-        [ant-radio-button {:value "wfs-search"
-                           :title "wfs search"}
-         [ant-icon {:type "search"}]
-         ]
-        
-        ]])))
+      (let [tab @atab]
+        [:section {:class "tab-buttons-container"
+                   :style {:position "absolute" :left 0 :top 64}}
+         [ant-button-group {:style {:display "flex" :flex-direction "column"}
+                            :value tab
+                            :on-click (fn [ev]
+                                         (rf/dispatch
+                                          [:ged.map.events/tab-button
+                                           (.. ev -target -value)]))
+                            :size "default"}
+          [ant-button {:value "selected-layers"
+                       :icon "profile"
+                       :type (key->button-type :selected-layers tab)
+                       :title "selected layers"}
+           #_[ant-icon {:type "profile"}]]
+          [ant-button {:value "all-layers"
+                       :type (key->button-type :all-layers tab)
+                       :icon "unordered-list"
+                       :title "all layers"}
+           #_[ant-icon {:type "unordered-list"}]]
+          [ant-button {:value "wfs-search"
+                       :title "wfs search"
+                       :type (key->button-type :wfs-search tab)
+                       :icon "search"}
+           #_[ant-icon {:type "search" :title "wfs search"}]]]]
+        )
+      
+      )))
 
 (defn panel []
   (let [module-count @(rf/subscribe [::subs/module-count])
         base-url @(rf/subscribe [:ged.subs/base-url])
         ]
-    [:div {:style {:height "100%"}}
+    [:div {:style {:height "100%" :margin-left 0}}
      [action-buttons]
      [tab-buttons]
      [ol-map 1 2 3]

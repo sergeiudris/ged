@@ -38,8 +38,10 @@
 (rf/reg-event-db
  ::tab-button
  (fn-traced [db [_ ea]]
-            (let [vl   (keyword ea)
-                  mkey :ged.map/tab-button
-                  nxdb (assoc db mkey vl)]
-              (do (ls/assoc-in-store! [mkey] vl))
+            (let [kw   (keyword ea)
+                  key :ged.map/tab-button
+                  old-vl (key db)
+                  vl (if (= kw old-vl) nil kw)
+                  nxdb (assoc db key vl)]
+              (do (ls/assoc-in-store! [key] vl))
               nxdb)))
