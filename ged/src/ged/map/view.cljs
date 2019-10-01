@@ -12,6 +12,8 @@
              ["antd/lib/row" :default AntRow]
              ["antd/lib/col" :default AntCol]
              ["antd/lib/table" :default AntTable]
+             ["antd/lib/dropdown" :default AntDropdown]
+             ["antd/lib/menu" :default AntMenu]
              [ged.map.ol :as ol]
              [ged.map.core :refer [get-olmap] :as core]))
 
@@ -24,6 +26,16 @@
 (def ant-row (r/adapt-react-class AntRow))
 (def ant-col (r/adapt-react-class AntCol))
 (def ant-table (r/adapt-react-class AntTable))
+(def ant-dropdown (r/adapt-react-class AntDropdown))
+(def ant-menu (r/adapt-react-class AntMenu))
+(def ant-menu-item (r/adapt-react-class (.-Item AntMenu)))
+(def ant-menu-divider (r/adapt-react-class (.-Divider AntMenu)))
+
+
+
+
+
+
 
 #_(js/console.log
    (js/document.getElementById
@@ -181,16 +193,27 @@
 (def all-layers-extra-columns
   [{:title ""
     :key "action"
-    :width "64px"
+    :width "32px"
     :render
     (fn [txt rec idx]
-      (r/as-element
-       [ant-button
-        {:size "small"
-         :icon "menu"
-         :on-click #(rf/dispatch
-                     [:ged.feats.events/select-feature
-                      rec])}]))}])
+      (let [on-click
+            (fn [ea]
+              (let [key (keyword (.-key ea))]
+                (cond
+                  (= key :select)
+                  (do (rf/dispatch
+                       [:ged.map.events/add-selected-layers-ids [(aget rec "name")]])))))
+            menu
+            (r/as-element
+             [ant-menu {:on-click on-click
+                        :size "small"}
+              [ant-menu-item {:key "select"} "select"]])]
+        (r/as-element
+         [ant-dropdown
+          {:overlay menu :trigger ["click"]}
+          [ant-button
+           {:size "small"
+            :icon "down"}]])))}])
 
 (def all-layers-colums
   (vec (concat all-layers-base-colums
@@ -241,19 +264,36 @@
     :key :name
     :dataIndex :name}])
 
+
 (def selected-layers-extra-columns
   [{:title ""
     :key "action"
-    :width "64px"
+    :width "32px"
     :render
     (fn [txt rec idx]
-      (r/as-element
-       [ant-button
-        {:size "small"
-         :icon "menu"
-         :on-click #(rf/dispatch
-                     [:ged.feats.events/select-feature
-                      rec])}]))}])
+      (let [on-click 
+            (fn [ea]
+              (let [key (keyword (.-key ea))
+                    name (aget rec "name")]
+                (cond
+                  (= key :remove)
+                  (rf/dispatch
+                   [:ged.map.events/remove-selected-layers-id name]))))
+            menu
+            (r/as-element
+             [ant-menu {:on-click on-click
+                        :size "small"}
+              [ant-menu-item {:key "edit"} "edit"]
+              [ant-menu-divider]
+              [ant-menu-item{:key "remove"} "remove"]])]
+        (r/as-element
+         [ant-dropdown
+          {:overlay menu :trigger ["click"]}
+          [ant-button
+           {:size "small"
+            :icon "down"}]]))
+      
+      )}])
 
 (def selected-layers-colums
   (vec (concat selected-layers-base-colums

@@ -94,6 +94,18 @@
                             (->> (concat old-vl ea)
                                  (distinct)
                                  (vec)))]
-              (do (ls/assoc-in-store! key (key nx)))
+              (do (ls/assoc-in-store! [key] (key nx)))
+              {:db nx})))
+
+
+(rf/reg-event-fx
+ ::remove-selected-layers-id
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [key :ged.map/selected-layers-ids
+                  old-vl (key db)
+                  id ea
+                  nx (assoc db key
+                            (filterv #(not= % id) old-vl))]
+              (do (ls/assoc-in-store! [key] (key nx)))
               {:db nx})))
 
