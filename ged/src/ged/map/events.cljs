@@ -15,15 +15,15 @@
 
 (rf/reg-event-fx
  ::refetch-wms-layers
- (fn [{:keys [db]} [_ ea]]
-   (let [lrs (.getArray  (.getLayers (get-olmap)))]
-     (doseq [lr  lrs]
-       (when (.get lr "id")
-         (do
-           (.updateParams (.getSource lr) #js {:r (Math/random)}))))
-     {:db db})
-   #_{:db db}
-   ))
+ (fn-traced
+  [{:keys [db]} [_ ea]]
+  (let [lrs (.getArray  (.getLayers (get-olmap)))]
+    (doseq [lr  lrs]
+      (when (.get lr "id")
+        (do
+          (.updateParams (.getSource lr) #js {:r (Math/random)}))))
+    {:db db})
+  #_{:db db}))
 
 (rf/reg-event-fx
  ::refetch-wms-layer

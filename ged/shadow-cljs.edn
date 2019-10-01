@@ -58,6 +58,8 @@
          #_ged.core/main
          #_routing-example.core/init!
          #_conduit.core/init
+         :repl-init-ns ged.core
+         :repl-pprint true
          :http-root  "resources/public"
          :http-port  9500
          :http-handler srv.dev-http/handle
