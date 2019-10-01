@@ -2,7 +2,7 @@
   (:require [clojure.repl]
             [bidi.bidi :as bidi]
             [pushy.core :as pushy]
-            [clerk.core :as clerk]
+            #_[clerk.core :as clerk]
             #_[goog.events ]
             [reagent.core :as r]
             [ged.events :as events]
