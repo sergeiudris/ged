@@ -137,7 +137,7 @@
    (filter (fn [lr] (= (.get lr "id") id)))
    (first)))
 
-(defn update-wms-layer
+(defn refetch-wms-layer
   [olmap id]
   (js/console.log "update wms layer:" id)
   (->
@@ -145,6 +145,46 @@
    (.getSource)
    (.updateParams #js {})))
 
-(defn add-layer
+(defn add-wms-layer
   [olmap geoserver-host id]
   (.addLayer olmap (wms-layer geoserver-host id)))
+
+(defn upsert-wms-layer
+  [olmap geoserver-host id]
+  (let [lr (id->layer olmap id)]
+    (when-not lr
+      (add-wms-layer olmap geoserver-host id))))
+
+
+(defn remove-layer
+  [olmap id]
+  (let [lr (id->layer olmap id)]
+    (.removeLayer olmap lr)))
+
+
+(defn upsert-wms-layers
+  [olmap geoserver-host ids]
+  (doseq [id ids]
+    (when (not (id->layer olmap id))
+      (add-wms-layer olmap geoserver-host id))))
+
+(defn prune-wfs-layers
+  "Remove wfs layers that are not listed"
+  [olmap ids]
+  (let [lrs (.getArray  (.getLayers olmap))]
+    (doseq [lr  lrs]
+      (let [id (.get lr "id")]
+        (when id
+          (when-not (some #(= id %) ids)
+            (.removeLayer olmap lr)))))))
+
+#_(some #(= "1" %) ["1" "2"])
+
+#_(when-not true (prn 3))
+
+(defn sync-wfs-layers
+  "Add if don't exist, remove existing if not in checked"
+  [olmap geoserver-host ids]
+  (upsert-wms-layers olmap geoserver-host ids)
+  
+  )

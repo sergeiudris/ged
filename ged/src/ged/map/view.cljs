@@ -60,30 +60,68 @@
                                      :height "100%"
                                      :border "1px solid #dedede"}}])})))
 
-(defn ol-map-layers
+
+(defn ol-wms-layer
   []
-  (let [geoserver-host (rf/subscribe [:ged.subs/geoserver-host])
-        ids-ref (rf/subscribe [:ged.map.subs/checked-layer-ids])]
+  (let []
+    (r/create-class
+     {:display-name "ol-wms-layer"
+      :component-did-mount
+      (fn [this]
+        (let [{:keys [id geoserver-host]} (r/props this)]
+          (do (ol/upsert-wms-layer (get-olmap) geoserver-host id))))
+      :component-will-unmount
+      (fn [this]
+        (let [{:keys [id]} (r/props this)]
+          (do (ol/remove-layer (get-olmap) id))))
+      :reagent-render
+      (fn []
+        nil)})))
+
+; https://github.com/Day8/re-frame/blob/master/docs/Using-Stateful-JS-Components.md
+#_(defn ol-map-layers-inner
+  []
+  (let []
     (r/create-class
      {:display-name "ol-map-layers"
       :component-did-mount
       (fn [this]
-        (let [ids @ids-ref
-              host @geoserver-host]
-          (js/console.log "view ids" ids)
-          (doseq [id ids]
-            (when (not (ol/id->layer (get-olmap) id))
-              (ol/add-layer (get-olmap) host id)))))
+        (let [{:keys [checked-layer-ids geoserver-host]} (r/props this)]
+          (js/console.log "view ids" checked-layer-ids)
+          (ol/upsert-wfs-layers (get-olmap) geoserver-host checked-layer-ids)
+          ))
       :component-did-update
       (fn [this old-argv]
-        (let [new-argv (rest (r/argv this))]
-          (js/console.log new-argv old-argv)))
+        (let [new-argv (rest (r/argv this))
+              {:keys [checked-layer-ids geoserver-host]} (r/props this)]
+          (js/console.log "component-did-update" checked-layer-ids)
+          #_(js/console.log new-argv old-argv)))
       :component-will-unmount
       (fn [this])
       :reagent-render
       (fn []
         nil)})))
 
+(defn ol-map-layers
+  []
+  (let [geoserver-host (rf/subscribe [:ged.subs/geoserver-host])
+        ids-ref (rf/subscribe [:ged.map.subs/checked-layer-ids])]
+    (fn []
+      (let [host @geoserver-host
+            ids @ids-ref
+            ]
+        [:<>
+         (map (fn [id]
+                [ol-wms-layer
+                 {:key id
+                  :id id
+                  :geoserver-host host}])
+              ids)]
+        
+        )
+      #_[ol-map-layers-inner
+       {:checked-layer-ids @ids-ref
+        :geoserver-host @geoserver-host}])))
 
 (defn action-buttons
   []
@@ -285,5 +323,6 @@
      [ol-map-layers]
      [all-layers]
      [selected-layers]
-     [wfs-search]]))
+     [wfs-search]
+     ]))
 

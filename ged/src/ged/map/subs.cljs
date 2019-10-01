@@ -12,9 +12,7 @@
 (rf/reg-sub
  ::selected-layers-checked
  (fn [db _]
-   (js/console.log db)
-   (:ged.map/selected-layers-checked db)
-   ))
+   (:ged.map/selected-layers-checked db)))
 
 (rf/reg-sub
  ::all-layers-checked
@@ -28,7 +26,6 @@
     (rf/subscribe  [::selected-layers-checked])])
  (fn [[all selected] _]
    (let []
-     (js/console.log selected)
      (->>
       (concat all selected)
       (distinct)
