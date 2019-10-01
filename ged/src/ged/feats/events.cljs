@@ -19,7 +19,7 @@
 
 (rf/reg-event-fx
  ::search
- (fn [{:keys [db]} [_ eargs]]
+ (fn-traced [{:keys [db]} [_ eargs]]
    (let [ftype-input (:ged.feats/feature-type-input db)
          [fpref ftype] (try (str/split ftype-input \:)
                             (catch js/Error e
@@ -67,7 +67,7 @@
 
 (rf/reg-event-fx
  ::tx-feature
- (fn [{:keys [db]} [_ eargs]]
+ (fn-traced [{:keys [db]} [_ eargs]]
    (let [ftype-input (:ged.feats/feature-type-input db)
          [fpref ftype] (try (str/split ftype-input \:)
                             (catch js/Error e
@@ -100,7 +100,7 @@
 
 (rf/reg-event-fx
  ::tx-res-succ
- (fn [{:keys [db]} [_ id ea]]
+ (fn-traced [{:keys [db]} [_ id ea]]
    (do (editor-response-set! (prettify-xml ea) ))
    {:dispatch [:ged.map.events/refetch-wms-layer id]
     :db (assoc db :ged.feats/tx-res ea)}
@@ -108,7 +108,7 @@
 
 (rf/reg-event-db
  ::tx-res-fail
- (fn [db [_ eargs]]
+ (fn-traced [db [_ eargs]]
    (do (editor-response-set! (prettify-xml eargs)))
    (assoc db :ged.feats/tx-res eargs)))
 
@@ -124,27 +124,27 @@
 
 (rf/reg-event-fx
  ::search-table-mdata
- (fn [{:keys [db]} [_ eargs]]
+ (fn-traced [{:keys [db]} [_ eargs]]
    (let [key :ged.feats/search-table-mdata]
      {:dispatch [:ged.feats.events/search {}]
       :db (assoc db key eargs)})))
 
 (rf/reg-event-fx
  ::select-feature
- (fn [{:keys [db]} [_ eargs]]
+ (fn-traced [{:keys [db]} [_ eargs]]
    (let [key :ged.feats/select-feature]
      (do (editor-set-json! eargs))
      {:db (assoc db key eargs)})))
 
 (rf/reg-event-fx
  ::feature-type-input
- (fn [{:keys [db]} [_ eargs]]
+ (fn-traced [{:keys [db]} [_ eargs]]
    (let [key :ged.feats/feature-type-input]
      {:db (assoc db key eargs)})))
 
 (rf/reg-event-fx
  ::feature-ns
- (fn [{:keys [db]} [_ eargs]]
+ (fn-traced [{:keys [db]} [_ eargs]]
    (let [key :ged.feats/feature-ns]
      {:db (assoc db key eargs)})))
 

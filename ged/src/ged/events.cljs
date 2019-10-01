@@ -24,14 +24,14 @@
 
 (rf/reg-event-fx
  :ant-message
- (fn [{:keys [db]} [_ ea]]
+ (fn-traced [{:keys [db]} [_ ea]]
    (let [msg (:msg ea)]
      (.info AntMessage msg 0.5)
      {:db db})))
 
 (rf/reg-event-db
  ::set-re-pressed-example
- (fn [db [_ value]]
+ (fn-traced [db [_ value]]
    (assoc db :re-pressed-example value)))
 
 (rf/reg-event-db
@@ -42,7 +42,7 @@
 
 (rf/reg-event-fx
  ::apply-server-settings
- (fn [{:keys [db]} [_ eargs]]
+ (fn-traced [{:keys [db]} [_ eargs]]
    (let [geoserver-host (:ged.settings/proxy-geoserver-host db)
          proxy-path (:ged.settings/proxy-path db)
          body (str  {:proxy-geoserver-host geoserver-host
@@ -62,7 +62,7 @@
 
 (rf/reg-event-fx
  ::apply-server-settings-res
- (fn [{:keys [db]} [_ eargs]]
+ (fn-traced [{:keys [db]} [_ eargs]]
    {:dispatch [:ant-message {:msg "settings applied"}]
     :db db}))
 
@@ -72,34 +72,33 @@
  ::request
 ;  [(re-frame/)]
  ;[(rf/inject-cofx ::inject/sub [:entity-request-data])]
- (fn [{:keys [db event] :as ctx} [_ eargs]]
-   (let [base-url (get-in db [:ged.core/api :base-url])
-         {:keys [method path on-success on-fail
-                 params url-params body headers response-format]} eargs
-         uri (str base-url path)
-         proxy-path (:ged.settings/proxy-path db)
-         geoserver-req? (str/starts-with? uri proxy-path)
-         uname (:ged.core/username db)
-         pass (:ged.core/password db)
-         ]
-     {:http-xhrio {:method method
-                   :uri uri
+ (fn-traced [{:keys [db event] :as ctx} [_ eargs]]
+            (let [base-url (get-in db [:ged.core/api :base-url])
+                  {:keys [method path on-success on-fail
+                          params url-params body headers response-format]} eargs
+                  uri (str base-url path)
+                  proxy-path (:ged.settings/proxy-path db)
+                  geoserver-req? (str/starts-with? uri proxy-path)
+                  uname (:ged.core/username db)
+                  pass (:ged.core/password db)]
+              {:http-xhrio {:method method
+                            :uri uri
                   ;  :response-format (ajax.edn/edn-response-format)
-                   :response-format (or response-format (ajax/json-response-format {:keywords? true}))
-                   #_(ajax/raw-response-format)
-                   :on-success on-success
-                   :format :edn
-                   :body body
-                   :headers (merge headers
-                                   (when geoserver-req?
-                                     {"Authorization" (basic-creds uname pass)}))
+                            :response-format (or response-format (ajax/json-response-format {:keywords? true}))
+                            #_(ajax/raw-response-format)
+                            :on-success on-success
+                            :format :edn
+                            :body body
+                            :headers (merge headers
+                                            (when geoserver-req?
+                                              {"Authorization" (basic-creds uname pass)}))
                   ;  :params {:data "{:hello 'world}"}
-                   :params params
-                   :url-params url-params
-                   :on-fail on-fail}
-      :db db}
+                            :params params
+                            :url-params url-params
+                            :on-fail on-fail}
+               :db db}
      ;
-     )))
+              )))
 
 
 

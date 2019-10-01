@@ -20,14 +20,13 @@
   (let [lrs (.getArray  (.getLayers (get-olmap)))]
     (doseq [lr  lrs]
       (when (.get lr "id")
-        (do
-          (.updateParams (.getSource lr) #js {:r (Math/random)}))))
+        (.updateParams (.getSource lr) #js {:r (Math/random)})))
     {:db db})
   #_{:db db}))
 
 (rf/reg-event-fx
  ::refetch-wms-layer
- (fn [{:keys [db]} [_ ea]]
+ (fn-traced [{:keys [db]} [_ ea]]
    (let [lr (ol/id->layer (get-olmap) ea)]
      (when lr
        (do (.updateParams (.getSource lr) #js {:r (Math/random)}))))

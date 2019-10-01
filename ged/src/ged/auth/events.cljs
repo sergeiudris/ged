@@ -12,7 +12,7 @@
 
 (rf/reg-event-fx
  ::login
- (fn [{:keys [db]} [_ ea]]
+ (fn-traced [{:keys [db]} [_ ea]]
    (let [username (:username ea)
          password (:password ea)]
      {:dispatch [:ant-message {:msg "credentials applied"}]

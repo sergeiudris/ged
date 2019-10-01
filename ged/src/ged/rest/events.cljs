@@ -25,7 +25,7 @@
 
 (rf/reg-event-fx
  ::fetch-selected-url
- (fn [{:keys [db]} [_ eargs]]
+ (fn-traced [{:keys [db]} [_ eargs]]
    (let [proxy-path (:ged.settings/proxy-path db)
          selected-url (:ged.rest/selected-url db)
          ]
@@ -52,7 +52,7 @@
 
 (rf/reg-event-fx
  ::tx-feature
- (fn [{:keys [db]} [_ eargs]]
+ (fn-traced [{:keys [db]} [_ eargs]]
    (let [tx-type (:tx-type eargs)
          proxy-path (:ged.settings/proxy-path db)
          vl (js/JSON.parse (editor-get-val))
@@ -76,7 +76,7 @@
 
 (rf/reg-event-fx
  ::tx-res
- (fn [{:keys [db]} [_ id ea]]
+ (fn-traced [{:keys [db]} [_ id ea]]
    (do (editor-response-set-json! ea))
    {:db (assoc db :ged.rest/tx-res ea)}))
 
@@ -93,7 +93,7 @@
 
 (rf/reg-event-fx
  ::search-table-mdata
- (fn [{:keys [db]} [_ eargs]]
+ (fn-traced [{:keys [db]} [_ eargs]]
    (let [key :ged.rest/search-table-mdata]
      {:dispatch [:ged.rest.events/search {}]
       :db (assoc db key eargs)})))
@@ -104,7 +104,7 @@
 
 (rf/reg-event-fx
  ::select-feature
- (fn [{:keys [db]} [_ ea]]
+ (fn-traced [{:keys [db]} [_ ea]]
    (let [href (:href (js->clj ea :keywordize-keys true))]
      (if href
        (let [path (href->path href)
@@ -129,13 +129,13 @@
 
 (rf/reg-event-fx
  ::select-feature-succ
- (fn [{:keys [db]} [_ ea]]
+ (fn-traced [{:keys [db]} [_ ea]]
    (do (editor-set-json! (clj->js ea)))
    {:db db}))
 
 (rf/reg-event-db
  ::select-feature-fail
- (fn [db [_ ea]]
+ (fn-traced [db [_ ea]]
    (do (editor-response-set-json! (clj->js ea)))
    db))
 
