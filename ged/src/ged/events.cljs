@@ -3,19 +3,42 @@
    [clojure.string :as str]
    [re-frame.core :refer [reg-event-db reg-event-fx inject-cofx path after] :as rf]
    [day8.re-frame.http-fx]
-   [ged.db :refer [default-db todos->local-store]]
+   [ged.db :refer [default-db]]
    #_[vimsical.re-frame.cofx.inject :as inject]
    [ajax.core :as ajax]
    [ajax.edn]
    [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
    [ged.api.core :refer [basic-creds]]
    ["antd/lib/message" :default AntMessage]
+   [ged.local-storage :as ls]
    ))
 
-(rf/reg-event-db
+
+#_(defn my-reg-event-db            ;; a replacement for reg-event-db
+
+   ;; 2-arity with no interceptors 
+  ([id handler]
+   (my-reg-event-db id nil handler))
+
+   ;; 3-arity with interceptors
+  ([id interceptors handler]
+   (re-frame.core/reg-event-db   ;; which uses reg-event-db 
+    id
+    [omni-ceptor interceptors] ;; <-- inject `omni-ceptor`
+    handler)))
+
+(rf/reg-cofx
+ :rehydrate-db
+ (fn [cofx _]
+   #_(js/console.log "coef" (ls/read-db))
+   (assoc cofx :rehydrate-db (ls/read-db))))
+
+
+(rf/reg-event-fx
  ::initialize-db
- (fn-traced [_ _]
-            ged.db/default-db))
+ [(inject-cofx :rehydrate-db)]
+ (fn-traced [{:keys [db rehydrate-db] :as coef} av]
+            {:db (merge ged.db/default-db rehydrate-db) }))
 
 (rf/reg-event-db
  ::set-active-panel

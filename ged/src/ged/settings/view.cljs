@@ -43,7 +43,7 @@
                           :on-change (fn [vl] (js/console.log vl))}
               [ant-select-option {:value "hello"} "hello"]
               [ant-select-option {:value "hi"} "hi"]]]]
-         [ant-row
+         #_[ant-row
           [ant-col {:span 3} "proxy path"]
           [ant-col {:span 8}
            [ant-input {:value @proxy-path
@@ -57,11 +57,13 @@
             "apply"]]]
          [:br]
          [ant-row
-          [ant-col {:span 3} "proxy geoserver host"]
+          [ant-col {:span 3 
+                    :title "will be used for proxying CORS requests"
+                    } "proxy geoserver host"]
           [ant-col {:span 8}
            [ant-input {:value @proxy-geoserver-host
                        :on-change
-                       #(rf/dispatch [:ged.settings.events/set 
+                       #(rf/dispatch [:ged.settings.events/set
                                       :ged.settings/proxy-geoserver-host
                                       (.. % -target -value)])}]]
           [ant-col {:span 4}
@@ -73,7 +75,9 @@
          
          [:br]
          [ant-row
-          [ant-col {:span 3} "geoserver host"]
+          [ant-col {:span 3
+                    :title "will be used for wms requests (layer tiles) that do not require CORS"
+                    } "geoserver host"]
           [ant-col {:span 8}
            [ant-input {:value @geoserver-host
                        :on-change
