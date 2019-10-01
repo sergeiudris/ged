@@ -3,7 +3,8 @@
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
             [ged.map.core :refer [get-olmap]]
             [ged.map.ol :as ol]
-            [ged.local-storage :as ls])
+            [ged.local-storage :as ls]
+            [ajax.core :as ajax])
   )
 
 (rf/reg-event-db
@@ -45,3 +46,28 @@
                   nxdb (assoc db key vl)]
               (do (ls/assoc-in-store! [key] vl))
               nxdb)))
+
+
+(rf/reg-event-fx
+ ::fetch-all-layers
+ (fn-traced
+  [{:keys [db]} [_ ea]]
+  (let [proxy-path (:ged.settings/proxy-path db)]
+    {:dispatch
+     [:ged.events/request
+      {:method :get
+       :params {}
+       :headers {"Content-Type" "application/json"
+                            ; "Authorization"  (ged.api.geoserver/auth-creds)
+                 }
+       :path (str proxy-path "/rest/layers.json")
+       :response-format (ajax/json-response-format {:keywords? true})
+       :on-success [::fetch-all-layers-res]
+       :on-fail [::fetch-all-layers-res]}]
+
+     :db db})))
+
+(rf/reg-event-fx
+ ::fetch-all-layers-res
+ (fn-traced [{:keys [db]} [_ ea]]
+            {:db (assoc db :ged.map/fetch-all-layers-res ea)}))

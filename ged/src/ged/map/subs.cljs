@@ -37,3 +37,9 @@
    [(rf/subscribe [::tab-button])])
  (fn [[tab-button] qv _]
    (= tab-button :wfs-search)))
+
+(rf/reg-sub
+ ::all-layers
+ (fn [db _]
+   (let [data (:ged.map/fetch-all-layers-res db)]
+     (get-in data [:layers :layer]))))

@@ -9,6 +9,9 @@
              ["antd/lib/button/button-group" :default AntButtonGroup]
              ["antd/lib/radio" :default AntRadio]
              ["antd/lib/icon" :default AntIcon]
+             ["antd/lib/row" :default AntRow]
+             ["antd/lib/col" :default AntCol]
+             ["antd/lib/table" :default AntTable]
              [ged.map.ol :as ol]
              [ged.map.core :refer [get-olmap] :as core]))
 
@@ -18,7 +21,9 @@
 (def ant-radio-group (r/adapt-react-class (.-Group AntRadio)))
 (def ant-radio-button (r/adapt-react-class (.-Button AntRadio)))
 (def ant-icon (r/adapt-react-class AntIcon))
-
+(def ant-row (r/adapt-react-class AntRow))
+(def ant-col (r/adapt-react-class AntCol))
+(def ant-table (r/adapt-react-class AntTable))
 
 #_(js/console.log
    (js/document.getElementById
@@ -83,7 +88,7 @@
   []
   (let []
     (fn []
-      [:section {:style {:position "absolute" :left 0 :top "30vh"}}
+      [:section {:style {:position "absolute" :right 64 :top 32}}
        [ant-button-group {:size "default"}
         [ant-button
          {:icon "reload"
@@ -127,14 +132,66 @@
                        :icon "search"}]]])
       )))
 
+(def all-layers-base-colums
+  [{:title "name"
+    :key :name
+    :dataIndex :name}])
+
+(def all-layers-extra-columns
+  [{:title ""
+    :key "action"
+    :width "64px"
+    :render
+    (fn [txt rec idx]
+      (r/as-element
+       [ant-button
+        {:size "small"
+         :icon "menu"
+         :on-click #(rf/dispatch
+                     [:ged.feats.events/select-feature
+                      rec])}]))}])
+
+(def all-layers-colums
+  (vec (concat all-layers-base-colums
+               all-layers-extra-columns)))
+
 (defn all-layers
   []
-  (let [avisible (rf/subscribe [:ged.map.subs/all-layers-visible])]
+  (let [avisible (rf/subscribe [:ged.map.subs/all-layers-visible])
+        all-layers (rf/subscribe [:ged.map.subs/all-layers])]
     (fn []
-      (let [visible? @avisible]
+      (let [visible? @avisible
+            lrs @all-layers]
         (when visible?
           [:section {:class "all-layers-container"}
-           "all layers"])))))
+           [ant-row "all layers"]
+           [ant-row
+            [ant-col {:style {:text-align "right"}}
+             [ant-button-group {:size "small"}
+              [ant-button {:icon "reload" :title "update"
+                           :on-click
+                           #(rf/dispatch
+                             [:ged.map.events/fetch-all-layers])}]]]]
+           [ant-table
+            {:show-header true
+             :size "small"
+             :row-key :name
+             :className ""
+             :columns all-layers-colums
+             :dataSource lrs
+             :on-change (fn [pag fil sor ext]
+                          (rf/dispatch [:ged.feats.events/search-table-mdata
+                                        (js->clj {:pagination pag
+                                                  :filters fil
+                                                  :sorter sor
+                                                  :extra ext} :keywordize-keys true)]))
+             :scroll {;  :x "max-content" 
+                                ;  :y 256
+                      }
+          ; :rowSelection {:on-change (fn [keys rows]
+          ;                             (prn keys)
+          ;                             )}
+             :pagination false}]])))))
 
 (defn selected-layers
   []

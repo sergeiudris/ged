@@ -63,6 +63,7 @@
                                  #_"dev:world_continents"]
 
      :ged.map/tab-button nil
+     :ged.map/fetch-all-layers-res nil
 
      ; rest
      :ged.rest/fetch-selected-url-res nil
