@@ -130,3 +130,13 @@ body {
 .tab-buttons-container .ant-btn   {
   margin-left: 0 !important;
 }
+
+.all-layers-container {
+  position: absolute;
+  top: 64px;
+  left: 32px;
+  height: calc(100% - 64px - 32px);
+  width: 28vw;
+  background: #fff;
+  border: 1px solid #dedede;
+}

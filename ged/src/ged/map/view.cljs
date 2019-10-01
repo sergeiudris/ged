@@ -9,7 +9,6 @@
              ["antd/lib/button/button-group" :default AntButtonGroup]
              ["antd/lib/radio" :default AntRadio]
              ["antd/lib/icon" :default AntIcon]
-   
              [ged.map.ol :as ol]
              [ged.map.core :refer [get-olmap] :as core]))
 
@@ -21,43 +20,9 @@
 (def ant-icon (r/adapt-react-class AntIcon))
 
 
-
-
-
-
-(defn my-component
-  [x y z]
-  (let [some (r/atom {})      ;; <-- closed over by lifecycle fns
-        can  (fn [])]
-    (r/create-class                 ;; <-- expects a map of functions 
-     {:display-name  "my-component"      ;; for more helpful warnings & errors
-
-      :component-did-mount               ;; the name of a lifecycle function
-      (fn [this]
-        (println "component-did-mount")) ;; your implementation
-
-      :component-did-update              ;; the name of a lifecycle function
-      (fn [this old-argv]                ;; reagent provides you the entire "argv", not just the "props"
-        (let [new-argv (rest (r/argv this))]
-          (js/console.log new-argv old-argv)))
-
-        ;; other lifecycle funcs can go in here
-
-
-      :reagent-render        ;; Note:  is not :render
-      (fn [x y z]           ;; remember to repeat parameters
-        [:div (str x " " y " " z)])})))
-
-(defn my-div []
-  (let [this (r/current-component)]
-    (into [:div.custom (r/props this)]
-          (r/children this))))
-
 #_(js/console.log
    (js/document.getElementById
     "map-container"))
-
-#_(js/console.log (:map @state))
 
 (defn ol-map
   [x y z]
@@ -102,9 +67,7 @@
               host @geoserver-host]
           (doseq [id ids]
             (when (not (ol/id->layer (get-olmap) id))
-              (ol/add-layer (get-olmap) host id))
-            ))
-        )
+              (ol/add-layer (get-olmap) host id)))))
       :component-did-update
       (fn [this old-argv]
         (let [new-argv (rest (r/argv this))]
@@ -120,16 +83,13 @@
   []
   (let []
     (fn []
-      [:section {
-                 :style {:position "absolute" :left 0 :top "30vh"}}
+      [:section {:style {:position "absolute" :left 0 :top "30vh"}}
        [ant-button-group {:size "default"}
-        [ant-button {:icon "reload"
-                     :title "refetch layers"
-                     :on-click (fn []
-                                 (rf/dispatch [:ged.map.events/refetch-wms-layers]))}]]
-       ]
-      ))
-  )
+        [ant-button
+         {:icon "reload"
+          :title "refetch layers"
+          :on-click (fn []
+                      (rf/dispatch [:ged.map.events/refetch-wms-layers]))}]]])))
 
 (defn active->button-type
   [active?]
@@ -149,28 +109,51 @@
          [ant-button-group {:style {:display "flex" :flex-direction "column"}
                             :value tab
                             :on-click (fn [ev]
-                                         (rf/dispatch
-                                          [:ged.map.events/tab-button
-                                           (.. ev -target -value)]))
+                                        (rf/dispatch
+                                         [:ged.map.events/tab-button
+                                          (.. ev -target -value)]))
                             :size "default"}
-          [ant-button {:value "selected-layers"
-                       :icon "profile"
-                       :type (key->button-type :selected-layers tab)
-                       :title "selected layers"}
-           #_[ant-icon {:type "profile"}]]
           [ant-button {:value "all-layers"
                        :type (key->button-type :all-layers tab)
                        :icon "unordered-list"
-                       :title "all layers"}
-           #_[ant-icon {:type "unordered-list"}]]
+                       :title "all layers"}]
+          [ant-button {:value "selected-layers"
+                       :icon "profile"
+                       :type (key->button-type :selected-layers tab)
+                       :title "selected layers"}]
           [ant-button {:value "wfs-search"
                        :title "wfs search"
                        :type (key->button-type :wfs-search tab)
-                       :icon "search"}
-           #_[ant-icon {:type "search" :title "wfs search"}]]]]
-        )
-      
+                       :icon "search"}]]])
       )))
+
+(defn all-layers
+  []
+  (let [avisible (rf/subscribe [:ged.map.subs/all-layers-visible])]
+    (fn []
+      (let [visible? @avisible]
+        (when visible?
+          [:section {:class "all-layers-container"}
+           "all layers"])))))
+
+(defn selected-layers
+  []
+  (let [avisible (rf/subscribe [:ged.map.subs/selected-layers-visible])]
+    (fn []
+      (let [visible? @avisible]
+        (when visible?
+          [:section {:class "all-layers-container"}
+           "selcted layers"
+           ])))))
+
+(defn wfs-search
+  []
+  (let [avisible (rf/subscribe [:ged.map.subs/wfs-search-visible])]
+    (fn []
+      (let [visible? @avisible]
+        (when visible?
+          [:section {:class "all-layers-container"}
+           "wfs search"])))))
 
 (defn panel []
   (let [module-count @(rf/subscribe [::subs/module-count])
@@ -180,5 +163,8 @@
      [action-buttons]
      [tab-buttons]
      [ol-map 1 2 3]
-     [ol-map-layers]]))
+     [ol-map-layers]
+     [all-layers]
+     [selected-layers]
+     [wfs-search]]))
 

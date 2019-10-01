@@ -18,6 +18,35 @@
   ;
   )
 
+
+(defn my-component
+  [x y z]
+  (let [some (r/atom {})      ;; <-- closed over by lifecycle fns
+        can  (fn [])]
+    (r/create-class                 ;; <-- expects a map of functions 
+     {:display-name  "my-component"      ;; for more helpful warnings & errors
+
+      :component-did-mount               ;; the name of a lifecycle function
+      (fn [this]
+        (println "component-did-mount")) ;; your implementation
+
+      :component-did-update              ;; the name of a lifecycle function
+      (fn [this old-argv]                ;; reagent provides you the entire "argv", not just the "props"
+        (let [new-argv (rest (r/argv this))]
+          (js/console.log new-argv old-argv)))
+
+        ;; other lifecycle funcs can go in here
+
+
+      :reagent-render        ;; Note:  is not :render
+      (fn [x y z]           ;; remember to repeat parameters
+        [:div (str x " " y " " z)])})))
+
+(defn my-div []
+  (let [this (r/current-component)]
+    (into [:div.custom (r/props this)]
+          (r/children this))))
+
 (defn stateful-comp
   []
   (let [component-state (r/atom {:count 0})]
