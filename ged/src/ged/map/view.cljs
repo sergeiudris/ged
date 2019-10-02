@@ -460,7 +460,7 @@
 (def wfs-search-columns
   (vec (concat
         wfs-search-base-columns
-        wfs-search-extra-columns)))
+        #_wfs-search-extra-columns)))
 
 (defn wfs-search-table
   []
@@ -491,6 +491,12 @@
                         ; :rowSelection {:on-change (fn [keys rows]
                         ;                             (prn keys)
                         ;                             )}
+                    :defaultExpandAllRows false
+                    :expandedRowRender
+                    (fn [rec]
+                      (r/as-element
+                       [:div (js/JSON.stringify (aget rec "properties") ) 
+                        #_(str (js->clj (aget rec "properties")) )]))
                     :pagination (merge pagination
                                        {:total total
                                             ; :on-change #(js/console.log %1 %2)
