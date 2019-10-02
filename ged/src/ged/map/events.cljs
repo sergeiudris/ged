@@ -1,5 +1,6 @@
 (ns ged.map.events
   (:require [re-frame.core :as rf]
+            [clojure.string :as str]
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
             [ged.map.core :refer [get-olmap]]
             [ged.map.ol :as ol]
@@ -127,3 +128,48 @@
                   nxdb (assoc db key vl)]
               (do (ls/assoc-in-store! [key] vl))
               nxdb)))
+
+
+(rf/reg-event-fx
+ ::wfs-search
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [{:keys [filter]} ea
+                  ftype-input (:ged.map/wfs-search-layer-input db)
+                  [fpref ftype] (try (str/split ftype-input \:)
+                                     (catch js/Error e
+                                       (do (js/console.warn e)
+                                           ["undefined:undefined"])))
+                  table-mdata (:ged.map/wfs-search-table-mdata db)
+                  total (get-in db [:ged.map/wfs-search-res :total])
+                  pag (:pagination table-mdata)
+                  proxy-path (:ged.settings/proxy-path db)
+                  {:keys [current pageSize]} pag
+                  limit (or pageSize 10)
+                  offset (or (* pageSize (dec current)) 0)
+                  body (ged.api.geoserver/wfs-get-features-body-str
+                        (merge
+                         {:offset offset
+                          :limit limit
+                          :featurePrefix fpref
+                          :featureTypes [ftype]}
+                         (when filter
+                           {:filter filter})))]
+              #_(do (editor-request-set! (prettify-xml body)))
+              {:dispatch [:ged.events/request
+                          {:method :post
+                           :params {}
+                           :body body
+                           :headers {"Content-Type" "application/json"
+                            ; "Authorization"  (ged.api.geoserver/auth-creds)
+                                     }
+                           :path (str proxy-path "/wfs")
+                           :response-format (ajax/json-response-format {:keywords? true})
+                           :on-success [::wfs-search-res]
+                           :on-fail [::wfs-search-res]}]
+               :db (merge db {:ged.map/search-table-mdata
+                              (merge table-mdata {:pagination (merge pag {:current 1})})})})))
+
+(rf/reg-event-db
+ ::wfs-search-res
+ (fn-traced [db [_ ea]]
+            (assoc db :ged.map/wfs-search-res ea)))

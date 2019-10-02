@@ -20,14 +20,14 @@
 
 (rf/reg-event-fx
  ::search
- (fn-traced [{:keys [db]} [_ eargs]]
+ (fn-traced [{:keys [db]} [_ ea]]
    (let [ftype-input (:ged.feats/feature-type-input db)
          [fpref ftype] (try (str/split ftype-input \:)
                             (catch js/Error e
                               (do (js/console.warn e)
                                   ["undefined:undefined"])))
          input (:ged.feats/search-input db)
-         s (or (:input eargs) input)
+         s (or (:input ea) input)
          table-mdata (:ged.feats/search-table-mdata db)
          total (get-in db [:ged.feats/search-res :total])
          pag (:pagination table-mdata)
@@ -57,25 +57,25 @@
                   :on-fail [::search-res]}]
       :db (merge db {:ged.feats/search-input s
                      :ged.feats/search-table-mdata
-                     (if (:input eargs)
+                     (if (:input ea)
                        (merge table-mdata {:pagination (merge pag {:current 1})})
                        table-mdata)})})))
 
 (rf/reg-event-db
  ::search-res
- (fn-traced [db [_ val]]
-            (assoc db :ged.feats/search-res val)))
+ (fn-traced [db [_ ea]]
+            (assoc db :ged.feats/search-res ea)))
 
 (rf/reg-event-fx
  ::tx-feature
- (fn-traced [{:keys [db]} [_ eargs]]
+ (fn-traced [{:keys [db]} [_ ea]]
    (let [ftype-input (:ged.feats/feature-type-input db)
          [fpref ftype] (try (str/split ftype-input \:)
                             (catch js/Error e
                               (do (js/console.warn e)
                                   ["undefined:undefined"])))
          fns (:ged.feats/feature-ns db)
-         tx-type (:tx-type eargs)
+         tx-type (:tx-type ea)
          proxy-path (:ged.settings/proxy-path db)
          vl (js/JSON.parse (editor-get-val))
          body (ged.api.geoserver/wfs-tx-jsons-str
@@ -109,43 +109,43 @@
 
 (rf/reg-event-db
  ::tx-res-fail
- (fn-traced [db [_ eargs]]
-   (do (editor-response-set! (prettify-xml eargs)))
-   (assoc db :ged.feats/tx-res eargs)))
+ (fn-traced [db [_ ea]]
+   (do (editor-response-set! (prettify-xml ea)))
+   (assoc db :ged.feats/tx-res ea)))
 
 
 
 
 (rf/reg-event-db
  ::search-input
- (fn-traced [db [_ eargs]]
+ (fn-traced [db [_ ea]]
             (let [key :ged.feats/search-input
-                  value eargs]
+                  value ea]
               (assoc db key value))))
 
 (rf/reg-event-fx
  ::search-table-mdata
- (fn-traced [{:keys [db]} [_ eargs]]
+ (fn-traced [{:keys [db]} [_ ea]]
    (let [key :ged.feats/search-table-mdata]
      {:dispatch [:ged.feats.events/search {}]
-      :db (assoc db key eargs)})))
+      :db (assoc db key ea)})))
 
 (rf/reg-event-fx
  ::select-feature
- (fn-traced [{:keys [db]} [_ eargs]]
+ (fn-traced [{:keys [db]} [_ ea]]
    (let [key :ged.feats/select-feature]
-     (do (editor-set-json! eargs))
-     {:db (assoc db key eargs)})))
+     (do (editor-set-json! ea))
+     {:db (assoc db key ea)})))
 
 (rf/reg-event-fx
  ::feature-type-input
- (fn-traced [{:keys [db]} [_ eargs]]
+ (fn-traced [{:keys [db]} [_ ea]]
    (let [key :ged.feats/feature-type-input]
-     {:db (assoc db key eargs)})))
+     {:db (assoc db key ea)})))
 
 (rf/reg-event-fx
  ::feature-ns
- (fn-traced [{:keys [db]} [_ eargs]]
+ (fn-traced [{:keys [db]} [_ ea]]
    (let [key :ged.feats/feature-ns]
-     {:db (assoc db key eargs)})))
+     {:db (assoc db key ea)})))
 

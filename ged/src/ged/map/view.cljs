@@ -16,6 +16,7 @@
              ["antd/lib/menu" :default AntMenu]
              ["antd/lib/input" :default AntInput]
              [ged.map.ol :as ol]
+             ["ol/format/filter" :as olf]
              [ged.map.core :refer [get-olmap] :as core]))
 
 (def ant-button (r/adapt-react-class AntButton))
@@ -407,11 +408,23 @@
       (let [on-click
             (fn [ev]
               (let [coords (.. ev -coordinate)
-                    wkt (ol/point->wkt-cir-poly {:coords coords :radius 8})]
-                (js/console.log wkt)
-                )
+                    geom (ol/point->cir-poly-geom (get-olmap) coords 16)
+                    filter (olf/intersects "the_geom"  geom)
+                    ; wkt (ol/point->wkt-cir-poly {:coords coords :radius 8})
+                    ]
+                #_(js/console.log geom)
+                #_(js/console.log filter)
+                (rf/dispatch [:ged.map.events/wfs-search {:filter filter }]))
               )]
         [wfs-search-map-click-inner {:on-click on-click}]))))
+
+(defn wfs-search-table
+  []
+  (let [adata (rf/subscribe [:ged.map.subs/wfs-search-res])]
+    (fn []
+      (let [data @adata]
+        (js/console.log data)
+        "table"))))
 
 (defn wfs-search
   []
@@ -427,6 +440,7 @@
            [ant-row
             [ant-col
              [wfs-search-layer-input]]]
+           [wfs-search-table]
            [wfs-search-map-click]])))))
 
 (defn panel []

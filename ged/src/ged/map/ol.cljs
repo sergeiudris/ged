@@ -13,8 +13,11 @@
    ["ol/format/GeoJSON" :default OlFormatGeoJSON]
    ["ol/format/WKT" :default OlFormatWKT]
    ["ol/geom/Polygon" :as OlGeomPolygon]
+   
    )
   )
+
+
 
 (defn deep-merge [a & maps]
   (if (map? a)
@@ -172,13 +175,23 @@
 #_(when-not true (prn 3))
 
 
+(defn px->meters
+  [olmap px]
+  (let [resolution (.getResolution (.getView olmap))]
+    (->
+     (* px resolution)
+     (/  2))))
+
+(defn point->cir-poly-geom
+  [olmap coords radius-px]
+  (js/console.log (px->meters olmap radius-px))
+  (OlGeomPolygon/circular coords (px->meters olmap radius-px) 16))
 
 (defn point-coords->circlular-polygon
-  [{:keys [coords radius]}]
+  [{:keys [olmap coords radius]}]
   (OlFeature.
    (clj->js
-    {"geometry"
-     (OlGeomPolygon/circular coords radius 16)})))
+    {"geometry" (point->cir-poly-geom olmap coords  radius)})))
 
 (defn feature->geojson
   [ft]

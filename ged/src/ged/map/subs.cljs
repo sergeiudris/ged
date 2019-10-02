@@ -80,3 +80,8 @@
  ::wfs-search-area-type
  (fn [db _]
    (:ged.map/wfs-search-area-type db)))
+
+(rf/reg-sub
+ ::wfs-search-res
+ (fn [db _]
+   (:ged.map/wfs-search-res db)))
