@@ -8,6 +8,11 @@
    ["ol/layer/Tile" :default OlTileLayer]
    ["ol/layer/Vector" :default OlVectorLayer]
    ["ol/source/TileWMS" :default TileWMS]
+   ["ol/geom/Circle" :default OlGeomCircle]
+   ["ol/Feature" :default OlFeature]
+   ["ol/format/GeoJSON" :default OlFormatGeoJSON]
+   ["ol/format/WKT" :default OlFormatWKT]
+   ["ol/geom/Polygon" :as OlGeomPolygon]
    )
   )
 
@@ -162,29 +167,42 @@
     (.removeLayer olmap lr)))
 
 
-(defn upsert-wms-layers
-  [olmap geoserver-host ids]
-  (doseq [id ids]
-    (when (not (id->layer olmap id))
-      (add-wms-layer olmap geoserver-host id))))
-
-(defn prune-wfs-layers
-  "Remove wfs layers that are not listed"
-  [olmap ids]
-  (let [lrs (.getArray  (.getLayers olmap))]
-    (doseq [lr  lrs]
-      (let [id (.get lr "id")]
-        (when id
-          (when-not (some #(= id %) ids)
-            (.removeLayer olmap lr)))))))
-
 #_(some #(= "1" %) ["1" "2"])
 
 #_(when-not true (prn 3))
 
-(defn sync-wfs-layers
-  "Add if don't exist, remove existing if not in checked"
-  [olmap geoserver-host ids]
-  (upsert-wms-layers olmap geoserver-host ids)
-  
-  )
+
+
+(defn point-coords->circlular-polygon
+  [{:keys [coords radius]}]
+  (OlFeature.
+   (clj->js
+    {"geometry"
+     (OlGeomPolygon/circular coords radius 16)})))
+
+(defn feature->geojson
+  [ft]
+  (->
+   (OlFormatGeoJSON. #js {})
+   (.writeFeature ft)))
+
+(defn point-coords->circle-geojson
+  [opts]
+  (->
+   (point-coords->circlular-polygon opts)
+   (feature->geojson)))
+
+(defn feature->wkt
+  [ft]
+  (->
+   (OlFormatWKT.)
+   (.writeFeature ft)))
+
+(defn point->wkt-cir-poly
+  [opts]
+  #_(js/console.log opts)
+  (->>
+   (point-coords->circlular-polygon opts)
+   (feature->wkt)))
+
+#_(OlGeomPolygon/circular [0 0 ] 8 16 )

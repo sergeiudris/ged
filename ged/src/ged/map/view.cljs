@@ -66,7 +66,8 @@
           (js/console.log new-argv old-argv)))
       :component-will-unmount
       (fn [this]
-        (ol/set-target (get-olmap) nil))
+        (when (get-olmap)
+          (ol/set-target (get-olmap) nil)))
       :reagent-render
       (fn [x y z]
         [:div#map-container {:style {:width "100%"
@@ -381,6 +382,37 @@
                       :type (key->button-type :area-rectangle area)
                       :value "area-rectangle"}]]))))
 
+(defn wfs-search-map-click-inner
+  []
+  (let []
+    (r/create-class
+     {:component-did-mount
+      (fn [this]
+        (let [{:keys [on-click]} (r/props this)]
+          (.on (get-olmap) "singleclick"
+               on-click)))
+      :component-will-unmount
+      (fn [this]
+        #_(js/console.log "will unmount click")
+        (let [{:keys [on-click]} (r/props this)]
+          (when (get-olmap)
+            (.un (get-olmap) "singleclick"
+                 on-click))))
+      :reagent-render (fn [] nil)})))
+
+(defn wfs-search-map-click
+  []
+  (let []
+    (fn []
+      (let [on-click
+            (fn [ev]
+              (let [coords (.. ev -coordinate)
+                    wkt (ol/point->wkt-cir-poly {:coords coords :radius 8})]
+                (js/console.log wkt)
+                )
+              )]
+        [wfs-search-map-click-inner {:on-click on-click}]))))
+
 (defn wfs-search
   []
   (let [avisible (rf/subscribe [:ged.map.subs/wfs-search-visible])]
@@ -394,7 +426,8 @@
              [wfs-search-buttons]]]
            [ant-row
             [ant-col
-             [wfs-search-layer-input]]]])))))
+             [wfs-search-layer-input]]]
+           [wfs-search-map-click]])))))
 
 (defn panel []
   (let [module-count @(rf/subscribe [::subs/module-count])
