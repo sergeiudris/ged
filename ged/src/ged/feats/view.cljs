@@ -111,9 +111,17 @@
   [{:title "id"
     :key "id"
     :dataIndex "id"}
-   {:title "geometry_name"
-    :key "geometry_name"
-    :dataIndex "geometry_name"}])
+   {:title "preview"
+    :key "preview"
+    :width "70%"
+    :render 
+    (fn [txt rec idx]
+      (r/as-element
+       [:div {:style  {:white-space "nowrap"
+                       :max-width "60vw"
+                       :overflow-x "hidden"}}
+        (js/JSON.stringify (aget rec "properties")  )]))
+    }])
 
 (def extra-columns
   [{:title "action"
