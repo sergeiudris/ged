@@ -376,8 +376,8 @@
                       :value "area-point"}]
          [ant-button {:title "search an area"
                       :icon "border"
-                      :type (key->button-type :area-rectangle area)
-                      :value "area-rectangle"}]]))))
+                      :type (key->button-type :area-box area)
+                      :value "area-box"}]]))))
 
 (defn wfs-search-map-click-inner
   []
@@ -415,7 +415,7 @@
           [wfs-search-map-click-inner {:on-click on-click}])
         ))))
 
-(defn wfs-search-area-rect-inner
+(defn wfs-search-area-box-inner
   []
   (let [astate (r/atom nil)]
     (r/create-class
@@ -434,9 +434,9 @@
             (ol/remove-interaction (get-olmap) @astate))))
       :reagent-render (fn [] nil)})))
 
-(defn wfs-search-area-rect
+(defn wfs-search-area-box
   []
-  (let [aactive? (rf/subscribe [:ged.map.subs/wfs-search-area-rect?])]
+  (let [aactive? (rf/subscribe [:ged.map.subs/wfs-search-area-box?])]
     (fn []
       (let [active? @aactive?
             on-draw-end
@@ -448,7 +448,7 @@
                     ]
                 (rf/dispatch [:ged.map.events/wfs-search {:filter filter}])))]
         (when active?
-          [wfs-search-area-rect-inner {:on-draw-end on-draw-end}])))))
+          [wfs-search-area-box-inner {:on-draw-end on-draw-end}])))))
 
 
 (def wfs-search-base-columns
@@ -550,7 +550,7 @@
              [wfs-search-layer-input]]]
            [wfs-search-table]
            [wfs-search-map-click]
-           [wfs-search-area-rect]
+           [wfs-search-area-box]
            ])))))
 
 (defn panel []

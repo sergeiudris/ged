@@ -94,10 +94,10 @@
     (= (:ged.map/tab-button db) :wfs-search))))
 
 (rf/reg-sub
- ::wfs-search-area-rect?
+ ::wfs-search-area-box?
  (fn [db _]
    (and
-    (= (:ged.map/wfs-search-area-type db) :area-rectangle)
+    (= (:ged.map/wfs-search-area-type db) :area-box)
     (= (:ged.map/tab-button db) :wfs-search))))
 
 (rf/reg-sub
