@@ -2,10 +2,12 @@
   (:require [re-frame.core :as rf]
             [clojure.string :as str]
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
-            [ged.map.core :refer [get-olmap]]
+            [ged.map.core :refer [get-olmap] :as core]
             [ged.map.ol :as ol]
             [ged.local-storage :as ls]
-            [ajax.core :as ajax])
+            [ajax.core :as ajax]
+   
+   )
   )
 
 (rf/reg-event-db
@@ -240,8 +242,47 @@
  (fn-traced [db [_ ea]]
             (assoc db :ged.map/modifying? ea)))
 
-(rf/reg-event-db
- ::modify-commit
- (fn-traced [db [_ ea]]
-            (assoc db :ged.map/modifying? false)))
+(rf/reg-event-fx
+ ::tx-features
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [ftype-input (:ged.map/modify-layer-id db)
+                  [fpref ftype] (try (str/split ftype-input \:)
+                                     (catch js/Error e
+                                       (do (js/console.warn e)
+                                           ["undefined:undefined"])))
+                  fns (:ged.map/modify-layer-ns db)
+                  {:keys [updates]} ea
+                  proxy-path (:ged.settings/proxy-path db)
+                  updates (core/get-modify-features)
+                  body (ged.api.geoserver/wfs-tx-jsons-str
+                        {:deletes nil
+                         :inserts nil
+                         :updates updates
+                         :featureNS fns
+                         :featurePrefix fpref
+                         :featureType ftype})]
+              (js/console.log "updates" updates)
+              {:dispatch [:ged.events/request
+                          {:method :post
+                           :body body
+                           :headers {"Content-Type" "application/json"}
+                           :path (str proxy-path "/wfs")
+                           :response-format
+                           (ajax/raw-response-format)
+                  ; (ajax/json-response-format {:keywords? true})
+                           :on-success [::tx-res-succ (str fpref ":" ftype)]
+                           :on-fail [::tx-res-fail]}]
+               :db (merge db {})})))
 
+(rf/reg-event-fx
+ ::tx-res-succ
+ (fn-traced [{:keys [db]} [_ id ea]]
+            {:dispatch [:ged.map.events/refetch-wms-layer id]
+             :db (merge db
+                        {:ged.map/tx-res ea
+                         :ged.map/modifying? false}) }))
+
+(rf/reg-event-db
+ ::tx-res-fail
+ (fn-traced [db [_ ea]]
+            (assoc db :ged.map/tx-res ea)))

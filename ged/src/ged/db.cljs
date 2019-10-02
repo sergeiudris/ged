@@ -89,9 +89,11 @@
      :ged.map/wfs-search-last-filter nil
      
      :ged.map/modify-layer-id "dev:usa_major_cities"
+     :ged.map/modify-layer-ns "http://www.opengis.net/wfs/dev"
      :ged.map/modify-wfs-click-last-filter nil
      :ged.map/modify-wfs-click-res nil
      :ged.map/modifying? false
+     :ged.map/tx-res nil
 
      ; rest
      :ged.rest/fetch-selected-url-res nil

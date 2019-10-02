@@ -121,6 +121,11 @@
    (:ged.map/modify-layer-id db)))
 
 (rf/reg-sub
+ ::modify-layer-ns
+ (fn [db _]
+   (:ged.map/modify-layer-ns db)))
+
+(rf/reg-sub
  ::modify-wfs-click?
  (fn [db _]
    (and

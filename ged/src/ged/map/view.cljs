@@ -583,8 +583,9 @@
                       :icon "save"
                       :on-click 
                       (fn [ev]
+                        #_(js/console.log (clj->js (core/get-modify-session)))
                         (rf/dispatch
-                         [:ged.map.events/modify-commit]))
+                           [:ged.map.events/tx-features]))
                       :type "default"}]
          [ant-button {:title "cancel modifying"
                       :icon "close-square"
@@ -633,20 +634,21 @@
 
 (defn modify-feature
   []
-  (let [astate (r/atom nil)]
+  (let []
     (r/create-class
      {:display-name "modify-feature"
       :component-did-mount
       (fn [this]
         (let [{:keys [ftedn]} (r/props this)]
           (do
-            (reset! astate (ol/add-modify-session (get-olmap) ftedn))
+            (core/merge-state (ol/add-modify-session (get-olmap) ftedn))
             #_(rf/dispatch [:ged.map.events/modifying? true]))))
       :component-will-unmount
       (fn [this]
-        (let [{:keys []} (r/props this)]
-          (when (and (get-olmap) @astate)
-            (do (ol/remove-modify-session (get-olmap) @astate)))))
+        (let [{:keys []} (r/props this)
+              session (core/get-modify-session)]
+          (when (and (get-olmap) session)
+            (do (ol/remove-modify-session (get-olmap) session)))))
       :reagent-render
       (fn []
         nil)})))
@@ -676,10 +678,12 @@
   []
   (let [avisible (rf/subscribe [:ged.map.subs/modify-visible])
         alayer-id (rf/subscribe [:ged.map.subs/modify-layer-id])
+        alayer-ns (rf/subscribe [:ged.map.subs/modify-layer-ns])
         ]
     (fn []
       (let [visible? @avisible
             input @alayer-id
+            layer-ns @alayer-ns
            ]
         (when visible?
           [:section {:class "all-layers-container"}
@@ -692,6 +696,7 @@
              [:span "layer:  "]
              [:b {:style {;:border-bottom "1px solid #dedede"
                             }} input]
+             [:div layer-ns]
              #_[ant-input {:value input
                          :read-only true
                         ;  :disabled true
