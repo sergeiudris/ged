@@ -89,8 +89,16 @@
 (rf/reg-sub
  ::wfs-search-map-click?
  (fn [db _]
-   (= (:ged.map/wfs-search-area-type db) :area-point)
-   ))
+   (and
+    (= (:ged.map/wfs-search-area-type db) :area-point)
+    (= (:ged.map/tab-button db) :wfs-search))))
+
+(rf/reg-sub
+ ::wfs-search-area-rect?
+ (fn [db _]
+   (and
+    (= (:ged.map/wfs-search-area-type db) :area-rectangle)
+    (= (:ged.map/tab-button db) :wfs-search))))
 
 (rf/reg-sub
  ::wfs-search-table-mdata

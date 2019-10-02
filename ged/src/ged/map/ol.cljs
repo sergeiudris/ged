@@ -13,11 +13,13 @@
    ["ol/format/GeoJSON" :default OlFormatGeoJSON]
    ["ol/format/WKT" :default OlFormatWKT]
    ["ol/geom/Polygon" :as OlGeomPolygon]
-   
+   ["ol/interaction/Draw" :default OlDrawInteraction :as OlDraw]
+   ["ol/source/Vector" :default OlVectorSource]
+   ["ol/layer/Vector" :default OlVectorLayer]
    )
   )
 
-
+#_OlDraw/createBox
 
 (defn deep-merge [a & maps]
   (if (map? a)
@@ -224,3 +226,29 @@
    (feature->wkt)))
 
 #_(OlGeomPolygon/circular [0 0 ] 8 16 )
+
+
+(defn add-box-interaction
+  [olmap opts]
+  (let [{:keys [on-draw-end]} opts
+        source (OlVectorSource. #js {"wrapX" false})
+        layer (OlVectorLayer.
+               #js {"source" source})
+        draw (OlDrawInteraction.
+              #js {"type" "Circle"
+                   "source" source
+                   "geometryFunction" (OlDraw/createBox)})]
+    (do
+      (.addLayer olmap layer)
+      (.on draw "drawend" on-draw-end )
+      (.addInteraction olmap draw))
+    {:source source
+     :layer layer
+     :interaction draw}))
+
+(defn remove-interaction
+  [olmap opts]
+  (let [{:keys [interaction source layer]} opts]
+    (do
+      (.removeInteraction olmap interaction)
+      (.removeLayer olmap layer))))

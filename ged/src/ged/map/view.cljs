@@ -35,10 +35,6 @@
 (def ant-input (r/adapt-react-class AntInput))
 
 
-
-
-
-
 #_(js/console.log
    (js/document.getElementById
     "map-container"))
@@ -419,6 +415,40 @@
           [wfs-search-map-click-inner {:on-click on-click}])
         ))))
 
+(defn wfs-search-area-rect-inner
+  []
+  (let [astate (r/atom nil)]
+    (r/create-class
+     {:component-did-mount
+      (fn [this]
+        (let [{:keys [on-draw-end]} (r/props this)]
+          (do
+            (->>
+             (ol/add-box-interaction (get-olmap) {:on-draw-end on-draw-end})
+             (reset! astate)))
+          ))
+      :component-will-unmount
+      (fn [this]
+        (let [{:keys [on-draw-end]} (r/props this)]
+          (when (get-olmap)
+            (ol/remove-interaction (get-olmap) @astate))))
+      :reagent-render (fn [] nil)})))
+
+(defn wfs-search-area-rect
+  []
+  (let [aactive? (rf/subscribe [:ged.map.subs/wfs-search-area-rect?])]
+    (fn []
+      (let [active? @aactive?
+            on-draw-end
+            (fn [ev]
+              (let [; coords (.. ev -coordinate)
+                    geom (.getGeometry (.-feature ev))
+                    filter (olf/intersects "the_geom"  geom)
+                    ; wkt (ol/point->wkt-cir-poly {:coords coords :radius 8})
+                    ]
+                (rf/dispatch [:ged.map.events/wfs-search {:filter filter}])))]
+        (when active?
+          [wfs-search-area-rect-inner {:on-draw-end on-draw-end}])))))
 
 
 (def wfs-search-base-columns
@@ -519,7 +549,9 @@
             [ant-col
              [wfs-search-layer-input]]]
            [wfs-search-table]
-           [wfs-search-map-click]])))))
+           [wfs-search-map-click]
+           [wfs-search-area-rect]
+           ])))))
 
 (defn panel []
   (let [module-count @(rf/subscribe [::subs/module-count])
