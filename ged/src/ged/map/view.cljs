@@ -412,9 +412,7 @@
                     filter (olf/intersects "the_geom"  geom)
                     ; wkt (ol/point->wkt-cir-poly {:coords coords :radius 8})
                     ]
-                #_(js/console.log geom)
-                #_(js/console.log filter)
-                (rf/dispatch [:ged.map.events/wfs-search {:filter filter }]))
+                (rf/dispatch [:ged.map.events/wfs-search {:filter filter}]))
               )]
         [wfs-search-map-click-inner {:on-click on-click}]))))
 

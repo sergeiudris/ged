@@ -182,10 +182,15 @@
      (* px resolution)
      (/  2))))
 
+#_(defn point->cir-poly-geom
+  [olmap coords radius-px]
+  (OlGeomPolygon/circular coords (px->meters olmap radius-px) 16 #_6371008.8))
+
 (defn point->cir-poly-geom
   [olmap coords radius-px]
-  (js/console.log (px->meters olmap radius-px))
-  (OlGeomPolygon/circular coords (px->meters olmap radius-px) 16))
+  (OlGeomPolygon/fromCircle
+   (OlGeomCircle. (clj->js coords) (px->meters olmap radius-px))
+   16))
 
 (defn point-coords->circlular-polygon
   [{:keys [olmap coords radius]}]
