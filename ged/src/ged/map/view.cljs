@@ -179,7 +179,12 @@
           [ant-button {:value "wfs-search"
                        :title "wfs search"
                        :type (key->button-type :wfs-search tab)
-                       :icon "search"}]]])
+                       :icon "search"}]
+          [ant-button {:value "modify"
+                       :title "modify"
+                       :type (key->button-type :modify tab)
+                       :icon "edit"}]
+          ]])
       )))
 
 ;all layers 
@@ -553,6 +558,19 @@
            [wfs-search-area-box]
            ])))))
 
+(defn modify
+  []
+  (let [avisible (rf/subscribe [:ged.map.subs/modify-visible])]
+    (fn []
+      (let [visible? @avisible]
+        (when visible?
+          [:section {:class "all-layers-container"}
+           [:div "modify"]
+           [ant-row
+            [ant-col {:style {:text-align "right"}}]]
+           [ant-row
+            [ant-col]]])))))
+
 (defn panel []
   (let [module-count @(rf/subscribe [::subs/module-count])
         base-url @(rf/subscribe [:ged.subs/base-url])
@@ -565,5 +583,6 @@
      [all-layers]
      [selected-layers]
      [wfs-search]
+     [modify]
      ]))
 

@@ -57,6 +57,8 @@
  (fn [[tab-button] qv _]
    (= tab-button :wfs-search)))
 
+
+
 (rf/reg-sub
  ::all-layers
  (fn [db _]
@@ -104,3 +106,11 @@
  ::wfs-search-table-mdata
  (fn [db _]
    (:ged.map/wfs-search-table-mdata db)))
+
+
+(rf/reg-sub
+ ::modify-visible
+ (fn [query-v _]
+   [(rf/subscribe [::tab-button])])
+ (fn [[tab-button] qv _]
+   (= tab-button :modify)))
