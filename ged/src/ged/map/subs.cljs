@@ -120,3 +120,9 @@
  (fn [db _]
    (:ged.map/modify-layer-id db)))
 
+(rf/reg-sub
+ ::modify-wfs-click?
+ (fn [db _]
+   (and
+    (:ged.map/modify-layer-id db)
+    (= (:ged.map/tab-button db) :modify))))

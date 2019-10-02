@@ -135,7 +135,7 @@
  (fn-traced [{:keys [db]} [_ ea]]
             (let [{:keys [filter]} ea
                   ftype-input (:ged.map/wfs-search-layer-input db)
-                  last-filter (:ged.map/last-wfs-filter db)
+                  last-filter (:ged.map/wfs-search-last-filter db)
                   wfs-filter (or filter last-filter)
                   [fpref ftype] (try (str/split ftype-input \:)
                                      (catch js/Error e
@@ -168,7 +168,7 @@
                            :response-format (ajax/json-response-format {:keywords? true})
                            :on-success [::wfs-search-res]
                            :on-fail [::wfs-search-res]}]
-               :db (merge db {:ged.map/last-wfs-filter wfs-filter
+               :db (merge db {:ged.map/wfs-search-last-filter wfs-filter
                               :ged.map/search-table-mdata
                               (merge table-mdata {:pagination (merge pag {:current 1})})})})))
 
@@ -191,4 +191,43 @@
               {:dispatch [:ged.map.events/tab-button :modify ]
                :db (merge db
                           {key ea})})))
+
+(rf/reg-event-fx
+ ::modify-wfs-click
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [{:keys [filter]} ea
+                  ftype-input (:ged.map/modify-layer-id db)
+                  last-filter (:ged.map/modify-wfs-click-last-filter db)
+                  wfs-filter (or filter last-filter)
+                  [fpref ftype] (try (str/split ftype-input \:)
+                                     (catch js/Error e
+                                       (do (js/console.warn e)
+                                           ["undefined:undefined"])))
+                  proxy-path (:ged.settings/proxy-path db)
+                  body (ged.api.geoserver/wfs-get-features-body-str
+                        (merge
+                         {:offset 0
+                          :limit 100
+                          :featurePrefix fpref
+                          :featureTypes [ftype]}
+                         (when wfs-filter
+                           {:filter wfs-filter})))]
+              #_(do (editor-request-set! (prettify-xml body)))
+              {:dispatch [:ged.events/request
+                          {:method :post
+                           :params {}
+                           :body body
+                           :headers {"Content-Type" "application/json"
+                            ; "Authorization"  (ged.api.geoserver/auth-creds)
+                                     }
+                           :path (str proxy-path "/wfs")
+                           :response-format (ajax/json-response-format {:keywords? true})
+                           :on-success [::modify-wfs-click-res]
+                           :on-fail [::modify-wfs-click-res]}]
+               :db (merge db {:ged.map/modify-wfs-click-last-filter wfs-filter})})))
+
+(rf/reg-event-db
+ ::modify-wfs-click-res
+ (fn-traced [db [_ ea]]
+            (assoc db :ged.map/modify-wfs-click-res ea)))
 

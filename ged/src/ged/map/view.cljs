@@ -582,6 +582,43 @@
                       :type "default"}]]
         ))))
 
+
+(defn modify-wfs-click-inner
+  []
+  (let []
+    (r/create-class
+     {:component-did-mount
+      (fn [this]
+        (let [{:keys [on-click]} (r/props this)]
+          (.on (get-olmap) "singleclick"
+               on-click)))
+      :component-will-unmount
+      (fn [this]
+        #_(js/console.log "will unmount click")
+        (let [{:keys [on-click]} (r/props this)]
+          (when (get-olmap)
+            (.un (get-olmap) "singleclick"
+                 on-click))))
+      :reagent-render (fn [] nil)})))
+
+(defn modify-wfs-click
+  []
+  (let [amap-click? (rf/subscribe [:ged.map.subs/modify-wfs-click?])]
+    (fn []
+      (let [map-click? @amap-click?
+            on-click
+            (fn [ev]
+              (let [coords (.. ev -coordinate)
+                    geom (ol/point->cir-poly-geom (get-olmap) coords 16)
+                    filter (olf/intersects "the_geom"  geom)
+                    ; wkt (ol/point->wkt-cir-poly {:coords coords :radius 8})
+                    ]
+                (rf/dispatch [:ged.map.events/modify-wfs-click {:filter filter}])))]
+        (when map-click?
+          [modify-wfs-click-inner {:on-click on-click}])))))
+
+
+
 (defn modify
   []
   (let [avisible (rf/subscribe [:ged.map.subs/modify-visible])
@@ -606,7 +643,9 @@
                         ;  :disabled true
                          :placeholder "topp:states"
                          :style {:width "100%"}}]
-             ]]])))))
+             ]]
+           [modify-wfs-click]
+           ])))))
 
 
 (defn panel []
