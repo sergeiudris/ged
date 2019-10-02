@@ -86,6 +86,7 @@
                                       :sorter {}
                                       :extra {:currentDataSource []}}
      :ged.map/wfs-search-res nil
+     :ged.map/last-wfs-filter nil
 
      ; rest
      :ged.rest/fetch-selected-url-res nil

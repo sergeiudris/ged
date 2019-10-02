@@ -135,6 +135,8 @@
  (fn-traced [{:keys [db]} [_ ea]]
             (let [{:keys [filter]} ea
                   ftype-input (:ged.map/wfs-search-layer-input db)
+                  last-filter (:ged.map/last-wfs-filter db)
+                  wfs-filter (or filter last-filter)
                   [fpref ftype] (try (str/split ftype-input \:)
                                      (catch js/Error e
                                        (do (js/console.warn e)
@@ -152,8 +154,8 @@
                           :limit limit
                           :featurePrefix fpref
                           :featureTypes [ftype]}
-                         (when filter
-                           {:filter filter})))]
+                         (when wfs-filter
+                           {:filter wfs-filter})))]
               #_(do (editor-request-set! (prettify-xml body)))
               {:dispatch [:ged.events/request
                           {:method :post
@@ -166,7 +168,8 @@
                            :response-format (ajax/json-response-format {:keywords? true})
                            :on-success [::wfs-search-res]
                            :on-fail [::wfs-search-res]}]
-               :db (merge db {:ged.map/search-table-mdata
+               :db (merge db {:ged.map/last-wfs-filter wfs-filter
+                              :ged.map/search-table-mdata
                               (merge table-mdata {:pagination (merge pag {:current 1})})})})))
 
 (rf/reg-event-db
