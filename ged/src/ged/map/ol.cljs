@@ -205,16 +205,25 @@
 
 (defn feature->geojson
   [ft]
+  
   (->
    (OlFormatGeoJSON. #js {})
    (.writeFeature ft)))
 
 (defn features->geojson
   [fts]
-  (->
-   (OlFormatGeoJSON. #js {"extractGeometryName" true
-                          "geometryName" true})
-   (.writeFeaturesObject fts)))
+  (let [json (->
+            (OlFormatGeoJSON.
+             #js {"extractGeometryName" true
+                  "geometryName" true})
+            (.writeFeaturesObject fts))
+        edn (js->clj json :keywordize-keys true)
+        fts (mapv
+             (fn [ft] (assoc ft :geometry_name "the_geom"))
+             (:features edn))]
+    (clj->js (merge
+              edn
+              {:features fts}))))
 
 (defn point-coords->circle-geojson
   [opts]
@@ -267,7 +276,7 @@
   [olmap ftedn]
  
   (let [json (clj->js ftedn)
-        ft (.readFeature (OlFormatGeoJSON. 
+        ft (.readFeature (OlFormatGeoJSON.
                           #js {"extractGeometryName" true}) json)
         source (OlVectorSource. #js {"wrapX" false
                                      "features" #js [ft]})
@@ -277,14 +286,11 @@
                 {"features" (.getFeatures source)})
         modify (OlInteractionModify.
                 #js {"features" (.getFeatures select)})]
-    (js/console.log ft)
-    (js/console.log (.getFeatures source))
     (do
       (.addLayer olmap layer)
       (.addInteraction olmap select)
       (.addInteraction olmap modify)
-      (.on modify "modifyend" (fn [ev] (js/console.log ev)))
-      )
+      #_(.on modify "modifyend" (fn [ev] (js/console.log ev))))
     {:select select
      :modify modify
      :layer layer

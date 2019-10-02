@@ -261,7 +261,6 @@
                          :featureNS fns
                          :featurePrefix fpref
                          :featureType ftype})]
-              (js/console.log "updates" updates)
               {:dispatch [:ged.events/request
                           {:method :post
                            :body body

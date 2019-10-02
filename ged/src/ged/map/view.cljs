@@ -664,14 +664,9 @@
           [:<>
            (map
             (fn [ftedn]
-              (js/console.log ftedn)
               [modify-feature {:key (:id ftedn)
                                :ftedn ftedn}])
-            fts)])
-        )
-      )
-    )
-  )
+            fts)])))))
 
 
 (defn modify

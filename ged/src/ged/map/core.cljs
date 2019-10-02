@@ -39,8 +39,7 @@
   (->
    (.getFeatures (:source @astate))
    (ol/features->geojson)
-   (aget "features")
-   ))
+   (aget "features")))
 
 (defn get-olmap
   []
