@@ -85,3 +85,9 @@
  ::wfs-search-res
  (fn [db _]
    (:ged.map/wfs-search-res db)))
+
+(rf/reg-sub
+ ::wfs-search-map-click?
+ (fn [db _]
+   (= (:ged.map/wfs-search-area-type db) :area-point)
+   ))

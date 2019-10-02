@@ -403,9 +403,10 @@
 
 (defn wfs-search-map-click
   []
-  (let []
+  (let [amap-click? (rf/subscribe [:ged.map.subs/wfs-search-map-click?]) ]
     (fn []
-      (let [on-click
+      (let [map-click? @amap-click?
+            on-click
             (fn [ev]
               (let [coords (.. ev -coordinate)
                     geom (ol/point->cir-poly-geom (get-olmap) coords 16)
@@ -414,7 +415,9 @@
                     ]
                 (rf/dispatch [:ged.map.events/wfs-search {:filter filter}]))
               )]
-        [wfs-search-map-click-inner {:on-click on-click}]))))
+        (when map-click?
+          [wfs-search-map-click-inner {:on-click on-click}])
+        ))))
 
 (defn wfs-search-table
   []
