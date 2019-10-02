@@ -173,3 +173,10 @@
  ::wfs-search-res
  (fn-traced [db [_ ea]]
             (assoc db :ged.map/wfs-search-res ea)))
+
+(rf/reg-event-fx
+ ::wfs-search-table-mdata
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [key :ged.map/wfs-search-table-mdata]
+              {:dispatch [:ged.map.events/wfs-search {}]
+               :db (assoc db key ea)})))

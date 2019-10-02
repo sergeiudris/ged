@@ -419,13 +419,83 @@
           [wfs-search-map-click-inner {:on-click on-click}])
         ))))
 
+
+
+(def wfs-search-base-columns
+  [{:title "id"
+    :key "id"
+    :dataIndex "id"}
+   #_{:title "geometry_name"
+    :key "geometry_name"
+    :dataIndex "geometry_name"}])
+
+(def wfs-search-extra-columns
+  [{:title ""
+    :key "action"
+    :width "32px"
+    :render
+    (fn [txt rec idx]
+      (let [on-click
+            (fn [ea]
+              (let [key (keyword (.-key ea))
+                    name (aget rec "name")]
+                (cond
+                  (= key :remove)
+                  (rf/dispatch
+                   [:ged.map.events/remove-selected-layers-id name]))))
+            menu
+            (r/as-element
+             [ant-menu {:on-click on-click
+                        :size "small"}
+              [ant-menu-item {:key "edit"} "edit"]
+              [ant-menu-divider]
+              [ant-menu-item {:key "remove"} "remove"]])]
+        (r/as-element
+         [ant-dropdown
+          {:overlay menu :trigger ["click"]}
+          [ant-button
+           {:size "small"
+            :icon "down"}]])))}])
+
+(def wfs-search-columns
+  (vec (concat
+        wfs-search-base-columns
+        wfs-search-extra-columns)))
+
 (defn wfs-search-table
   []
-  (let [adata (rf/subscribe [:ged.map.subs/wfs-search-res])]
+  (let [adata (rf/subscribe [:ged.map.subs/wfs-search-res])
+        table-mdata (rf/subscribe [:ged.map.subs/wfs-search-table-mdata])]
     (fn []
-      (let [data @adata]
-        (js/console.log data)
-        "table"))))
+      (let [items (:features @adata)
+            total (:totalFeatures @adata)
+            ents items
+            #_(mapv #(-> % :entity (dissoc :db/id)) items)
+            pagination (:pagination @table-mdata)]
+        #_(js/console.log @adata)
+        [ant-table {:show-header true
+                    :size "small"
+                    :row-key :id
+                    :className ""
+                    :columns wfs-search-columns
+                    :dataSource ents
+                    :on-change (fn [pag fil sor ext]
+                                 (rf/dispatch [:ged.map.events/wfs-search-table-mdata
+                                               (js->clj {:pagination pag
+                                                         :filters fil
+                                                         :sorter sor
+                                                         :extra ext} :keywordize-keys true)]))
+                    :scroll {;  :x "max-content" 
+                                ;  :y 256
+                             }
+                        ; :rowSelection {:on-change (fn [keys rows]
+                        ;                             (prn keys)
+                        ;                             )}
+                    :pagination (merge pagination
+                                       {:total total
+                                            ; :on-change #(js/console.log %1 %2)
+                                        })}]))))
+
 
 (defn wfs-search
   []

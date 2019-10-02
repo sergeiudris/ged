@@ -91,3 +91,8 @@
  (fn [db _]
    (= (:ged.map/wfs-search-area-type db) :area-point)
    ))
+
+(rf/reg-sub
+ ::wfs-search-table-mdata
+ (fn [db _]
+   (:ged.map/wfs-search-table-mdata db)))
