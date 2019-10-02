@@ -476,7 +476,7 @@
         [ant-table {:show-header true
                     :size "small"
                     :row-key :id
-                    :className ""
+                    :style {:height "91%" :overflow-y "auto"}
                     :columns wfs-search-columns
                     :dataSource ents
                     :on-change (fn [pag fil sor ext]
@@ -495,8 +495,9 @@
                     :expandedRowRender
                     (fn [rec]
                       (r/as-element
-                       [:div (js/JSON.stringify (aget rec "properties") ) 
-                        #_(str (js->clj (aget rec "properties")) )]))
+                       [:div {:style {:max-height "50vh" :overflow-y "auto" }}
+                        (js/JSON.stringify (aget rec "properties") nil "\t")
+                        #_(str (js->clj (aget rec "properties")))]))
                     :pagination (merge pagination
                                        {:total total
                                             ; :on-change #(js/console.log %1 %2)
