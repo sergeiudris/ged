@@ -88,9 +88,10 @@
      :ged.map/wfs-search-res nil
      :ged.map/wfs-search-last-filter nil
      
-     :ged.map/modify-layer-id nil
+     :ged.map/modify-layer-id "dev:usa_major_cities"
      :ged.map/modify-wfs-click-last-filter nil
      :ged.map/modify-wfs-click-res nil
+     :ged.map/modifying? false
 
      ; rest
      :ged.rest/fetch-selected-url-res nil

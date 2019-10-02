@@ -84,7 +84,9 @@
       :component-will-unmount
       (fn [this]
         (let [{:keys [id]} (r/props this)]
-          (do (ol/remove-layer (get-olmap) id))))
+          (when (get-olmap)
+            (do (ol/remove-layer (get-olmap) id)))
+          ))
       :reagent-render
       (fn []
         nil)})))
@@ -396,7 +398,8 @@
   []
   (let []
     (r/create-class
-     {:component-did-mount
+     {:display-name "wfs-search-map-click-inner"
+      :component-did-mount
       (fn [this]
         (let [{:keys [on-click]} (r/props this)]
           (.on (get-olmap) "singleclick"
@@ -432,7 +435,8 @@
   []
   (let [astate (r/atom nil)]
     (r/create-class
-     {:component-did-mount
+     {:display-name "wfs-search-area-box-inner"
+      :component-did-mount
       (fn [this]
         (let [{:keys [on-draw-end]} (r/props this)]
           (do
@@ -571,15 +575,24 @@
 
 (defn modify-buttons
   []
-  (let []
+  (let [ amodifying? (rf/subscribe [:ged.map.subs/modifying?])]
     (fn []
-      (let [on-click (fn [ev]
-                       (rf/dispatch
-                        [:ged.map.events/modify-commit ]))]
+      (let [modifying? @amodifying?]
         [ant-button-group {:size "small"}
          [ant-button {:title "commit changes"
                       :icon "save"
-                      :type "default"}]]
+                      :on-click 
+                      (fn [ev]
+                        (rf/dispatch
+                         [:ged.map.events/modify-commit]))
+                      :type "default"}]
+         [ant-button {:title "cancel modifying"
+                      :icon "close-square"
+                      :on-click
+                      (fn []
+                        (rf/dispatch [:ged.map.events/modifying? false]))
+                      :type "default"}]
+         ]
         ))))
 
 
@@ -587,7 +600,8 @@
   []
   (let []
     (r/create-class
-     {:component-did-mount
+     {:display-name "modify-wfs-click-inner"
+      :component-did-mount
       (fn [this]
         (let [{:keys [on-click]} (r/props this)]
           (.on (get-olmap) "singleclick"
@@ -617,6 +631,45 @@
         (when map-click?
           [modify-wfs-click-inner {:on-click on-click}])))))
 
+(defn modify-feature
+  []
+  (let [astate (r/atom nil)]
+    (r/create-class
+     {:display-name "modify-feature"
+      :component-did-mount
+      (fn [this]
+        (let [{:keys [ftedn]} (r/props this)]
+          (do
+            (reset! astate (ol/add-modify-session (get-olmap) ftedn))
+            #_(rf/dispatch [:ged.map.events/modifying? true]))))
+      :component-will-unmount
+      (fn [this]
+        (let [{:keys []} (r/props this)]
+          (when (and (get-olmap) @astate)
+            (do (ol/remove-modify-session (get-olmap) @astate)))))
+      :reagent-render
+      (fn []
+        nil)})))
+
+(defn modify-features
+  []
+  (let [afeatures (rf/subscribe [:ged.map.subs/modify-features])
+        amodifying? (rf/subscribe [:ged.map.subs/modifying?])]
+    (fn []
+      (let [fts @afeatures
+            modifying? @amodifying?]
+        (when modifying?
+          [:<>
+           (map
+            (fn [ftedn]
+              (js/console.log ftedn)
+              [modify-feature {:key (:id ftedn)
+                               :ftedn ftedn}])
+            fts)])
+        )
+      )
+    )
+  )
 
 
 (defn modify
@@ -626,7 +679,8 @@
         ]
     (fn []
       (let [visible? @avisible
-            input @alayer-id]
+            input @alayer-id
+           ]
         (when visible?
           [:section {:class "all-layers-container"}
            [:div "modify"]
@@ -645,6 +699,7 @@
                          :style {:width "100%"}}]
              ]]
            [modify-wfs-click]
+           [modify-features]
            ])))))
 
 

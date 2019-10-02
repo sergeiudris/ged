@@ -226,8 +226,22 @@
                            :on-fail [::modify-wfs-click-res]}]
                :db (merge db {:ged.map/modify-wfs-click-last-filter wfs-filter})})))
 
-(rf/reg-event-db
+(rf/reg-event-fx
  ::modify-wfs-click-res
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [fts (:features ea)]
+              (merge
+               {:db (assoc db :ged.map/modify-wfs-click-res ea)}
+               (when-not (empty? fts)
+                 {:dispatch [::modifying? true]})))))
+
+(rf/reg-event-db
+ ::modifying?
  (fn-traced [db [_ ea]]
-            (assoc db :ged.map/modify-wfs-click-res ea)))
+            (assoc db :ged.map/modifying? ea)))
+
+(rf/reg-event-db
+ ::modify-commit
+ (fn-traced [db [_ ea]]
+            (assoc db :ged.map/modifying? false)))
 

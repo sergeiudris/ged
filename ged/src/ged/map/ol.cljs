@@ -16,6 +16,9 @@
    ["ol/interaction/Draw" :default OlDrawInteraction :as OlDraw]
    ["ol/source/Vector" :default OlVectorSource]
    ["ol/layer/Vector" :default OlVectorLayer]
+   ["ol/interaction/Select" :default OlInteractionSelect]
+   ["ol/interaction/Modify" :default OlInteractionModify]
+   
    )
   )
 
@@ -252,3 +255,36 @@
     (do
       (.removeInteraction olmap interaction)
       (.removeLayer olmap layer))))
+
+(defn add-modify-session
+  [olmap ftedn]
+ 
+  (let [json (clj->js ftedn)
+        ft (.readFeature (OlFormatGeoJSON.) json)
+        source (OlVectorSource. #js {"wrapX" false
+                                     "features" #js [ft]})
+        layer (OlVectorLayer.
+               #js {"source" source})
+        select (OlInteractionSelect.
+                {"features" (.getFeatures source)})
+        modify (OlInteractionModify.
+                #js {"features" (.getFeatures select)})]
+    (js/console.log ft)
+    (js/console.log (.getFeatures source))
+    (do
+      (.addLayer olmap layer)
+      (.addInteraction olmap select)
+      (.addInteraction olmap modify))
+    {:select select
+     :modify modify
+     :layer layer
+     :source source}))
+
+(defn remove-modify-session
+  [olmap opts]
+  (let [{:keys [select modify
+                layer source]} opts]
+    (do
+      (.removeLayer olmap layer)
+      (.removeInteraction olmap select)
+      (.removeInteraction olmap modify))))

@@ -124,5 +124,19 @@
  ::modify-wfs-click?
  (fn [db _]
    (and
+    (not (:ged.map/modifying? db))
     (:ged.map/modify-layer-id db)
     (= (:ged.map/tab-button db) :modify))))
+
+(rf/reg-sub
+ ::modify-features
+ (fn [db _]
+   (let [data (:ged.map/modify-wfs-click-res db)
+         fts (:features data)]
+     (vec (take 1 fts)))))
+
+(rf/reg-sub
+ ::modifying?
+ (fn [db _]
+   (:ged.map/modifying? db)))
+
