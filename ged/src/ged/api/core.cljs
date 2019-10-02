@@ -123,11 +123,14 @@
    (.then (fn [r] (js/console.log r))))
 
 #_(->
-   (js/fetch "http://localhost:8600/rest/layers.json"
-             (clj->js {"method" "GET"
-                       "headers" {"Authorization"
-                                  (str "Basic " (js/btoa (str "admin" ":" "myawesomegeoserver")))
-                                  "Sec-Fetch-Mode" "no-cors"}}))
-   (.then (fn [res] (.json res)))
+   (fetch-geosrv-edn
+    (str "/wfs?" (url-search-params {"service" "wfs"
+                                     "version" "1.1.0"
+                                     "request" "DescribeFeatureType"
+                                     "typeName" "dev:usa_major_cities"
+                                    ;  "typeNames" "dev:usa_major_cities"
+                                     "exceptions" "application/json"
+                                     "outputFormat" "application/json"} :str true))
+    {:method "get"})
    (.then (fn [r] (js/console.log r))))
 
