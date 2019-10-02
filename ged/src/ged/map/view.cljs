@@ -598,7 +598,10 @@
              [modify-buttons]]]
            [ant-row
             [ant-col 
-             [ant-input {:value input
+             [:span "layer:  "]
+             [:b {:style {;:border-bottom "1px solid #dedede"
+                            }} input]
+             #_[ant-input {:value input
                          :read-only true
                         ;  :disabled true
                          :placeholder "topp:states"
