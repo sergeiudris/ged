@@ -70,3 +70,13 @@
      (mapv (fn [id]
              {:name id
               :href nil}) ids))))
+
+(rf/reg-sub
+ ::wfs-search-layer-input
+ (fn [db _]
+   (:ged.map/wfs-search-layer-input db)))
+
+(rf/reg-sub
+ ::wfs-search-area-type
+ (fn [db _]
+   (:ged.map/wfs-search-area-type db)))

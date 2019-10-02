@@ -5,7 +5,7 @@
              [re-frame.core :as rf]
              [ged.map.subs :as subs]
              [ged.map.events :as events]
-             ["antd/lib/button" :default ant-Button]
+             ["antd/lib/button" :default AntButton]
              ["antd/lib/button/button-group" :default AntButtonGroup]
              ["antd/lib/radio" :default AntRadio]
              ["antd/lib/icon" :default AntIcon]
@@ -14,10 +14,11 @@
              ["antd/lib/table" :default AntTable]
              ["antd/lib/dropdown" :default AntDropdown]
              ["antd/lib/menu" :default AntMenu]
+             ["antd/lib/input" :default AntInput]
              [ged.map.ol :as ol]
              [ged.map.core :refer [get-olmap] :as core]))
 
-(def ant-button (r/adapt-react-class ant-Button))
+(def ant-button (r/adapt-react-class AntButton))
 (def ant-button-group (r/adapt-react-class AntButtonGroup))
 (def ant-radio (r/adapt-react-class AntRadio))
 (def ant-radio-group (r/adapt-react-class (.-Group AntRadio)))
@@ -30,7 +31,7 @@
 (def ant-menu (r/adapt-react-class AntMenu))
 (def ant-menu-item (r/adapt-react-class (.-Item AntMenu)))
 (def ant-menu-divider (r/adapt-react-class (.-Divider AntMenu)))
-
+(def ant-input (r/adapt-react-class AntInput))
 
 
 
@@ -343,6 +344,43 @@
              :pagination false}]])))))
 
 
+(defn wfs-search-layer-input
+  []
+  (let [ainput (rf/subscribe [:ged.map.subs/wfs-search-layer-input])]
+    (fn []
+      (let [input @ainput
+            on-change
+            (fn [ev]
+              (rf/dispatch [:ged.map.events/wfs-search-layer-input
+                            (.. ev -target -value)]))]
+        [ant-input {:value input
+                    :on-change on-change
+                    :placeholder "topp:states"
+                    :style {:width "100%"}}]
+        )
+      )
+    )
+  )
+
+(defn wfs-search-buttons
+  []
+  (let [aarea (rf/subscribe [:ged.map.subs/wfs-search-area-type])]
+    (fn []
+      (let [area @aarea
+            on-click (fn [ev]
+                       (rf/dispatch
+                        [:ged.map.events/wfs-search-area-type
+                         (.. ev -target -value)]))]
+        [ant-button-group {:size "small" :on-click on-click}
+         [ant-button {:title "search a point"
+                      :icon "environment"
+                      :type (key->button-type :area-point area)
+                      :value "area-point"}]
+         [ant-button {:title "search an area"
+                      :icon "border"
+                      :type (key->button-type :area-rectangle area)
+                      :value "area-rectangle"}]]))))
+
 (defn wfs-search
   []
   (let [avisible (rf/subscribe [:ged.map.subs/wfs-search-visible])]
@@ -350,7 +388,13 @@
       (let [visible? @avisible]
         (when visible?
           [:section {:class "all-layers-container"}
-           "wfs search"])))))
+           [:div "wfs search"]
+           [ant-row
+            [ant-col {:style {:text-align "right"}}
+             [wfs-search-buttons]]]
+           [ant-row
+            [ant-col
+             [wfs-search-layer-input]]]])))))
 
 (defn panel []
   (let [module-count @(rf/subscribe [::subs/module-count])

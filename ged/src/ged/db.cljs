@@ -71,6 +71,9 @@
                                    #_"dev:world_continents"]
      :ged.map/selected-layers-checked []
      :ged.map/all-layers-checked []
+     
+     :ged.map/wfs-search-layer-input ""
+     :ged.map/wfs-search-area-type nil
 
      ; rest
      :ged.rest/fetch-selected-url-res nil

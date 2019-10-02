@@ -109,3 +109,21 @@
               (do (ls/assoc-in-store! [key] (key nx)))
               {:db nx})))
 
+(rf/reg-event-db
+ ::wfs-search-layer-input
+ (fn-traced [db [_ ea]]
+            (let [vl ea
+                  key :ged.map/wfs-search-layer-input]
+              (do (ls/assoc-in-store! [key] vl))
+              (assoc db key vl))))
+
+(rf/reg-event-db
+ ::wfs-search-area-type
+ (fn-traced [db [_ ea]]
+            (let [kw (keyword ea)
+                  key :ged.map/wfs-search-area-type
+                  old-vl (key db)
+                  vl (if (= kw old-vl) nil kw)
+                  nxdb (assoc db key vl)]
+              (do (ls/assoc-in-store! [key] vl))
+              nxdb)))
