@@ -183,3 +183,12 @@
             (let [key :ged.map/wfs-search-table-mdata]
               {:dispatch [:ged.map.events/wfs-search {}]
                :db (assoc db key ea)})))
+
+(rf/reg-event-fx
+ ::modify-layer
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [key :ged.map/modify-layer-id]
+              {:dispatch [:ged.map.events/tab-button :modify ]
+               :db (merge db
+                          {key ea})})))
+

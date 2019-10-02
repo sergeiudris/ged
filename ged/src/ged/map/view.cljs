@@ -226,10 +226,13 @@
 (defn all-layers
   []
   (let [avisible (rf/subscribe [:ged.map.subs/all-layers-visible])
-        all-layers (rf/subscribe [:ged.map.subs/all-layers])]
+        all-layers (rf/subscribe [:ged.map.subs/all-layers])
+        achecked (rf/subscribe [:ged.map.subs/all-layers-checked])
+        ]
     (fn []
       (let [visible? @avisible
-            lrs @all-layers]
+            lrs @all-layers
+            checked @achecked]
         (when visible?
           [:section {:class "all-layers-container"}
            [ant-row "all layers"]
@@ -256,9 +259,11 @@
              :scroll {;  :x "max-content" 
                                 ;  :y 256
                       }
-          ; :rowSelection {:on-change (fn [keys rows]
-          ;                             (prn keys)
-          ;                             )}
+             :rowSelection {:selectedRowKeys checked
+                            :on-change (fn [keys rows ea]
+                                         (rf/dispatch
+                                          [:ged.map.events/all-layers-checked keys])
+                                         #_(js/console.log keys rows ea))}
              :pagination false}]])))))
 
 ; selected layers
@@ -282,12 +287,15 @@
                 (cond
                   (= key :remove)
                   (rf/dispatch
-                   [:ged.map.events/remove-selected-layers-id name]))))
+                   [:ged.map.events/remove-selected-layers-id name])
+                  (= key :modify)
+                  (rf/dispatch
+                   [:ged.map.events/modify-layer name]))))
             menu
             (r/as-element
              [ant-menu {:on-click on-click
                         :size "small"}
-              [ant-menu-item {:key "edit"} "edit"]
+              [ant-menu-item {:key "modify"} "modify"]
               [ant-menu-divider]
               [ant-menu-item{:key "remove"} "remove"]])]
         (r/as-element
@@ -506,14 +514,17 @@
             total (:totalFeatures @adata)
             ents items
             #_(mapv #(-> % :entity (dissoc :db/id)) items)
-            pagination (:pagination @table-mdata)]
-        #_(js/console.log @adata)
+            pagination (:pagination @table-mdata)
+            first-item (first items)
+            ]
+        #_(js/console.log first-item)
         [ant-table {:show-header true
                     :size "small"
                     :row-key :id
                     :style {:height "91%" :overflow-y "auto"}
                     :columns wfs-search-columns
                     :dataSource ents
+                    ; :defaultExpandedRowKeys [(:id first-item)]
                     :on-change (fn [pag fil sor ext]
                                  (rf/dispatch [:ged.map.events/wfs-search-table-mdata
                                                (js->clj {:pagination pag
@@ -558,18 +569,42 @@
            [wfs-search-area-box]
            ])))))
 
+(defn modify-buttons
+  []
+  (let []
+    (fn []
+      (let [on-click (fn [ev]
+                       (rf/dispatch
+                        [:ged.map.events/modify-commit ]))]
+        [ant-button-group {:size "small"}
+         [ant-button {:title "commit changes"
+                      :icon "save"
+                      :type "default"}]]
+        ))))
+
 (defn modify
   []
-  (let [avisible (rf/subscribe [:ged.map.subs/modify-visible])]
+  (let [avisible (rf/subscribe [:ged.map.subs/modify-visible])
+        alayer-id (rf/subscribe [:ged.map.subs/modify-layer-id])
+        ]
     (fn []
-      (let [visible? @avisible]
+      (let [visible? @avisible
+            input @alayer-id]
         (when visible?
           [:section {:class "all-layers-container"}
            [:div "modify"]
            [ant-row
-            [ant-col {:style {:text-align "right"}}]]
+            [ant-col {:style {:text-align "right"}}
+             [modify-buttons]]]
            [ant-row
-            [ant-col]]])))))
+            [ant-col 
+             [ant-input {:value input
+                         :read-only true
+                        ;  :disabled true
+                         :placeholder "topp:states"
+                         :style {:width "100%"}}]
+             ]]])))))
+
 
 (defn panel []
   (let [module-count @(rf/subscribe [::subs/module-count])

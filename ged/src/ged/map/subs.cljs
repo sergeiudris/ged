@@ -114,3 +114,9 @@
    [(rf/subscribe [::tab-button])])
  (fn [[tab-button] qv _]
    (= tab-button :modify)))
+
+(rf/reg-sub
+ ::modify-layer-id
+ (fn [db _]
+   (:ged.map/modify-layer-id db)))
+
