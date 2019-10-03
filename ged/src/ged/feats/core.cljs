@@ -1,12 +1,8 @@
 (ns ged.feats.core
-  (:require [cljs.repl :as repl])
+  (:require [cljs.repl :as repl]
+            [re-frame.core :as rf]
+            [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]])
   )
-
-(def editor-feature-ref (atom nil))
-
-(def editor-response-ref (atom nil))
-
-(def editor-request-ref (atom nil))
 
 (def prettify-xml
   (fn [sourceXml]
@@ -33,42 +29,90 @@
       (def resultXml (.serializeToString (new js/XMLSerializer) resultDoc))
       resultXml)))
 
+(def editors (atom {:data nil
+                    :response nil
+                    :request nil}))
 
-(defn editor-get-val
-  []
-  (if @editor-feature-ref (.getValue @editor-feature-ref) nil))
+(defn get-editor
+  [k]
+  (k @editors))
 
-(defn set-json!
-  [editor-atom json]
+(defn get-editor-val
+  [k]
+  (when (get-editor k)
+    (.getValue (get-editor k))))
+
+(defn set-editor!
+  [k ref]
+  (swap! editors assoc k ref))
+
+(defn set-editor-val!
+  [k v]
   (.setValue
-   (.-session @editor-atom)
-   (js/JSON.stringify json nil "\t")
-          ; JSON.stringify(jsonDoc, null, '\t')
-   ))
-
-(defn editor-set-json!
-  [json]
-  (set-json! editor-feature-ref json))
-
-(defn editor-set-str!
-  [s]
-  (.setValue
-   (.-session @editor-feature-ref)
-   (or s "")))
-
-
-(defn editor-response-set-json!
-  [json]
-  (set-json! editor-response-ref json))
-
-(defn editor-response-set!
-  [v]
-  (.setValue
-   (.-session @editor-response-ref)
+   (.-session (get-editor k))
    v))
 
-(defn editor-request-set!
-  [v]
-  (.setValue
-   (.-session @editor-request-ref)
-   v))
+(defn set-editor-str!
+  [k v]
+  (set-editor-val! k (or v "")))
+
+(defn set-editor-json!
+  [k v]
+  (set-editor-val! k (js/JSON.stringify v nil "\t")))
+
+(defn set-editor-xml!
+  [k v]
+  (set-editor-val! k (prettify-xml v)))
+
+(defn set-editor-preserve!
+  [k ref]
+  (let [v (get-editor-val k)]
+    (swap! editors assoc k ref)
+    (when v
+      (set-editor-val! k v))))
+
+; re-frame events
+
+(rf/reg-event-fx
+ ::set-editor-val
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [[k v] ea]
+              (do (set-editor-val! k v)))
+            {}))
+
+(rf/reg-event-fx
+ ::set-editor-json
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [[k v] ea]
+              (do (set-editor-json! k v)))
+            {}))
+
+(rf/reg-event-fx
+ ::set-editor-xml
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [[k v] ea]
+              (do (set-editor-xml! k v)))
+            {}))
+
+(rf/reg-event-fx
+ ::set-editor-str
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [[k v] ea]
+              (do (set-editor-str! k v)))
+            {}))
+
+(rf/reg-event-fx
+ ::set-editor-preserve
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [[k ref] ea]
+              (do (set-editor-preserve! k ref)))
+            {}))
+
+; re-frame iceptors
+
+(rf/reg-cofx
+ ::get-editor-val
+ (fn [cofx [k]]
+   (assoc cofx :get-editor-val (do (get-editor-val k)))))
+
+

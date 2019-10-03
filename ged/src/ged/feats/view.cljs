@@ -4,11 +4,17 @@
              [cljs.pprint :as pp]
              [re-frame.core :as rf]
              [ged.feats.subs :as subs]
-             [ged.feats.events :as events]
-             [ged.feats.sample :refer [sample-table]]
-             [ged.feats.editor :refer [editor-feature 
-                                       editor-request
-                                       editor-response]]
+             [ged.feats.evs :as evs]
+             [ged.feats.core]
+
+             ["react-ace/lib/index.js" :default ReactAce]
+             ["brace" :as brace]
+             ["brace/mode/clojure.js"]
+             ["brace/mode/graphqlschema.js"]
+             ["brace/mode/json.js"]
+             ["brace/mode/xml.js"]
+             ["brace/theme/github.js"]
+
              ["antd/lib/icon" :default AntIcon]
              ["antd/lib/button" :default AntButton]
              ["antd/lib/button/button-group" :default AntButtonGroup]
@@ -31,15 +37,58 @@
 (def ant-auto-complete-option (r/adapt-react-class (.-Option AntAutoComplete)))
 (def ant-table (r/adapt-react-class AntTable))
 
+(def react-ace (r/adapt-react-class ReactAce))
 
-(defn search
+(defn editor-feature
   []
-  (let [on-search (fn [s]
-                    (prn s))]
+  (let [default-value ""
+        av (r/atom default-value)]
     (fn []
-      [ant-input-search {:style {:width "50%"}
-                         :placeholder "search"
-                         :on-search on-search}])))
+      [react-ace {:name "editor-feature"
+                  :mode "json"
+                  :theme "github"
+                  :className "editor-feature"
+                  :width "32vw"
+                    ;  :default-value default-value
+                  :value @av
+                  :on-load (fn [ref]
+                             (rf/dispatch [:ged.feats.core/set-editor-preserve [:data ref]]))
+                  :on-change (fn [v ev] (reset! av v))
+                  :editor-props {"$blockScrolling" js/Infinity}}])))
+
+(defn editor-response
+  []
+  (let [default-value ""
+        av (r/atom default-value)]
+    (fn []
+      [react-ace {:name "editor-response"
+                  :mode "xml"
+                  :theme "github"
+                  :className "editor-response"
+                  :width "32vw"
+                    ;  :default-value default-value
+                  :value @av
+                  :on-load (fn [ref]
+                             (rf/dispatch [:ged.feats.core/set-editor-preserve [:response ref]]))
+                  :on-change (fn [v ev] (reset! av v))
+                  :editor-props {"$blockScrolling" js/Infinity}}])))
+
+(defn editor-request
+  []
+  (let [default-value ""
+        av (r/atom default-value)]
+    (fn []
+      [react-ace {:name "editor-request"
+                  :mode "xml"
+                  :theme "github"
+                  :className "editor-request"
+                  :width "32vw"
+                    ;  :default-value default-value
+                  :value @av
+                  :on-load (fn [ref]
+                             (rf/dispatch [:ged.feats.core/set-editor-preserve [:request ref]]))
+                  :on-change (fn [v ev] (reset! av v))
+                  :editor-props {"$blockScrolling" js/Infinity}}])))
 
 (defn auto-complete-suffix
   [{:keys [on-click]}]
@@ -57,7 +106,7 @@
         on-select (fn [s]
                     (prn "selected " s))
         on-search (fn [s]
-                    (rf/dispatch [:ged.feats.events/search {:input s}]))
+                    (rf/dispatch [::evs/search {:input s}]))
         on-change (fn [s]
                     #_(prn "s:" (.. evt -target -value))
                     (swap! state assoc :input s))
@@ -82,28 +131,28 @@
 (defn feature-type-input
   []
   (let [sref (rf/subscribe
-               [:ged.feats.subs/feature-type-input])]
+               [::subs/feature-type-input])]
     (fn []
       [ant-input {:style {:width "16%" :margin "0 0 0 8px"}
                   :value @sref
                   :on-change
                   (fn [ev]
                     (rf/dispatch
-                     [:ged.feats.events/feature-type-input
+                     [::evs/feature-type-input
                       (.. ev -target -value)]))
                   :placeholder "topp:states"}])))
 
 (defn feature-ns
   []
   (let [sref (rf/subscribe
-              [:ged.feats.subs/feature-ns])]
+              [::subs/feature-ns])]
     (fn []
       [ant-input {:style {:width "16%" :margin "0 0 0 8px"}
                   :value @sref
                   :on-change
                   (fn [ev]
                     (rf/dispatch
-                     [:ged.feats.events/feature-ns
+                     [::evs/feature-ns
                       (.. ev -target -value)]))
                   :placeholder "http://www.opengis.net/wfs/dev"}])))
 
@@ -136,7 +185,7 @@
                   :type "primary"
 
                   :on-click #(rf/dispatch
-                              [:ged.feats.events/select-feature
+                              [::evs/select-feature
                                rec])
                   }
                  "select"]]))}
@@ -147,8 +196,8 @@
 
 (defn table
   []
-  (let [search-res (rf/subscribe [:ged.feats.subs/search-res])
-        table-mdata (rf/subscribe [:ged.feats.subs/search-table-mdata])]
+  (let [search-res (rf/subscribe [::subs/search-res])
+        table-mdata (rf/subscribe [::subs/search-table-mdata])]
     (fn []
       (let [items (:features @search-res)
             total (:totalFeatures @search-res)
@@ -162,7 +211,7 @@
                     :columns columns
                     :dataSource ents
                     :on-change (fn [pag fil sor ext]
-                                 (rf/dispatch [:ged.feats.events/search-table-mdata
+                                 (rf/dispatch [::evs/search-table-mdata
                                                (js->clj {:pagination pag
                                                          :filters fil
                                                          :sorter sor
@@ -183,8 +232,8 @@
 (defn panel
   []
   #_(js/console.log 'count-panel-fn)
-  #_(rf/dispatch [:ged.feats.events/nutrients])
-  #_(rf/dispatch [:ged.feats.events/nhi-dri])
+  #_(rf/dispatch [::evs/nutrients])
+  #_(rf/dispatch [::evs/nhi-dri])
   (let []
     (fn []
       [:section
@@ -206,15 +255,15 @@
        [:br]
        [ant-button-group {:size "small"}
         [ant-button {:on-click 
-                     #(rf/dispatch [:ged.feats.events/tx-feature {:tx-type :inserts}])
+                     #(rf/dispatch [::evs/tx-feature {:tx-type :inserts}])
                      :style {:width "96px"}}
          "insert"]
         [ant-button {:on-click 
-                     #(rf/dispatch [:ged.feats.events/tx-feature {:tx-type :updates}])
+                     #(rf/dispatch [::evs/tx-feature {:tx-type :updates}])
                      :style {:width "96px"}}
          "update"]
         [ant-button {:on-click
-                     #(rf/dispatch [:ged.feats.events/tx-feature {:tx-type :deletes}])
+                     #(rf/dispatch [::evs/tx-feature {:tx-type :deletes}])
                      :style {:width "96px"}}
          "delete"]]
        [:br]
