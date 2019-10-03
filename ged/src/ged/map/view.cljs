@@ -50,22 +50,18 @@
         (if (not (get-olmap))
           (do
             (js/console.log "creating new map..")
-            (rf/dispatch [:ged.map.core/set-olmap
-                          (ol/create-map {:el-id "map-container"})])
-            #_(.addLayer (get-olmap) (ol/wms-layer geoserver-host "dev:usa_major_cities"))
-            #_(.addLayer (get-olmap) (ol/wms-layer geoserver-host "dev:usa_major_cities_2"))
-            (set! (.. js/window -map) (get-olmap)))
+            (rf/dispatch [:ged.map.core/create-olmap "map-container"]))
           (do
             (js/console.log "setting new map target..")
-            (ol/set-target (get-olmap) "map-container"))))
+            (rf/dispatch [:ged.map.core/set-olmap-target "map-container"]))))
       :component-did-update
       (fn [this old-argv]
         (let [new-argv (rest (r/argv this))]
           (js/console.log new-argv old-argv)))
       :component-will-unmount
       (fn [this]
-        (when (get-olmap)
-          (ol/set-target (get-olmap) nil)))
+        (js/console.log "setting new map target to nil")
+        (rf/dispatch [:ged.map.core/set-olmap-target nil]))
       :reagent-render
       (fn [x y z]
         [:div#map-container {:style {:width "100%"
@@ -464,21 +460,19 @@
     :width "32px"
     :render
     (fn [txt rec idx]
-      (let [on-click
-            (fn [ea]
-              (let [key (keyword (.-key ea))
-                    name (aget rec "name")]
-                (cond
-                  (= key :remove)
-                  (rf/dispatch
-                   [::evs/remove-selected-layers-id name]))))
-            menu
-            (r/as-element
-             [ant-menu {:on-click on-click
-                        :size "small"}
-              [ant-menu-item {:key "edit"} "edit"]
-              [ant-menu-divider]
-              [ant-menu-item {:key "remove"} "remove"]])]
+      (let [on-click (fn [ea]
+                       (let [key (keyword (.-key ea))
+                             name (aget rec "name")]
+                         (cond
+                           (= key :remove)
+                           (rf/dispatch
+                            [::evs/remove-selected-layers-id name]))))
+            menu (r/as-element
+                  [ant-menu {:on-click on-click
+                             :size "small"}
+                   [ant-menu-item {:key "edit"} "edit"]
+                   [ant-menu-divider]
+                   [ant-menu-item {:key "remove"} "remove"]])]
         (r/as-element
          [ant-dropdown
           {:overlay menu :trigger ["click"]}

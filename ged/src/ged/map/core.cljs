@@ -56,10 +56,21 @@
 
 
 (rf/reg-event-fx
- ::set-olmap
+ ::create-olmap
  (fn-traced [{:keys [db]} [_ ea]]
-            (js/console.log ea)
-            (do (set-olmap! ea))
+            (do
+              (->
+               (ol/create-map {:el-id ea})
+               (set-olmap!))
+              (set! (.. js/window -map) (get-olmap)))
+            {}))
+
+(rf/reg-event-fx
+ ::set-olmap-target
+ (fn-traced [{:keys [db]} [_ ea]]
+            (do
+              (when (get-olmap)
+                (ol/set-target (get-olmap) ea)))
             {}))
 
 (rf/reg-event-fx
