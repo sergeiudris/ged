@@ -117,7 +117,8 @@
  (fn-traced
   [{:keys [db]} [_ ea]]
   (do
-    (let [[coords] ea
+    (let [[ev] ea
+          coords (.. ev -coordinate)
           geom (ol/point->cir-poly-geom (get-olmap) coords 16)
           filter (olf/intersects "the_geom"  geom)
                     ; wkt (ol/point->wkt-cir-poly {:coords coords :radius 8})
@@ -150,7 +151,8 @@
  (fn-traced
   [{:keys [db]} [_ ea]]
   (do
-    (let [[geom] ea
+    (let [[ev] ea
+          geom (.getGeometry (.-feature ev))
           filter (olf/intersects "the_geom"  geom)]
       {:dispatch [:ged.map.evs/wfs-search {:filter filter}]}))))
 

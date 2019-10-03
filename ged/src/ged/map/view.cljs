@@ -419,8 +419,7 @@
     (fn []
       (let [map-click? @amap-click?
             on-click (fn [ev]
-                       (let [coords (.. ev -coordinate)]
-                         (rf/dispatch [:ged.map.core/wfs-search-mapclick [coords]])))]
+                       (rf/dispatch [:ged.map.core/wfs-search-mapclick [ev]]))]
         (when map-click?
           [wfs-search-map-click-inner {:on-click on-click}])))))
 
@@ -445,9 +444,8 @@
     (fn []
       (let [active? @aactive?
             on-draw-end (fn [ev]
-                          (let [geom (.getGeometry (.-feature ev))]
-                            (rf/dispatch [:ged.map.core/wfs-search-mapbox
-                                          [geom]])))]
+                          (rf/dispatch
+                           [:ged.map.core/wfs-search-mapbox [ev]]))]
         (when active?
           [wfs-search-area-box-inner {:on-draw-end on-draw-end}])))))
 
