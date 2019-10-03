@@ -58,11 +58,13 @@
 (rf/reg-event-fx
  ::create-olmap
  (fn-traced [{:keys [db]} [_ ea]]
-            (do
-              (->
-               (ol/create-map {:el-id ea})
-               (set-olmap!))
-              (set! (.. js/window -map) (get-olmap)))
+            (if-not (get-olmap)
+              (do
+                (->
+                 (ol/create-map {:el-id ea})
+                 (set-olmap!))
+                (set! (.. js/window -map) (get-olmap)))
+              (do (ol/set-target (get-olmap) ea)))
             {}))
 
 (rf/reg-event-fx
@@ -195,15 +197,6 @@
           geom (.getGeometry (.-feature ev))
           filter (olf/intersects "the_geom"  geom)]
       {:dispatch [:ged.map.evs/wfs-search {:filter filter}]}))))
-
-(rf/reg-event-fx
- ::start-modify-session
- (fn-traced
-  [{:keys [db]} [_ ea]]
-  (do
-    (let [ftedn ea]
-      (ol/add-modify-session (get-olmap) ftedn)
-      {}))))
 
 (rf/reg-event-fx
  ::start-modify-session

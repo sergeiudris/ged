@@ -14,10 +14,7 @@
              ["antd/lib/table" :default AntTable]
              ["antd/lib/dropdown" :default AntDropdown]
              ["antd/lib/menu" :default AntMenu]
-             ["antd/lib/input" :default AntInput]
-             [ged.map.ol :as ol]
-             ["ol/format/filter" :as olf]
-             [ged.map.core :refer [get-olmap] :as core]))
+             ["antd/lib/input" :default AntInput]))
 
 (def ant-button (r/adapt-react-class AntButton))
 (def ant-button-group (r/adapt-react-class AntButtonGroup))
@@ -46,21 +43,13 @@
      {:display-name "ol-map"
       :component-did-mount
       (fn [this]
-        (println "component-did-mount")
-        (if (not (get-olmap))
-          (do
-            (js/console.log "creating new map..")
-            (rf/dispatch [:ged.map.core/create-olmap "map-container"]))
-          (do
-            (js/console.log "setting new map target..")
-            (rf/dispatch [:ged.map.core/set-olmap-target "map-container"]))))
+        (rf/dispatch [:ged.map.core/create-olmap "map-container"]))
       :component-did-update
       (fn [this old-argv]
         (let [new-argv (rest (r/argv this))]
           (js/console.log new-argv old-argv)))
       :component-will-unmount
       (fn [this]
-        (js/console.log "setting new map target to nil")
         (rf/dispatch [:ged.map.core/set-olmap-target nil]))
       :reagent-render
       (fn [x y z]
