@@ -20,17 +20,17 @@
    (cljs.reader/read-string)))
 
 (defn write-db!
-  [vl]
-  (.setItem js/localStorage (ls-key) (str vl)))
+  [v]
+  (.setItem js/localStorage (ls-key) (str v)))
 
 (defn ^:export remove-db!
   []
   (.removeItem js/localStorage (ls-key)))
 
 (defn assoc-in-store!
-  [path vl]
+  [path v]
   (let [db (read-db)
-        nx (assoc-in db path vl)]
+        nx (assoc-in db path v)]
     (write-db! nx)))
 
 (defn deep-merge-store!

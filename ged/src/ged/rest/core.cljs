@@ -1,48 +1,81 @@
 (ns ged.rest.core
-  (:require [cljs.repl :as repl]))
+  (:require [cljs.repl :as repl]
+            [re-frame.core :as rf]
+            [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]))
 
-(def editor-data-ref (atom nil))
+(def editors (atom {:data nil
+                    :response nil
+                    :request nil}))
 
-(def editor-response-ref (atom nil))
+(defn get-editor
+  [k]
+  (k @editors))
 
-(def editor-request-ref (atom nil))
+(defn get-editor-val
+  [k]
+  (when (get-editor k)
+    (.getValue (get-editor k))))
 
+(defn set-editor!
+  [k ref]
+  (swap! editors assoc k ref))
 
-(defn editor-get-val
-  []
-  (if @editor-data-ref (.getValue @editor-data-ref) nil))
-
-(defn set-json!
-  [editor-atom json]
+(defn set-editor-val!
+  [k v]
   (.setValue
-   (.-session @editor-atom)
-   (js/JSON.stringify json nil "\t")
-          ; JSON.stringify(jsonDoc, null, '\t')
-   ))
+   (.-session (get-editor k))
+   v))
 
-(defn editor-set-json!
-  [json]
-  (set-json! editor-data-ref json))
+(defn set-editor-str!
+  [k v]
+  (set-editor-val! k (or v "")))
 
-(defn editor-set-str!
-  [s]
-  (.setValue
-   (.-session @editor-data-ref)
-   (or s "")))
+(defn set-editor-json!
+  [k v]
+  (set-editor-val! k (js/JSON.stringify v nil "\t")))
+
+(defn set-editor-preserve!
+  [k ref]
+  (let [v (get-editor-val k)]
+    (swap! editors assoc k ref)
+    (when v
+      (set-editor-val! k v))))
+
+; re-frame events
+
+(rf/reg-event-fx
+ ::set-editor-val
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [[k v] ea]
+              (do (set-editor-val! k v)))
+            {}))
+
+(rf/reg-event-fx
+ ::set-editor-json
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [[k v] ea]
+              (do (set-editor-json! k v)))
+            {}))
+
+(rf/reg-event-fx
+ ::set-editor-str
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [[k v] ea]
+              (do (set-editor-str! k v)))
+            {}))
+
+(rf/reg-event-fx
+ ::set-editor-preserve
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [[k ref] ea]
+              (do (set-editor-preserve! k ref)))
+            {}))
+
+; re-frame iceptors
+
+(rf/reg-cofx
+ ::get-editor-val
+ (fn [cofx [k]]
+   (assoc cofx :get-editor-val (do (get-editor-val k)))))
 
 
-(defn editor-response-set-json!
-  [json]
-  (set-json! editor-response-ref json))
-
-(defn editor-response-set!
-  [vl]
-  (.setValue
-   (.-session @editor-response-ref)
-   vl))
-
-(defn editor-request-set!
-  [vl]
-  (.setValue
-   (.-session @editor-request-ref)
-   vl))

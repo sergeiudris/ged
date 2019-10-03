@@ -50,7 +50,7 @@
  (fn-traced [{:keys [db]} [_ ea]]
    (let [msg (:msg ea)]
      (.info AntMessage msg 0.5)
-     {:db db})))
+     {})))
 
 (rf/reg-event-db
  ::set-re-pressed-example
@@ -86,8 +86,7 @@
 (rf/reg-event-fx
  ::apply-server-settings-res
  (fn-traced [{:keys [db]} [_ eargs]]
-   {:dispatch [:ant-message {:msg "settings applied"}]
-    :db db}))
+   {:dispatch [:ant-message {:msg "settings applied"}]}))
 
 ; edn deprecated
 ; https://github.com/JulianBirch/cljs-ajax/blob/master/docs/formats.md#edn
@@ -118,8 +117,7 @@
                   ;  :params {:data "{:hello 'world}"}
                             :params params
                             :url-params url-params
-                            :on-fail on-fail}
-               :db db}
+                            :on-fail on-fail}}
      ;
               )))
 
@@ -136,3 +134,11 @@
  :request-res
  (fn-traced [db [_ db-key res]]
             (assoc db db-key res)))
+
+
+(rf/reg-event-fx
+ :assoc-in-store
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [[path v] ea]
+              (do (ls/assoc-in-store! path v)))
+            {}))

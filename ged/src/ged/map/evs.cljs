@@ -1,55 +1,20 @@
-(ns ged.map.events
+(ns ged.map.evs
   (:require [re-frame.core :as rf]
             [clojure.string :as str]
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
-            [ged.map.core :refer [get-olmap] :as core]
-            [ged.map.ol :as ol]
-            [ged.local-storage :as ls]
-            [ajax.core :as ajax]
-   
-   )
-  )
-
-(rf/reg-event-db
- ::inc-module-count
- (fn-traced [db [_ active-panel]]
-            (let [kw :ged.core/module-count]
-              (assoc db kw (inc (kw db))))
-            ))
-
+            [ged.map.core :as core]
+            [ajax.core :as ajax]))
 
 (rf/reg-event-fx
- ::refetch-wms-layers
- (fn-traced
-  [{:keys [db]} [_ ea]]
-  (let [lrs (.getArray  (.getLayers (get-olmap)))]
-    (doseq [lr  lrs]
-      (when (.get lr "id")
-        (.updateParams (.getSource lr) #js {:r (Math/random)})))
-    {:db db})
-  #_{:db db}))
-
-(rf/reg-event-fx
- ::refetch-wms-layer
- (fn-traced [{:keys [db]} [_ ea]]
-   (let [lr (ol/id->layer (get-olmap) ea)]
-     (when lr
-       (do (.updateParams (.getSource lr) #js {:r (Math/random)}))))
-   {:db db}
-   #_{:db db}))
-
-
-(rf/reg-event-db
  ::tab-button
- (fn-traced [db [_ ea]]
+ (fn-traced [{:keys [db]} [_ ea]]
             (let [kw   (keyword ea)
                   key :ged.map/tab-button
-                  old-vl (key db)
-                  vl (if (= kw old-vl) nil kw)
-                  nxdb (assoc db key vl)]
-              (do (ls/assoc-in-store! [key] vl))
-              nxdb)))
-
+                  v-old (key db)
+                  v (if (= kw v-old) nil kw)
+                  nxdb (assoc db key v)]
+              {:db nxdb
+               :dispatch [:assoc-in-store [[key] v]]})))
 
 (rf/reg-event-fx
  ::fetch-all-layers
@@ -60,14 +25,11 @@
      [:ged.events/request
       {:method :get
        :params {}
-       :headers {"Content-Type" "application/json"
-                            ; "Authorization"  (ged.api.geoserver/auth-creds)
-                 }
+       :headers {"Content-Type" "application/json"}
        :path (str proxy-path "/rest/layers.json")
        :response-format (ajax/json-response-format {:keywords? true})
        :on-success [::fetch-all-layers-res]
        :on-fail [::fetch-all-layers-res]}]
-
      :db db})))
 
 (rf/reg-event-fx
@@ -80,8 +42,8 @@
  (fn-traced [{:keys [db]} [_ ea]]
             (let [key :ged.map/selected-layers-checked
                   nx (assoc db key ea)]
-              (do (ls/assoc-in-store! [key] (key nx)))
-              {:db nx})))
+              {:db nx
+               :dispatch [:assoc-in-store [[key] (key nx)]]})))
 
 (rf/reg-event-fx
  ::all-layers-checked
@@ -92,45 +54,44 @@
  ::add-selected-layers-ids
  (fn-traced [{:keys [db]} [_ ea]]
             (let [key :ged.map/selected-layers-ids
-                  old-vl (key db)
+                  v-old (key db)
                   nx (assoc db key
-                            (->> (concat old-vl ea)
+                            (->> (concat v-old ea)
                                  (distinct)
                                  (vec)))]
-              (do (ls/assoc-in-store! [key] (key nx)))
-              {:db nx})))
+              {:db nx
+               :dispatch [:assoc-in-store [[key] (key nx)]]})))
 
 
 (rf/reg-event-fx
  ::remove-selected-layers-id
  (fn-traced [{:keys [db]} [_ ea]]
-            (let [key :ged.map/selected-layers-ids
-                  old-vl (key db)
+            (let [k :ged.map/selected-layers-ids
+                  v-old (k db)
                   id ea
-                  nx (assoc db key
-                            (filterv #(not= % id) old-vl))]
-              (do (ls/assoc-in-store! [key] (key nx)))
-              {:db nx})))
+                  nx (assoc db k
+                            (filterv #(not= % id) v-old))]
+              {:db nx
+               :dispatch [:assoc-in-store [[k] (k nx)]]})))
 
-(rf/reg-event-db
+(rf/reg-event-fx
  ::wfs-search-layer-input
- (fn-traced [db [_ ea]]
-            (let [vl ea
-                  key :ged.map/wfs-search-layer-input]
-              (do (ls/assoc-in-store! [key] vl))
-              (assoc db key vl))))
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [v ea
+                  k :ged.map/wfs-search-layer-input]
+              {:db (assoc db k v)
+               :dispatch [:assoc-in-store [[k] v]]})))
 
-(rf/reg-event-db
+(rf/reg-event-fx
  ::wfs-search-area-type
- (fn-traced [db [_ ea]]
+ (fn-traced [{:keys [db]} [_ ea]]
             (let [kw (keyword ea)
-                  key :ged.map/wfs-search-area-type
-                  old-vl (key db)
-                  vl (if (= kw old-vl) nil kw)
-                  nxdb (assoc db key vl)]
-              (do (ls/assoc-in-store! [key] vl))
-              nxdb)))
-
+                  k :ged.map/wfs-search-area-type
+                  v-old (k db)
+                  v (if (= kw v-old) nil kw)
+                  nxdb (assoc db k v)]
+              {:db nxdb
+               :dispatch [:assoc-in-store [[k] v]]})))
 
 (rf/reg-event-fx
  ::wfs-search
@@ -163,9 +124,7 @@
                           {:method :post
                            :params {}
                            :body body
-                           :headers {"Content-Type" "application/json"
-                            ; "Authorization"  (ged.api.geoserver/auth-creds)
-                                     }
+                           :headers {"Content-Type" "application/json"}
                            :path (str proxy-path "/wfs")
                            :response-format (ajax/json-response-format {:keywords? true})
                            :on-success [::wfs-search-res]
@@ -219,9 +178,7 @@
                           {:method :post
                            :params {}
                            :body body
-                           :headers {"Content-Type" "application/json"
-                            ; "Authorization"  (ged.api.geoserver/auth-creds)
-                                     }
+                           :headers {"Content-Type" "application/json"}
                            :path (str proxy-path "/wfs")
                            :response-format (ajax/json-response-format {:keywords? true})
                            :on-success [::modify-wfs-click-res]
@@ -279,7 +236,7 @@
             {:dispatch [:ged.map.events/refetch-wms-layer id]
              :db (merge db
                         {:ged.map/tx-res ea
-                         :ged.map/modifying? false}) }))
+                         :ged.map/modifying? false})}))
 
 (rf/reg-event-db
  ::tx-res-fail

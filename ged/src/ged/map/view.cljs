@@ -4,7 +4,7 @@
              [cljs.pprint :as pp]
              [re-frame.core :as rf]
              [ged.map.subs :as subs]
-             [ged.map.events :as events]
+             [ged.map.evs :as evs]
              ["antd/lib/button" :default AntButton]
              ["antd/lib/button/button-group" :default AntButtonGroup]
              ["antd/lib/radio" :default AntRadio]
@@ -50,7 +50,8 @@
         (if (not (get-olmap))
           (do
             (js/console.log "creating new map..")
-            (core/set-map (ol/create-map {:el-id "map-container"}))
+            (rf/dispatch [:ged.map.core/set-olmap
+                          (ol/create-map {:el-id "map-container"})])
             #_(.addLayer (get-olmap) (ol/wms-layer geoserver-host "dev:usa_major_cities"))
             #_(.addLayer (get-olmap) (ol/wms-layer geoserver-host "dev:usa_major_cities_2"))
             (set! (.. js/window -map) (get-olmap)))
@@ -80,7 +81,7 @@
       :component-did-mount
       (fn [this]
         (let [{:keys [id geoserver-host]} (r/props this)]
-          (do (ol/upsert-wms-layer (get-olmap) geoserver-host id))))
+          #_(do (ol/upsert-wms-layer (get-olmap) geoserver-host id))))
       :component-will-unmount
       (fn [this]
         (let [{:keys [id]} (r/props this)]
@@ -118,7 +119,7 @@
 (defn ol-map-layers
   []
   (let [geoserver-host (rf/subscribe [:ged.subs/geoserver-host])
-        ids-ref (rf/subscribe [:ged.map.subs/checked-layer-ids])]
+        ids-ref (rf/subscribe [::subs/checked-layer-ids])]
     (fn []
       (let [host @geoserver-host
             ids @ids-ref
@@ -146,7 +147,7 @@
          {:icon "reload"
           :title "refetch layers"
           :on-click (fn []
-                      (rf/dispatch [:ged.map.events/refetch-wms-layers]))}]]])))
+                      (rf/dispatch [::evs/refetch-wms-layers]))}]]])))
 
 (defn active->button-type
   [active?]
@@ -158,7 +159,7 @@
 
 (defn tab-buttons
   []
-  (let [atab (rf/subscribe [:ged.map.subs/tab-button]) ]
+  (let [atab (rf/subscribe [::subs/tab-button]) ]
     (fn []
       (let [tab @atab]
         [:section {:class "tab-buttons-container"
@@ -167,7 +168,7 @@
                             :value tab
                             :on-click (fn [ev]
                                         (rf/dispatch
-                                         [:ged.map.events/tab-button
+                                         [::evs/tab-button
                                           (.. ev -target -value)]))
                             :size "default"}
           [ant-button {:value "all-layers"
@@ -208,7 +209,7 @@
                 (cond
                   (= key :select)
                   (do (rf/dispatch
-                       [:ged.map.events/add-selected-layers-ids [(aget rec "name")]])))))
+                       [::evs/add-selected-layers-ids [(aget rec "name")]])))))
             menu
             (r/as-element
              [ant-menu {:on-click on-click
@@ -227,9 +228,9 @@
 
 (defn all-layers
   []
-  (let [avisible (rf/subscribe [:ged.map.subs/all-layers-visible])
-        all-layers (rf/subscribe [:ged.map.subs/all-layers])
-        achecked (rf/subscribe [:ged.map.subs/all-layers-checked])
+  (let [avisible (rf/subscribe [::subs/all-layers-visible])
+        all-layers (rf/subscribe [::subs/all-layers])
+        achecked (rf/subscribe [::subs/all-layers-checked])
         ]
     (fn []
       (let [visible? @avisible
@@ -244,7 +245,7 @@
               [ant-button {:icon "reload" :title "update"
                            :on-click
                            #(rf/dispatch
-                             [:ged.map.events/fetch-all-layers])}]]]]
+                             [::evs/fetch-all-layers])}]]]]
            [ant-table
             {:show-header true
              :size "small"
@@ -264,7 +265,7 @@
              :rowSelection {:selectedRowKeys checked
                             :on-change (fn [keys rows ea]
                                          (rf/dispatch
-                                          [:ged.map.events/all-layers-checked keys])
+                                          [::evs/all-layers-checked keys])
                                          #_(js/console.log keys rows ea))}
              :pagination false}]])))))
 
@@ -289,10 +290,10 @@
                 (cond
                   (= key :remove)
                   (rf/dispatch
-                   [:ged.map.events/remove-selected-layers-id name])
+                   [::evs/remove-selected-layers-id name])
                   (= key :modify)
                   (rf/dispatch
-                   [:ged.map.events/modify-layer name]))))
+                   [::evs/modify-layer name]))))
             menu
             (r/as-element
              [ant-menu {:on-click on-click
@@ -315,9 +316,9 @@
 
 (defn selected-layers
   []
-  (let [avisible (rf/subscribe [:ged.map.subs/selected-layers-visible])
-        alayers (rf/subscribe [:ged.map.subs/selected-layers])
-        achecked (rf/subscribe [:ged.map.subs/selected-layers-checked])
+  (let [avisible (rf/subscribe [::subs/selected-layers-visible])
+        alayers (rf/subscribe [::subs/selected-layers])
+        achecked (rf/subscribe [::subs/selected-layers-checked])
         ]
     (fn []
       (let [visible? @avisible
@@ -332,7 +333,7 @@
               #_[ant-button {:icon "reload" :title "update"
                            :on-click
                            #(rf/dispatch
-                             [:ged.map.events/fetch-all-layers])}]]]]
+                             [::evs/fetch-all-layers])}]]]]
            [ant-table
             {:show-header true
              :size "small"
@@ -352,19 +353,19 @@
              :rowSelection {:selectedRowKeys checked
                             :on-change (fn [keys rows ea]
                                          (rf/dispatch
-                                          [:ged.map.events/selected-layers-checked keys])
+                                          [::evs/selected-layers-checked keys])
                                          #_(js/console.log keys rows ea))}
              :pagination false}]])))))
 
 
 (defn wfs-search-layer-input
   []
-  (let [ainput (rf/subscribe [:ged.map.subs/wfs-search-layer-input])]
+  (let [ainput (rf/subscribe [::subs/wfs-search-layer-input])]
     (fn []
       (let [input @ainput
             on-change
             (fn [ev]
-              (rf/dispatch [:ged.map.events/wfs-search-layer-input
+              (rf/dispatch [::evs/wfs-search-layer-input
                             (.. ev -target -value)]))]
         [ant-input {:value input
                     :on-change on-change
@@ -377,12 +378,12 @@
 
 (defn wfs-search-buttons
   []
-  (let [aarea (rf/subscribe [:ged.map.subs/wfs-search-area-type])]
+  (let [aarea (rf/subscribe [::subs/wfs-search-area-type])]
     (fn []
       (let [area @aarea
             on-click (fn [ev]
                        (rf/dispatch
-                        [:ged.map.events/wfs-search-area-type
+                        [::evs/wfs-search-area-type
                          (.. ev -target -value)]))]
         [ant-button-group {:size "small" :on-click on-click}
          [ant-button {:title "search a point"
@@ -402,34 +403,26 @@
       :component-did-mount
       (fn [this]
         (let [{:keys [on-click]} (r/props this)]
-          (.on (get-olmap) "singleclick"
-               on-click)))
+          (rf/dispatch [:ged.map.core/wfs-search-mapclick-listen
+                             {:on-click on-click}])))
       :component-will-unmount
       (fn [this]
         #_(js/console.log "will unmount click")
         (let [{:keys [on-click]} (r/props this)]
-          (when (get-olmap)
-            (.un (get-olmap) "singleclick"
-                 on-click))))
+          (rf/dispatch [:ged.map.core/wfs-search-mapclick-unlisten
+                             {:on-click on-click}])))
       :reagent-render (fn [] nil)})))
 
 (defn wfs-search-map-click
   []
-  (let [amap-click? (rf/subscribe [:ged.map.subs/wfs-search-map-click?]) ]
+  (let [amap-click? (rf/subscribe [::subs/wfs-search-map-click?])]
     (fn []
       (let [map-click? @amap-click?
-            on-click
-            (fn [ev]
-              (let [coords (.. ev -coordinate)
-                    geom (ol/point->cir-poly-geom (get-olmap) coords 16)
-                    filter (olf/intersects "the_geom"  geom)
-                    ; wkt (ol/point->wkt-cir-poly {:coords coords :radius 8})
-                    ]
-                (rf/dispatch [:ged.map.events/wfs-search {:filter filter}]))
-              )]
+            on-click (fn [ev]
+                       (let [coords (.. ev -coordinate)]
+                         (rf/dispatch [:ged.map.core/wfs-search-mapclick [coords]])))]
         (when map-click?
-          [wfs-search-map-click-inner {:on-click on-click}])
-        ))))
+          [wfs-search-map-click-inner {:on-click on-click}])))))
 
 (defn wfs-search-area-box-inner
   []
@@ -439,31 +432,22 @@
       :component-did-mount
       (fn [this]
         (let [{:keys [on-draw-end]} (r/props this)]
-          (do
-            (->>
-             (ol/add-box-interaction (get-olmap) {:on-draw-end on-draw-end})
-             (reset! astate)))
-          ))
+          (rf/dispatch [:ged.map.core/wfs-search-mapbox-listen
+                        {:on-draw-end on-draw-end}])))
       :component-will-unmount
       (fn [this]
-        (let [{:keys [on-draw-end]} (r/props this)]
-          (when (get-olmap)
-            (ol/remove-interaction (get-olmap) @astate))))
+        (rf/dispatch [:ged.map.core/wfs-search-mapbox-unlisten]))
       :reagent-render (fn [] nil)})))
 
 (defn wfs-search-area-box
   []
-  (let [aactive? (rf/subscribe [:ged.map.subs/wfs-search-area-box?])]
+  (let [aactive? (rf/subscribe [::subs/wfs-search-area-box?])]
     (fn []
       (let [active? @aactive?
-            on-draw-end
-            (fn [ev]
-              (let [; coords (.. ev -coordinate)
-                    geom (.getGeometry (.-feature ev))
-                    filter (olf/intersects "the_geom"  geom)
-                    ; wkt (ol/point->wkt-cir-poly {:coords coords :radius 8})
-                    ]
-                (rf/dispatch [:ged.map.events/wfs-search {:filter filter}])))]
+            on-draw-end (fn [ev]
+                          (let [geom (.getGeometry (.-feature ev))]
+                            (rf/dispatch [:ged.map.core/wfs-search-mapbox
+                                          [geom]])))]
         (when active?
           [wfs-search-area-box-inner {:on-draw-end on-draw-end}])))))
 
@@ -489,7 +473,7 @@
                 (cond
                   (= key :remove)
                   (rf/dispatch
-                   [:ged.map.events/remove-selected-layers-id name]))))
+                   [::evs/remove-selected-layers-id name]))))
             menu
             (r/as-element
              [ant-menu {:on-click on-click
@@ -511,8 +495,8 @@
 
 (defn wfs-search-table
   []
-  (let [adata (rf/subscribe [:ged.map.subs/wfs-search-res])
-        table-mdata (rf/subscribe [:ged.map.subs/wfs-search-table-mdata])]
+  (let [adata (rf/subscribe [::subs/wfs-search-res])
+        table-mdata (rf/subscribe [::subs/wfs-search-table-mdata])]
     (fn []
       (let [items (:features @adata)
             total (:totalFeatures @adata)
@@ -530,7 +514,7 @@
                     :dataSource ents
                     ; :defaultExpandedRowKeys [(:id first-item)]
                     :on-change (fn [pag fil sor ext]
-                                 (rf/dispatch [:ged.map.events/wfs-search-table-mdata
+                                 (rf/dispatch [::evs/wfs-search-table-mdata
                                                (js->clj {:pagination pag
                                                          :filters fil
                                                          :sorter sor
@@ -556,7 +540,7 @@
 
 (defn wfs-search
   []
-  (let [avisible (rf/subscribe [:ged.map.subs/wfs-search-visible])]
+  (let [avisible (rf/subscribe [::subs/wfs-search-visible])]
     (fn []
       (let [visible? @avisible]
         (when visible?
@@ -575,7 +559,7 @@
 
 (defn modify-buttons
   []
-  (let [ amodifying? (rf/subscribe [:ged.map.subs/modifying?])]
+  (let [ amodifying? (rf/subscribe [::subs/modifying?])]
     (fn []
       (let [modifying? @amodifying?]
         [ant-button-group {:size "small"}
@@ -585,13 +569,13 @@
                       (fn [ev]
                         #_(js/console.log (clj->js (core/get-modify-session)))
                         (rf/dispatch
-                           [:ged.map.events/tx-features]))
+                           [::evs/tx-features]))
                       :type "default"}]
          [ant-button {:title "cancel modifying"
                       :icon "close-square"
                       :on-click
                       (fn []
-                        (rf/dispatch [:ged.map.events/modifying? false]))
+                        (rf/dispatch [::evs/modifying? false]))
                       :type "default"}]
          ]
         ))))
@@ -618,7 +602,7 @@
 
 (defn modify-wfs-click
   []
-  (let [amap-click? (rf/subscribe [:ged.map.subs/modify-wfs-click?])]
+  (let [amap-click? (rf/subscribe [::subs/modify-wfs-click?])]
     (fn []
       (let [map-click? @amap-click?
             on-click
@@ -628,7 +612,7 @@
                     filter (olf/intersects "the_geom"  geom)
                     ; wkt (ol/point->wkt-cir-poly {:coords coords :radius 8})
                     ]
-                (rf/dispatch [:ged.map.events/modify-wfs-click {:filter filter}])))]
+                (rf/dispatch [::evs/modify-wfs-click {:filter filter}])))]
         (when map-click?
           [modify-wfs-click-inner {:on-click on-click}])))))
 
@@ -641,8 +625,8 @@
       (fn [this]
         (let [{:keys [ftedn]} (r/props this)]
           (do
-            (core/merge-state (ol/add-modify-session (get-olmap) ftedn))
-            #_(rf/dispatch [:ged.map.events/modifying? true]))))
+            (core/merge-state! (ol/add-modify-session (get-olmap) ftedn))
+            #_(rf/dispatch [::evs/modifying? true]))))
       :component-will-unmount
       (fn [this]
         (let [{:keys []} (r/props this)
@@ -655,8 +639,8 @@
 
 (defn modify-features
   []
-  (let [afeatures (rf/subscribe [:ged.map.subs/modify-features])
-        amodifying? (rf/subscribe [:ged.map.subs/modifying?])]
+  (let [afeatures (rf/subscribe [::subs/modify-features])
+        amodifying? (rf/subscribe [::subs/modifying?])]
     (fn []
       (let [fts @afeatures
             modifying? @amodifying?]
@@ -671,9 +655,9 @@
 
 (defn modify
   []
-  (let [avisible (rf/subscribe [:ged.map.subs/modify-visible])
-        alayer-id (rf/subscribe [:ged.map.subs/modify-layer-id])
-        alayer-ns (rf/subscribe [:ged.map.subs/modify-layer-ns])
+  (let [avisible (rf/subscribe [::subs/modify-visible])
+        alayer-id (rf/subscribe [::subs/modify-layer-id])
+        alayer-ns (rf/subscribe [::subs/modify-layer-ns])
         ]
     (fn []
       (let [visible? @avisible

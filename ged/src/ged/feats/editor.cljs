@@ -28,9 +28,9 @@
                     ;  :default-value default-value
                   :value @value
                   :on-load (fn [edr]
-                             (let [vl (editor-get-val)]
+                             (let [v (editor-get-val)]
                                (reset! ged.feats.core/editor-feature-ref edr)
-                               (editor-set-str! vl)))
+                               (editor-set-str! v)))
                   :on-change (fn [val evt] (do
                                              #_(js/console.log val)
                                              (reset! value val)
@@ -73,9 +73,9 @@
                     ;  :default-value default-value
                   :value @value
                   :on-load (fn [edr]
-                             (let [vl (editor-get-val)]
+                             (let [v (editor-get-val)]
                                (reset! ged.feats.core/editor-request-ref edr)
-                               (editor-set-str! vl)))
+                               (editor-set-str! v)))
                   :on-change (fn [val evt] (do
                                              #_(js/console.log val)
                                              (reset! value val)

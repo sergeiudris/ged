@@ -62,13 +62,13 @@
   (set-json! editor-response-ref json))
 
 (defn editor-response-set!
-  [vl]
+  [v]
   (.setValue
    (.-session @editor-response-ref)
-   vl))
+   v))
 
 (defn editor-request-set!
-  [vl]
+  [v]
   (.setValue
    (.-session @editor-request-ref)
-   vl))
+   v))

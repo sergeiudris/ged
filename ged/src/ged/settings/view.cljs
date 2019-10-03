@@ -40,7 +40,7 @@
             [ant-col {:span 4}
              [ant-select {:default-value "hello"
                           :style {:width "120px"}
-                          :on-change (fn [vl] (js/console.log vl))}
+                          :on-change (fn [v] (js/console.log v))}
               [ant-select-option {:value "hello"} "hello"]
               [ant-select-option {:value "hi"} "hi"]]]]
          #_[ant-row

@@ -8,8 +8,8 @@
 
 (rf/reg-event-fx
  ::set
- (fn-traced [{:keys [db]} [_ key vl]]
+ (fn-traced [{:keys [db]} [_ key v]]
             (let []
               (do
-                (ls/assoc-in-store! [key] vl))
-              {:db (assoc db key vl)})))
+                (ls/assoc-in-store! [key] v))
+              {:db (assoc db key v)})))

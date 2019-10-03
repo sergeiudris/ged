@@ -77,9 +77,9 @@
          fns (:ged.feats/feature-ns db)
          tx-type (:tx-type ea)
          proxy-path (:ged.settings/proxy-path db)
-         vl (js/JSON.parse (editor-get-val))
+         v (js/JSON.parse (editor-get-val))
          body (ged.api.geoserver/wfs-tx-jsons-str
-               {tx-type [vl]
+               {tx-type [v]
                 :featureNS fns
                 :featurePrefix fpref
                 :featureType ftype})]
