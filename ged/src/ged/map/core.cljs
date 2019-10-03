@@ -47,7 +47,7 @@
 (defn get-modify-features
   []
   (->
-   (.getFeatures (:source @astate))
+   (.getFeatures (:source (get-modify-session)))
    (ol/features->geojson)
    (aget "features")))
 
@@ -120,7 +120,7 @@
    (first)))
 
 (rf/reg-event-fx
- ::wfs-search-mapclick-listen
+ ::mapclick-listen
  (fn-traced
   [{:keys [db]} [_ ea]]
   (do
@@ -130,7 +130,7 @@
   {}))
 
 (rf/reg-event-fx
- ::wfs-search-mapclick-unlisten
+ ::mapclick-unlisten
  (fn-traced
   [{:keys [db]} [_ ea]]
   (do
@@ -151,6 +151,19 @@
                     ; wkt (ol/point->wkt-cir-poly {:coords coords :radius 8})
           ]
       {:dispatch [:ged.map.evs/wfs-search {:filter filter}]}))))
+
+(rf/reg-event-fx
+ ::wfs-modify-mapclick
+ (fn-traced
+  [{:keys [db]} [_ ea]]
+  (do
+    (let [[ev] ea
+          coords (.. ev -coordinate)
+          geom (ol/point->cir-poly-geom (get-olmap) coords 16)
+          filter (olf/intersects "the_geom"  geom)
+                    ; wkt (ol/point->wkt-cir-poly {:coords coords :radius 8})
+          ]
+      {:dispatch [:ged.map.evs/modify-wfs-click {:filter filter}]}))))
 
 (rf/reg-event-fx
  ::wfs-search-mapbox-listen
@@ -182,6 +195,34 @@
           geom (.getGeometry (.-feature ev))
           filter (olf/intersects "the_geom"  geom)]
       {:dispatch [:ged.map.evs/wfs-search {:filter filter}]}))))
+
+(rf/reg-event-fx
+ ::start-modify-session
+ (fn-traced
+  [{:keys [db]} [_ ea]]
+  (do
+    (let [ftedn ea]
+      (ol/add-modify-session (get-olmap) ftedn)
+      {}))))
+
+(rf/reg-event-fx
+ ::start-modify-session
+ (fn-traced
+  [{:keys [db]} [_ ea]]
+  (do
+    (let [[ftedn] ea]
+      (assoc-key! :modify-session (ol/add-modify-session (get-olmap) ftedn))
+      {}))))
+
+(rf/reg-event-fx
+ ::stop-modify-session
+ (fn-traced
+  [{:keys [db]} [_ ea]]
+  (do
+    (let [session (get-modify-session)]
+      (when (and (get-olmap) session)
+        (do (ol/remove-modify-session (get-olmap) session)))
+      {}))))
 
 
 ; re-frame iceptors

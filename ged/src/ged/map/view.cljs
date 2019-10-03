@@ -174,7 +174,7 @@
          {:icon "reload"
           :title "refetch layers"
           :on-click (fn []
-                      (rf/dispatch [::evs/refetch-wms-layers]))}]]])))
+                      (rf/dispatch [:ged.map.core/refetch-wms-layers]))}]]])))
 
 (defn active->button-type
   [active?]
@@ -422,22 +422,22 @@
                       :type (key->button-type :area-box area)
                       :value "area-box"}]]))))
 
-(defn wfs-search-map-click-inner
+(defn map-click-inner
   []
   (let []
     (r/create-class
-     {:display-name "wfs-search-map-click-inner"
+     {:display-name "map-click-inner"
       :component-did-mount
       (fn [this]
         (let [{:keys [on-click]} (r/props this)]
-          (rf/dispatch [:ged.map.core/wfs-search-mapclick-listen
-                             {:on-click on-click}])))
+          (rf/dispatch [:ged.map.core/mapclick-listen
+                        {:on-click on-click}])))
       :component-will-unmount
       (fn [this]
         #_(js/console.log "will unmount click")
         (let [{:keys [on-click]} (r/props this)]
-          (rf/dispatch [:ged.map.core/wfs-search-mapclick-unlisten
-                             {:on-click on-click}])))
+          (rf/dispatch [:ged.map.core/mapclick-unlisten
+                        {:on-click on-click}])))
       :reagent-render (fn [] nil)})))
 
 (defn wfs-search-map-click
@@ -448,7 +448,7 @@
             on-click (fn [ev]
                        (rf/dispatch [:ged.map.core/wfs-search-mapclick [ev]]))]
         (when map-click?
-          [wfs-search-map-click-inner {:on-click on-click}])))))
+          [map-click-inner {:on-click on-click}])))))
 
 (defn wfs-search-area-box-inner
   []
@@ -604,24 +604,6 @@
         ))))
 
 
-(defn modify-wfs-click-inner
-  []
-  (let []
-    (r/create-class
-     {:display-name "modify-wfs-click-inner"
-      :component-did-mount
-      (fn [this]
-        (let [{:keys [on-click]} (r/props this)]
-          (.on (get-olmap) "singleclick"
-               on-click)))
-      :component-will-unmount
-      (fn [this]
-        #_(js/console.log "will unmount click")
-        (let [{:keys [on-click]} (r/props this)]
-          (when (get-olmap)
-            (.un (get-olmap) "singleclick"
-                 on-click))))
-      :reagent-render (fn [] nil)})))
 
 (defn modify-wfs-click
   []
@@ -630,14 +612,9 @@
       (let [map-click? @amap-click?
             on-click
             (fn [ev]
-              (let [coords (.. ev -coordinate)
-                    geom (ol/point->cir-poly-geom (get-olmap) coords 16)
-                    filter (olf/intersects "the_geom"  geom)
-                    ; wkt (ol/point->wkt-cir-poly {:coords coords :radius 8})
-                    ]
-                (rf/dispatch [::evs/modify-wfs-click {:filter filter}])))]
+              (rf/dispatch [:ged.map.core/wfs-modify-mapclick [ev]]))]
         (when map-click?
-          [modify-wfs-click-inner {:on-click on-click}])))))
+          [map-click-inner {:on-click on-click}])))))
 
 (defn modify-feature
   []
@@ -648,14 +625,11 @@
       (fn [this]
         (let [{:keys [ftedn]} (r/props this)]
           (do
-            (core/merge-state! (ol/add-modify-session (get-olmap) ftedn))
+            (rf/dispatch [:ged.map.core/start-modify-session [ftedn]])
             #_(rf/dispatch [::evs/modifying? true]))))
       :component-will-unmount
       (fn [this]
-        (let [{:keys []} (r/props this)
-              session (core/get-modify-session)]
-          (when (and (get-olmap) session)
-            (do (ol/remove-modify-session (get-olmap) session)))))
+        (do (rf/dispatch [:ged.map.core/stop-modify-session])))
       :reagent-render
       (fn []
         nil)})))

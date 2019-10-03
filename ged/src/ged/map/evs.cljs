@@ -201,7 +201,8 @@
 
 (rf/reg-event-fx
  ::tx-features
- (fn-traced [{:keys [db]} [_ ea]]
+ [(rf/inject-cofx :ged.map.core/modify-features)]
+ (fn-traced [{:keys [db modify-features]} [_ ea]]
             (let [ftype-input (:ged.map/modify-layer-id db)
                   [fpref ftype] (try (str/split ftype-input \:)
                                      (catch js/Error e
@@ -210,7 +211,7 @@
                   fns (:ged.map/modify-layer-ns db)
                   {:keys [updates]} ea
                   proxy-path (:ged.settings/proxy-path db)
-                  updates (core/get-modify-features)
+                  updates modify-features
                   body (ged.api.geoserver/wfs-tx-jsons-str
                         {:deletes nil
                          :inserts nil
@@ -233,7 +234,7 @@
 (rf/reg-event-fx
  ::tx-res-succ
  (fn-traced [{:keys [db]} [_ id ea]]
-            {:dispatch [:ged.map.events/refetch-wms-layer id]
+            {:dispatch [:ged.map.core/refetch-wms-layer id]
              :db (merge db
                         {:ged.map/tx-res ea
                          :ged.map/modifying? false})}))
