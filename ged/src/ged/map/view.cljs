@@ -69,7 +69,7 @@
                                      :border "1px solid #dedede"}}])})))
 
 
-(defn ol-wms-layer
+#_(defn ol-wms-layer
   []
   (let []
     (r/create-class
@@ -112,7 +112,7 @@
       (fn []
         nil)})))
 
-(defn ol-map-layers
+#_(defn ol-map-layers
   []
   (let [geoserver-host (rf/subscribe [:ged.subs/geoserver-host])
         ids-ref (rf/subscribe [::subs/checked-layer-ids])]
@@ -132,6 +132,37 @@
       #_[ol-map-layers-inner
        {:checked-layer-ids @ids-ref
         :geoserver-host @geoserver-host}])))
+
+(defn ol-map-layers-inner
+  []
+  (let []
+    (r/create-class
+     {:display-name "ol-map-layers"
+      :component-did-mount
+      (fn [this]
+        (let [{:keys [ids geoserver-host]} (r/props this)]
+          (rf/dispatch [:ged.map.core/sync-layer-ids [ids geoserver-host]])))
+      :component-did-update
+      (fn [this old-argv]
+        (let [new-argv (rest (r/argv this))
+              {:keys [ids geoserver-host]} (r/props this)]
+          (rf/dispatch [:ged.map.core/sync-layer-ids [ids geoserver-host]])
+          #_(js/console.log new-argv old-argv)))
+      :component-will-unmount
+      (fn [this])
+      :reagent-render
+      (fn []
+        nil)})))
+
+(defn ol-map-layers
+  []
+  (let [geoserver-host (rf/subscribe [:ged.subs/geoserver-host])
+        ids-ref (rf/subscribe [::subs/checked-layer-ids])]
+    (fn []
+      (let [host @geoserver-host
+            ids @ids-ref]
+        [ol-map-layers-inner {:ids ids
+                              :geoserver-host host}]))))
 
 (defn action-buttons
   []

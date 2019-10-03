@@ -99,9 +99,25 @@
  (fn-traced
   [{:keys [db]} [_ ea]]
   (do
-    (let [ids ea]
-      (js/console.log "impl sync " ea)))
+    (let [[ids geoserver-host] ea
+          lrs (.getArray (.getLayers (get-olmap)))]
+      (doseq [lr lrs]
+        (let [id (.get lr "id")]
+          (when id
+            (when-not (some #(= id %) ids)
+              (.removeLayer (get-olmap) lr)))))
+      (doseq [id ids]
+        (when-not (ol/id->layer (get-olmap) id)
+          (ol/upsert-wms-layer (get-olmap) geoserver-host id)))))
   {}))
+
+(defn id->layer
+  [olmap id]
+  (->>
+   (.getLayers olmap)
+   (.getArray)
+   (filter (fn [lr] (= (.get lr "id") id)))
+   (first)))
 
 (rf/reg-event-fx
  ::wfs-search-mapclick-listen

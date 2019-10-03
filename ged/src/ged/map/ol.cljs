@@ -118,11 +118,13 @@
   ([geoserver-host id]
    (wms-layer geoserver-host {:id id} {:params  {"LAYERS" id}}))
   ([geoserver-host opts src-opts]
-   (OlTileLayer.
-    (clj->js
-     (deep-merge
-      {:source (wms-source geoserver-host src-opts)}
-      opts)))))
+   (let [lr (OlTileLayer.
+             (clj->js
+              (deep-merge
+               {:source (wms-source geoserver-host src-opts)}
+               opts)))]
+     #_(do (.set lr "id" (:id opts)))
+     lr)))
 
 
 
