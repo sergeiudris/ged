@@ -4,7 +4,7 @@
              [cljs.pprint :as pp]
              [re-frame.core :as rf]
              [ged.home.subs :as subs]
-             [ged.home.events :as events]
+             [ged.home.evs :as evs]
              ["antd/lib/button" :default ant-Button]
              #_[ged.core.extra :refer [extra-component]]))
 
@@ -66,7 +66,7 @@
      [:p.someclass
       "I have " [:strong "bold"]
       [:span {:style {:color "red"}} " and red "] "text."]
-     [ant-button {:on-click (fn [] (rf/dispatch [::events/inc-module-count]) )
+     [ant-button {:on-click (fn [] (rf/dispatch [::evs/inc-module-count]) )
                   } "inc module count"]
      #_[extra-component]
      [stateful-comp]

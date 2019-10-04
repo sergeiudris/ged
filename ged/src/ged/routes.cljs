@@ -5,7 +5,6 @@
             #_[clerk.core :as clerk]
             #_[goog.events ]
             [reagent.core :as r]
-            [ged.events :as events]
             [re-frame.core :as rf])
   (:import goog.History
            goog.history.Html5History
@@ -48,7 +47,7 @@
         url (:url matched-route)]
     #_(prn "matched-route: " matched-route)
     #_(r/after-render clerk/after-render!)
-    (rf/dispatch [::events/set-active-panel panel-name])
+    (rf/dispatch [:ged.evs/set-active-panel panel-name])
     #_(clerk/navigate-page! url)))
 
 (declare history)

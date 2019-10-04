@@ -23,7 +23,7 @@
   [{:keys [db]} [_ ea]]
   (let [proxy-path (:ged.settings/proxy-path db)]
     {:dispatch
-     [:ged.events/request
+     [:ged.evs/request
       {:method :get
        :params {}
        :headers {"Content-Type" "application/json"}
@@ -121,15 +121,15 @@
                          (when wfs-filter
                            {:filter wfs-filter})))]
               #_(do (editor-request-set! (prettify-xml body)))
-              {:dispatch [:ged.events/request
+              {:dispatch [:ged.evs/request
                           {:method :post
                            :params {}
                            :body body
                            :headers {"Content-Type" "application/json"}
                            :path (str proxy-path "/wfs")
                            :response-format
-                           #_(ajax/json-response-format {:keywords? true})
-                           (ajax/transit-response-format {:reader (t/reader :json)})
+                           (ajax/json-response-format {:keywords? true})
+                           #_(ajax/transit-response-format {:reader (t/reader :json)})
                            :on-success [::wfs-search-res]
                            :on-fail [::wfs-search-res]}]
                :db (merge db {:ged.map/wfs-search-last-filter wfs-filter
@@ -177,7 +177,7 @@
                          (when wfs-filter
                            {:filter wfs-filter})))]
               #_(do (editor-request-set! (prettify-xml body)))
-              {:dispatch [:ged.events/request
+              {:dispatch [:ged.evs/request
                           {:method :post
                            :params {}
                            :body body
@@ -222,7 +222,7 @@
                          :featureNS fns
                          :featurePrefix fpref
                          :featureType ftype})]
-              {:dispatch [:ged.events/request
+              {:dispatch [:ged.evs/request
                           {:method :post
                            :body body
                            :headers {"Content-Type" "application/json"}

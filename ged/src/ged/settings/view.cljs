@@ -3,8 +3,8 @@
              [re-frame.core :as rf]
              [cljs.repl :as repl]
              [cljs.pprint :as pp]
-             [ged.settings.events]
-             [ged.settings.subs]
+             [ged.settings.evs :as evs]
+             [ged.settings.subs :as subs]
              [ged.settings.core]
              ["antd/lib/row" :default AntRow]
              ["antd/lib/col" :default AntCol]
@@ -53,7 +53,7 @@
                                       (.. % -target -value)])}]]
           [ant-col {:span 4}
            [ant-button
-            {:on-click (fn [] (rf/dispatch [:ged.events/apply-server-settings]) )}
+            {:on-click (fn [] (rf/dispatch [:ged.evs/apply-server-settings]) )}
             "apply"]]]
          [:br]
          [ant-row
@@ -63,12 +63,12 @@
           [ant-col {:span 8}
            [ant-input {:value @proxy-geoserver-host
                        :on-change
-                       #(rf/dispatch [:ged.settings.events/set
+                       #(rf/dispatch [::evs/set
                                       :ged.settings/proxy-geoserver-host
                                       (.. % -target -value)])}]]
           [ant-col {:span 4}
            [ant-button 
-            {:on-click (fn [] (rf/dispatch [:ged.events/apply-server-settings]))}
+            {:on-click (fn [] (rf/dispatch [:ged.evs/apply-server-settings]))}
             "apply"]
            ]
           ]
@@ -81,7 +81,7 @@
           [ant-col {:span 8}
            [ant-input {:value @geoserver-host
                        :on-change
-                       #(rf/dispatch [:ged.settings.events/set 
+                       #(rf/dispatch [::evs/set 
                                       :ged.settings/geoserver-host
                                       (.. % -target -value)])}]]]
          ;

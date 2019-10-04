@@ -3,8 +3,8 @@
              [re-frame.core :as rf]
              [cljs.repl :as repl]
              [cljs.pprint :as pp]
-             [ged.auth.events]
-             [ged.auth.subs]
+             [ged.auth.evs :as evs]
+             [ged.auth.subs :as subs]
              ["antd/lib/row" :default AntRow]
              ["antd/lib/col" :default AntCol]
              ["antd/lib/select" :default AntSelect]
@@ -58,7 +58,7 @@
              [ant-button
               {:title "Geoserver auth is stateless, credentials will be used in every request"
                :on-click (fn [] (rf/dispatch
-                                 [:ged.auth.events/login
+                                 [::evs/login
                                   {:username (or @uname @username)
                                    :password (or @pass @password)}]))}
               "apply"]]]]]

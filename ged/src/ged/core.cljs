@@ -5,7 +5,7 @@
             [reagent.core :as r]
             [re-frame.core :as rf]
             [re-pressed.core :as rp]
-            [ged.events :as events]
+            [ged.evs :as evs]
             [ged.routes :as routes]
             [ged.config :as config]
             [ged.subs :as subs]
@@ -38,7 +38,7 @@
 
 (defn ^:export main []
   (routes/app-routes)
-  (rf/dispatch-sync [::events/initialize-db])
+  (rf/dispatch-sync [::evs/initialize-db])
   (rf/dispatch-sync [::rp/add-keyboard-event-listener "keydown"])
   (dev-setup)
   (mount-root))

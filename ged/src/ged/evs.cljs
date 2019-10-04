@@ -1,4 +1,4 @@
-(ns ged.events
+(ns ged.evs
   (:require
    [clojure.string :as str]
    [re-frame.core :refer [reg-event-db reg-event-fx inject-cofx path after] :as rf]
@@ -70,7 +70,7 @@
          proxy-path (:ged.settings/proxy-path db)
          body (str  {:proxy-geoserver-host geoserver-host
                      :proxy-path proxy-path})]
-     {:dispatch [:ged.events/request
+     {:dispatch [:ged.evs/request
                  {:method :post
                   :body body
                   :headers {"Content-Type" "application/json" #_"text/html; charset=utf-8"}

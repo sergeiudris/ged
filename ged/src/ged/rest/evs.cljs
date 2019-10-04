@@ -19,7 +19,7 @@
  (fn-traced [{:keys [db]} [_ ea]]
             (let [proxy-path (:ged.settings/proxy-path db)
                   selected-url (:ged.rest/selected-url db)]
-              {:dispatch [:ged.events/request
+              {:dispatch [:ged.evs/request
                           {:method :get
                            :params {}
                            :headers {"Content-Type" "application/json"
@@ -47,7 +47,7 @@
                   v (js/JSON.parse get-editor-val)
                   path (:ged.rest/selected-item-path db)
                   body (js/JSON.stringify v)]
-              {:dispatch [:ged.events/request
+              {:dispatch [:ged.evs/request
                           {:method tx-type
                            :body body
                            :headers {"Content-Type" "application/json"
@@ -94,7 +94,7 @@
      (if href
        (let [path (href->path href)
              proxy-path (:ged.settings/proxy-path db)]
-         {:dispatch [:ged.events/request
+         {:dispatch [:ged.evs/request
                      {:method :get
                       :headers {"Content-Type" "application/json"
                             ; "Authorization"  (ged.api.geoserver/auth-creds)

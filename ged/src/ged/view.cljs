@@ -76,7 +76,7 @@
               (-> (loader/load module-name)
                   (.then
                    (fn []
-                     (rf/dispatch [:ged.events/inc-module-count])
+                     (rf/dispatch [:ged.evs/inc-module-count])
                      (swap! comp-state update-in [module-name] (module->panel module-name)))
                    (fn [] (js/console.log (str "module load failed: " module-name))))))
             #_[:div "nothing"]
@@ -139,7 +139,7 @@
                   (let [eargs-clj (js->clj eargs :keywordize-keys true)
                         {:keys [key]} eargs-clj]
                     (ged.routes/set-path! (str "/" (panel->module-name (keyword key))))
-                    #_(rf/dispatch [:ged.events/set-active-panel (keyword key)])))}]
+                    #_(rf/dispatch [:ged.evs/set-active-panel (keyword key)])))}]
    [main-panel]
    ]
   #_[main-panel])

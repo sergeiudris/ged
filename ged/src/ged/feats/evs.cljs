@@ -37,7 +37,7 @@
                 (when (not-empty s)
                   {:filter (olf/like "NAME" (str "*" s "*") "*" "." "!" false)})))]
      {:dispatch-n (list
-                 [:ged.events/request
+                 [:ged.evs/request
                   {:method :post
                    :params {}
                    :body body
@@ -77,7 +77,7 @@
                          :featurePrefix fpref
                          :featureType ftype})]
               {:dispatch-n (list
-                            [:ged.events/request
+                            [:ged.evs/request
                              {:method :post
                               :body body
                               :headers {"Content-Type" "application/json"}
