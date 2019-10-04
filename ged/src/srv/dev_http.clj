@@ -154,7 +154,7 @@
     (let [path (subs uri (count (get-proxy-path)))
           url (if (not-empty query-string)   (str path "?" query-string) path)
           req-opts {:throw-entire-message? true
-                    :throw-exceptions true
+                    :throw-exceptions false
                     :method request-method
                     :url (str (get-geoserver-host) "/geoserver" url)
                     ; :as :byte-array
