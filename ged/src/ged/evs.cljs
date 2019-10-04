@@ -8,9 +8,9 @@
    [ajax.core :as ajax]
    [ajax.edn]
    [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
-   [ged.api.core :refer [basic-creds]]
+   [ged.core :refer [basic-creds]]
    ["antd/lib/message" :default AntMessage]
-   [ged.local-storage :as ls]
+   [ged.storage]
    ))
 
 
@@ -27,18 +27,12 @@
     [omni-ceptor interceptors] ;; <-- inject `omni-ceptor`
     handler)))
 
-(rf/reg-cofx
- :rehydrate-db
- (fn [cofx _]
-   #_(js/console.log "coef" (ls/read-db))
-   (assoc cofx :rehydrate-db (ls/read-db))))
-
 
 (rf/reg-event-fx
  ::initialize-db
- [(inject-cofx :rehydrate-db)]
- (fn-traced [{:keys [db rehydrate-db] :as coef} av]
-            {:db (merge ged.db/default-db rehydrate-db) }))
+ [(inject-cofx :storagedb)]
+ (fn-traced [{:keys [db storagedb] :as coef} av]
+            {:db (merge ged.db/default-db storagedb)}))
 
 (rf/reg-event-db
  ::set-active-panel
@@ -122,13 +116,19 @@
               )))
 
 
+(rf/reg-event-fx
+ :xhrio-failure
+ (fn [{:keys [db]} [_ ea]]
+   (js/console.log ":xhrio-failure")
+   (js/console.log ea)
+   {}))
 
 (rf/reg-event-db
  :http-no-on-failure
- (fn [db [_ eargs]]
-            (js/console.warn ":http-no-on-failure event "
-                             eargs)
-            db))
+ (fn [db [_ ea]]
+   (js/console.warn ":http-no-on-failure event "
+                    ea)
+   db))
 
 (rf/reg-event-db
  :request-res
@@ -136,9 +136,3 @@
             (assoc db db-key res)))
 
 
-(rf/reg-event-fx
- :assoc-in-store
- (fn-traced [{:keys [db]} [_ ea]]
-            (let [[path v] ea]
-              (do (ls/assoc-in-store! path v)))
-            {}))

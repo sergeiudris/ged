@@ -1,28 +1,26 @@
-(ns ged.api.core
-  (:require [clojure.string :as str]))
+(ns ged.notepad
+  (:require [clojure.string :as str]
+            [clojure.repl :as repl]
+            [ged.core :refer [deep-merge]]
+            ["ol/format/filter" :as OlFilter]))
 
-(defn basic-creds
-  [uname pass]
-  (str "Basic " (js/btoa (str uname ":" pass))))
+
+#_(OlFilter/like "name" "Mississippi*")
+
+#_(OlFilter/ilike "name" "Mississippi*")
 
 (defn auth-creds
   []
   (str "Basic " (js/btoa (str "admin" ":" "myawesomegeoserver"))))
 
-(defn deep-merge [a & maps]
-  (if (map? a)
-    (apply merge-with deep-merge a maps)
-    (apply merge-with deep-merge maps)))
 
 (defn fetch-geosrv
   [path opts]
   (->
    (js/fetch (str "/geoserver" path)
              (clj->js (deep-merge
-                       {
-                        "headers" {"Authorization"  (auth-creds)}}
-                       opts)))
-   ))
+                       {"headers" {"Authorization"  (auth-creds)}}
+                       opts)))))
 
 (defn url-search-params
   [prms & {:keys [str] :or {str false}}]
@@ -85,8 +83,7 @@
 
 #_(->
    (fetch-geosrv-edn "/rest/layers.json")
-   (.then (fn [r] (js/console.log r)))
-   )
+   (.then (fn [r] (js/console.log r))))
 
 ; https://docs.geoserver.org/stable/en/user/services/wfs/reference.html
 
@@ -98,8 +95,7 @@
                              "typeNames" "dev:usa_major_cities"
                              "exceptions" "application/json"
                              "outputFormat" "application/json"})
-   (.toString)
-   )
+   (.toString))
 
 #_(url-search-params {"service" "wfs"
                       "version" "2.0.0"
@@ -112,7 +108,7 @@
 #_(->
    (fetch-geosrv-edn
     (str "/wfs?" (url-search-params {"service" "wfs"
-                                    "version" "2.0.0"
+                                     "version" "2.0.0"
                                     ;  "version" "1.1.0"
                                      "request" "GetFeature"
                                      "count" 10
@@ -133,4 +129,6 @@
                                      "outputFormat" "application/json"} :str true))
     {:method "get"})
    (.then (fn [r] (js/console.log r))))
+
+
 

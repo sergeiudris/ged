@@ -1,13 +1,8 @@
-(ns ged.local-storage
+(ns ged.storage
   (:require [clojure.repl :as repl]
-            [re-frame.core :as rf]))
-
-
-
-(defn deep-merge [a & maps]
-  (if (map? a)
-    (apply merge-with deep-merge a maps)
-    (apply merge-with deep-merge maps)))
+            [re-frame.core :as rf]
+            [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
+            [ged.core :refer [deep-merge]]))
 
 (defn ls-key
   []
@@ -47,6 +42,20 @@
 
 ; https://clojuredocs.org/clojure.core/some-%3E%3E
 
-
-
 #_(repl/dir rf)
+
+
+; re-frame events
+
+(rf/reg-event-fx
+ :assoc-in-store
+ (fn-traced [{:keys [db]} [_ ea]]
+            (do
+              (let [[path v] ea]
+                (assoc-in-store! path v)))
+            {}))
+
+(rf/reg-cofx
+ :storagedb
+ (fn [cofx ea]
+   (assoc cofx :storagedb (read-db))))

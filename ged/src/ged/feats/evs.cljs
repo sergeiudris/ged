@@ -2,7 +2,7 @@
   (:require [re-frame.core :as rf]
             [clojure.repl :as repl]
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
-            [ged.api.geoserver]
+            [ged.core :refer [wfs-tx-jsons-str wfs-get-features-body-str]]
             [ajax.core :as ajax]
             [clojure.string :as str]
             ["ol/format/filter" :as olf]))
@@ -28,7 +28,7 @@
          {:keys [current pageSize]} pag
          limit (or pageSize 10)
          offset (or (* pageSize (dec current)) 0)
-         body (ged.api.geoserver/wfs-get-features-body-str
+         body (wfs-get-features-body-str
                (merge
                 {:offset offset
                  :limit limit
@@ -71,7 +71,7 @@
                   tx-type (:tx-type ea)
                   proxy-path (:ged.settings/proxy-path db)
                   v (js/JSON.parse get-editor-val)
-                  body (ged.api.geoserver/wfs-tx-jsons-str
+                  body (wfs-tx-jsons-str
                         {tx-type [v]
                          :featureNS fns
                          :featurePrefix fpref

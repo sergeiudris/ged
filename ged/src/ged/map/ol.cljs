@@ -1,5 +1,6 @@
 (ns ged.map.ol
   (:require
+   [ged.core :refer [deep-merge]]
    ["ol/proj/Projection" :default OlProjection]
    ["ol/proj" :refer [fromLonLat]]
    ["ol/Map" :default OlMap]
@@ -23,11 +24,6 @@
   )
 
 #_OlDraw/createBox
-
-(defn deep-merge [a & maps]
-  (if (map? a)
-    (apply merge-with deep-merge a maps)
-    (apply merge-with deep-merge maps)))
 
 (defn tile-layer-osm
   []

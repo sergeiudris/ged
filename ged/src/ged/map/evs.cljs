@@ -4,6 +4,7 @@
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
             [ged.map.core :as core]
             [ajax.core :as ajax]
+            [ged.core :refer [wfs-tx-jsons-str wfs-get-features-body-str]]
             [cognitect.transit :as t]))
 
 (rf/reg-event-fx
@@ -112,7 +113,7 @@
                   {:keys [current pageSize]} pag
                   limit (or pageSize 10)
                   offset (or (* pageSize (dec current)) 0)
-                  body (ged.api.geoserver/wfs-get-features-body-str
+                  body (wfs-get-features-body-str
                         (merge
                          {:offset offset
                           :limit limit
@@ -169,7 +170,7 @@
                                        (do (js/console.warn e)
                                            ["undefined:undefined"])))
                   proxy-path (:ged.settings/proxy-path db)
-                  body (ged.api.geoserver/wfs-get-features-body-str
+                  body (wfs-get-features-body-str
                         (merge
                          {:offset 0
                           :limit 100
@@ -216,7 +217,7 @@
                   {:keys [updates]} ea
                   proxy-path (:ged.settings/proxy-path db)
                   updates modify-features
-                  body (ged.api.geoserver/wfs-tx-jsons-str
+                  body (wfs-tx-jsons-str
                         {:deletes nil
                          :inserts nil
                          :updates updates

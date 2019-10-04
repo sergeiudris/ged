@@ -26,7 +26,7 @@
         :module-loader true
         :modules
         {:main {:entries [#_simple.core
-                          ged.core
+                          ged.main
                           #_routing-example.core
                           #_conduit.core]}
 
@@ -58,7 +58,7 @@
          #_ged.core/main
          #_routing-example.core/init!
          #_conduit.core/init
-         :repl-init-ns ged.core
+         :repl-init-ns ged.main
          :repl-pprint true
          :http-root  "resources/public"
          :http-port  9500
