@@ -30,7 +30,7 @@
        :path (str proxy-path "/rest/layers.json")
        :response-format (ajax/json-response-format {:keywords? true})
        :on-success [::fetch-all-layers-res]
-       :on-fail [::fetch-all-layers-res]}]
+       :on-failure [::fetch-all-layers-res]}]
      :db db})))
 
 (rf/reg-event-fx
@@ -131,7 +131,7 @@
                            (ajax/json-response-format {:keywords? true})
                            #_(ajax/transit-response-format {:reader (t/reader :json)})
                            :on-success [::wfs-search-res]
-                           :on-fail [::wfs-search-res]}]
+                           :on-failure [::wfs-search-res]}]
                :db (merge db {:ged.map/wfs-search-last-filter wfs-filter
                               :ged.map/search-table-mdata
                               (merge table-mdata {:pagination (merge pag {:current 1})})})})))
@@ -139,6 +139,7 @@
 (rf/reg-event-db
  ::wfs-search-res
  (fn-traced [db [_ ea]]
+            (js/console.log "res" ea)
             (assoc db :ged.map/wfs-search-res ea)))
 
 (rf/reg-event-fx
@@ -185,7 +186,7 @@
                            :path (str proxy-path "/wfs")
                            :response-format (ajax/json-response-format {:keywords? true})
                            :on-success [::modify-wfs-click-res]
-                           :on-fail [::modify-wfs-click-res]}]
+                           :on-failure [::modify-wfs-click-res]}]
                :db (merge db {:ged.map/modify-wfs-click-last-filter wfs-filter})})))
 
 (rf/reg-event-fx
@@ -231,7 +232,7 @@
                            (ajax/raw-response-format)
                   ; (ajax/json-response-format {:keywords? true})
                            :on-success [::tx-res-succ (str fpref ":" ftype)]
-                           :on-fail [::tx-res-fail]}]
+                           :on-failure [::tx-res-fail]}]
                :db (merge db {})})))
 
 (rf/reg-event-fx

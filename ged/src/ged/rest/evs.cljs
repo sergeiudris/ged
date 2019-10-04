@@ -30,7 +30,7 @@
                            (ajax/json-response-format {:keywords? true})
                            #_(ajax/raw-response-format)
                            :on-success [::fetch-selected-url-res]
-                           :on-fail [::fetch-selected-url-res]}]
+                           :on-failure [::fetch-selected-url-res]}]
                :db (merge db {})})))
 
 (rf/reg-event-db
@@ -59,7 +59,7 @@
                            #_(ajax/raw-response-format)
                            (ajax/json-response-format {:keywords? true})
                            :on-success [::tx-res]
-                           :on-fail [::tx-res]}]
+                           :on-failure [::tx-res]}]
                :db (merge db {})})))
 
 (rf/reg-event-fx
@@ -104,7 +104,7 @@
                       #_(ajax/raw-response-format)
                       (ajax/json-response-format {:keywords? true})
                       :on-success [::select-feature-succ]
-                      :on-fail [::select-feature-fail]}]
+                      :on-failure [::select-feature-fail]}]
           :db (merge db {:ged.rest/selected-item-href href
                          :ged.rest/selected-item-path path})})
        {:dispatch [:ged.rest.core/set-editor-json [:data ea]]

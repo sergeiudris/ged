@@ -80,7 +80,7 @@
                   (ajax/raw-response-format)
                   ; (ajax/json-response-format {:keywords? true})
                   :on-success [::apply-server-settings-res]
-                  :on-fail [::apply-server-settings-res]}]
+                  :on-failure [::apply-server-settings-res]}]
       :db (merge db {})})))
 
 (rf/reg-event-fx
@@ -117,7 +117,7 @@
                   ;  :params {:data "{:hello 'world}"}
                             :params params
                             :url-params url-params
-                            :on-fail on-fail}}
+                            :on-failure on-fail}}
      ;
               )))
 
@@ -125,7 +125,7 @@
 
 (rf/reg-event-db
  :http-no-on-failure
- (fn-traced [db [_ eargs]]
+ (fn [db [_ eargs]]
             (js/console.warn ":http-no-on-failure event "
                              eargs)
             db))

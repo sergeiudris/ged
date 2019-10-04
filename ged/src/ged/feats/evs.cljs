@@ -45,7 +45,7 @@
                    :path (str proxy-path "/wfs")
                    :response-format (ajax/json-response-format {:keywords? true})
                    :on-success [::search-res]
-                   :on-fail [::search-res]}]
+                   :on-failure [::search-res]}]
                  [:ged.feats.core/set-editor-xml [:request body]])
       :db (merge db {:ged.feats/search-input s
                      :ged.feats/search-table-mdata
@@ -85,7 +85,7 @@
                               :response-format
                               (ajax/raw-response-format) #_(ajax/json-response-format {:keywords? true})
                               :on-success [::tx-res-succ (str fpref ":" ftype)]
-                              :on-fail [::tx-res-fail]}]
+                              :on-failure [::tx-res-fail]}]
                             [:ged.feats.core/set-editor-xml [:request body]])
                :db (merge db {})})))
 
