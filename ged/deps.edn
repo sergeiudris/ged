@@ -18,6 +18,7 @@
                               kibu/pushy {:mvn/version "0.3.8"}
                               com.andrewmcveigh/cljs-time {:mvn/version "0.5.2"}
                               cljs-ajax {:mvn/version "0.7.3"}
+                              com.cognitect/transit-cljs {:mvn/version "0.8.256"}
 
         ; server
 

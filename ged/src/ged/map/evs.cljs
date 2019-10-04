@@ -3,7 +3,8 @@
             [clojure.string :as str]
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
             [ged.map.core :as core]
-            [ajax.core :as ajax]))
+            [ajax.core :as ajax]
+            [cognitect.transit :as t]))
 
 (rf/reg-event-fx
  ::tab-button
@@ -126,7 +127,9 @@
                            :body body
                            :headers {"Content-Type" "application/json"}
                            :path (str proxy-path "/wfs")
-                           :response-format (ajax/json-response-format {:keywords? true})
+                           :response-format
+                           #_(ajax/json-response-format {:keywords? true})
+                           (ajax/transit-response-format {:reader (t/reader :json)})
                            :on-success [::wfs-search-res]
                            :on-fail [::wfs-search-res]}]
                :db (merge db {:ged.map/wfs-search-last-filter wfs-filter

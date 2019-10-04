@@ -95,7 +95,7 @@
             {:db (assoc db :ged.feats/tx-res ea)
              :dispatch-n (list
                           [:ged.feats.core/set-editor-xml [:response ea]]
-                          [:ged.map.events/refetch-wms-layer id])}))
+                          [:ged.map.core/refetch-wms-layer id])}))
 
 
 (rf/reg-event-fx

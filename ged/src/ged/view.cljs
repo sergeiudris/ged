@@ -12,7 +12,12 @@
             [clojure.string]
             [ged.routes]
             [ged.layout :as layout]
-   ))
+            ["antd/lib/result" :default AntResult]
+            ["antd/lib/button" :default AntButton]))
+
+(def ant-result (r/adapt-react-class AntResult))
+(def ant-button (r/adapt-react-class AntButton))
+
 
 (defn fn-to-call-on-load []
   (js/console.log "module loaded"))
@@ -20,10 +25,6 @@
 (defn fn-to-call-on-error []
   (js/console.log "module load failed"))
 
-
-(defn not-found-panel []
-  [:div
-   [:span "not found :("]])
 
 ; @(resolve 'clojure.repl/dir)  wrong , macro
 ; ((resolve 'clojure.core/first) [1 2]) works
@@ -83,6 +84,17 @@
           ;
           )))))
 
+(defn not-found-panel
+  [path]
+  [ant-result {:status "404"
+               :title "404"
+               :subTitle (str path " not found")
+              ;  :extra (r/as-element
+              ;          [ant-button {:type "default"}
+              ;           [:a {:href "/"} "/"]])
+               }]
+  )
+
 (defn- panels [panel-name]
   (case panel-name
     :home-panel [ged.home.view/panel]
@@ -91,7 +103,8 @@
     :feats-panel [panel-defered "feats"]
     :auth-panel [panel-defered "auth"]
     :rest-panel [panel-defered "rest"]
-    [:div (str panel-name "  not found" )]))
+    nil [:div "loading..."]
+    [not-found-panel panel-name]))
 
 
 (defn show-panel [panel-name]
