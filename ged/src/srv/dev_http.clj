@@ -134,7 +134,7 @@
 (defn handle [{:keys [uri http-roots http-config request-method
                       server-name server-port body headers query-string] :as req}]
   (reset! rqs req)
-  (prn uri)
+  #_(prn uri)
   (cond
     (= uri "/update-settings")
     (let [bstring (with-open [^InputStream b (:body @rqs)]
