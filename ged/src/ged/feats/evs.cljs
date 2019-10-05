@@ -104,12 +104,13 @@
             {:db (assoc db :ged.feats/tx-res ea)
              :dispatch [:ged.feats.core/set-editor-xml [:response ea]]}))
 
-(rf/reg-event-db
+(rf/reg-event-fx
  ::search-input
- (fn-traced [db [_ ea]]
-            (let [key :ged.feats/search-input
-                  value ea]
-              (assoc db key value))))
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [k :ged.feats/search-input
+                  v ea]
+              {:db (assoc db k v)
+               })))
 
 (rf/reg-event-fx
  ::search-table-mdata
@@ -128,8 +129,10 @@
 (rf/reg-event-fx
  ::feature-type-input
  (fn-traced [{:keys [db]} [_ ea]]
-   (let [key :ged.feats/feature-type-input]
-     {:db (assoc db key ea)})))
+   (let [v ea
+         k :ged.feats/feature-type-input]
+     {:db (assoc db k v)
+      :dispatch [:assoc-in-store [[k] v]]})))
 
 (rf/reg-event-fx
  ::feature-ns
