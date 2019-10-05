@@ -59,8 +59,16 @@
               {:profiles [:json :proxy-path]
                :url "/wfs"
                :on-success [:ged.log.evs/http-on-success]
-               :on-failure [:ged.log.evs/http-on-failure]}
-              :geoserver-rest {}}})
+               :on-failure [:ged.log.evs/http-on-failure]
+               :requires [:gs.rest.ns/id]
+               }
+              :geoserver-rest {}}
+   
+   :resources {:gs.rest.ns/id {:resolve-http (fn [ctx])
+                               :resolve-db (fn [{:keys [db]} [id _]]
+                                             (get-in db [:ged.db.core/namespaces id]))
+                               :expire 10000}}
+   })
 
 (defn reverse-distinct
   [v]
@@ -68,11 +76,12 @@
 
 (defn profile->keys
   [profile profiles]
-  (let [all (reduce (fn [a k]
-                      (into a (profile->keys (k profiles) profiles)))
-                    (:profiles profile) (:profiles profile))
-        dtc (reverse-distinct all)]
-    (vec dtc)))
+  (->>
+   (reduce (fn [a k]
+             (into a (profile->keys (k profiles) profiles)))
+           (:profiles profile) (:profiles profile))
+   (reverse-distinct)
+   (vec)))
 
 (defn combined-profile
   [cofx rq profiles]
