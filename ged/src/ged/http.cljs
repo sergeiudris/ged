@@ -44,7 +44,12 @@
 
 
 (def http-conf
-  {:merge-rules {:url (fn [a b] (str (f? a) (f? b)))}
+  {:merge-rules {:url (fn [cofx [k a b]] (str (f? cofx a) (f? cofx b)))
+                 :profiles (fn [c [_ a b]] (into a b))
+                 :on-success (fn [c [_ a b]] (into a b))
+                 :on-failure (fn [c [_ a b]] (into a b))
+                 :headers (fn [c [_ a b]] (merge a b))
+                 }
    :profiles {:json {:default? true
                      :headers {"Content-Type" "application/json"}}
               :proxy-path
@@ -55,31 +60,44 @@
                :url "/wfs"
                :on-success [:ged.log.evs/http-on-success]
                :on-failure [:ged.log.evs/http-on-failure]}
-              :geoserver-rest {}}}
-  )
+              :geoserver-rest {}}})
 
+(defn reverse-distinct
+  [v]
+  (-> v reverse distinct reverse))
 
-(defn merge-profiles
-  [pf & pfs]
-  (apply merge-with deep-merge pf pfs))
+(defn profile->keys
+  [profile profiles]
+  (let [all (reduce (fn [a k]
+                      (into a (profile->keys (k profiles) profiles)))
+                    (:profiles profile) (:profiles profile))
+        dtc (reverse-distinct all)]
+    (vec dtc)))
+
+(defn combined-profile
+  [cofx rq profiles]
+  (let [ks (profile->keys rq profiles)
+        pfs (mapv #(% profiles) ks)
+        rules (get-in cofx [:http-conf :merge-rules])]
+    (apply (partial merge-with-rules cofx rules rq) pfs)))
+
+#_(map (fn [e] (js/console.log e) ) {:a 1} )
+#_(distinct [:b :c :a :b :a :b])
+#_(-> [:b :c :a :b :a :b] reverse distinct reverse vec)
+
 
 (rf/reg-cofx
  :http-conf
  (fn [cofx ea]
-   (assoc cofx :http-profiles http-conf)))
-
-(defn combined-profile
-  [rq profiles]
-  (->> (:profiles rq) (map #(% profiles)) (apply merge-profiles)))
+   (assoc cofx :http-conf http-conf)))
 
 (rf/reg-event-fx
  :http
  [(rf/inject-cofx :http-conf)]
  (fn-traced
   [{:keys [db http-conf] :as cofx} [_ ea]]
-  (let [pf (combined-profile ea (:http-profiles http-conf))]
-    (js/console.log ea)
-    (js/console.log http-conf)
+  (let [pf (combined-profile cofx ea (:profiles http-conf))]
+    (js/console.log pf)
     #_(do
         (->
          (js/fetch (:url ea)
