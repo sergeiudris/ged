@@ -42,6 +42,9 @@
 #_(reduce (fn [a v] (js/console.log v) a ) {} (seq {:a 1}) )
 #_(apply + (list 1 2))
 
+; registry for multistep requests
+; register via uuids 
+(def registry (atom {}))
 
 (def http-conf
   {:merge-rules {:url (fn [cofx [k a b]] (str (f? cofx a) (f? cofx b)))
