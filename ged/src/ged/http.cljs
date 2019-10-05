@@ -9,11 +9,11 @@
 
 
 (defn f?
-  [v]
-  (if (fn? v) (v) v))
+  [ctx v]
+  (if (fn? v) (v ctx) v))
 
 (defn merge-with-rules
-  [rules & maps]
+  [ctx rules & maps]
   (when (some identity maps)
     (let [merge-entry (fn [m e]
 
@@ -21,16 +21,18 @@
                               v (val e)
                               f (get rules k)]
                           (if (contains? m k)
-                            (assoc m k (apply (get rules k) (list k (get m k) v)))
+                            (assoc m k (f ctx [k (get m k) v] ))
                             (assoc m k v))))
           merge2 (fn [m1 m2]
                    (reduce merge-entry (or m1 {}) (seq m2)))]
       (reduce merge2 maps))))
 
-#_(let [rules {:url (fn furl [k a b] (str (f? a) (f? b)))}
+#_(let [rules {:url (fn furl [ctx [k a b]]
+                      (js/console.log ctx)
+                      (str (f? ctx a) (f? ctx b)))}
         m1 {:url (fn [] "/geoserver")}
         m2 {:url "/wfs"}]
-    (merge-with-rules rules m1 m2))
+    (merge-with-rules {:db {}} rules m1 m2))
 
 #_(fn? :url)
 #_(fn? (fn [] "" ))
