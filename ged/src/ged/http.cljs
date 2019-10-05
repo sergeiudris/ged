@@ -11,4 +11,14 @@
  (fn-traced
   [{:keys [db]} [_ ea]]
   (let []
+    (js/console.log ea)
+    (do
+      (->
+       (js/fetch (:url ea)
+                 (:init ea))
+       (.catch (fn [e]
+                 (rf/dispatch (:on-failure ea))))
+       (.then (fn [r]
+                (rf/dispatch (:on-success ea)))))
+      )
     {})))
