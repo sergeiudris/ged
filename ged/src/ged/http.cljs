@@ -72,6 +72,12 @@
                                }}
    })
 
+; register requests by id (via event)
+; async resolve (fetch) resources
+; when response arrives, dispatch continuation event for the registered id
+; the graph (or tree) of resources resolve themselves, finally proceeding with inital request
+
+
 (defn reverse-distinct
   [v]
   (-> v reverse distinct reverse))
