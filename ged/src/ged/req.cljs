@@ -1,4 +1,4 @@
-(ns ged.http
+(ns ged.req
   (:require [clojure.string :as str]
             [re-frame.core :as rf]
             [ged.core :refer [deep-merge]]
@@ -53,6 +53,12 @@
                  :on-failure (fn [c [_ a b]] (into a b))
                  :headers (fn [c [_ a b]] (merge a b))
                  }
+   :requests {:wfs-search {:method :post
+                           :body (fn [args]
+                                   {}
+                                   ) }
+              
+              }
    :profiles {:json {:default? true
                      :headers {"Content-Type" "application/json"}}
               :proxy-path
@@ -112,7 +118,7 @@
    (assoc cofx :http-conf http-conf)))
 
 (rf/reg-event-fx
- :http
+ ::request
  [(rf/inject-cofx :http-conf)]
  (fn-traced
   [{:keys [db http-conf] :as cofx} [_ ea]]
@@ -127,3 +133,6 @@
          (.then (fn [r]
                   (rf/dispatch (:on-success ea))))))
     {})))
+
+
+

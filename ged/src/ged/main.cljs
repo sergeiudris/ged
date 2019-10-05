@@ -12,7 +12,7 @@
             [ged.view]
             [tools.core]
             [ged.core]
-            [ged.http]
+            [ged.req]
             [ged.async]
             [devtools.core :as devtools]
             ;dev

@@ -122,7 +122,7 @@
                            {:filter wfs-filter})))]
               #_(do (editor-request-set! (prettify-xml body)))
               {:dispatch
-               [:http {:profiles [:wfs-get-feature]
+               [:ged.req/request {:profiles [:wfs-get-feature]
                        :params {}
                        :body body
                        :headers {"Content-Type" "application/json"}
