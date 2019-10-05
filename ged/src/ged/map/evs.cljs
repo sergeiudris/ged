@@ -121,17 +121,24 @@
                          (when wfs-filter
                            {:filter wfs-filter})))]
               #_(do (editor-request-set! (prettify-xml body)))
-              {:dispatch [:ged.evs/request
-                          {:method :post
-                           :params {}
-                           :body body
-                           :headers {"Content-Type" "application/json"}
-                           :path (str proxy-path "/wfs")
-                           :response-format
-                           (ajax/json-response-format {:keywords? true})
-                           #_(ajax/transit-response-format {:reader (t/reader :json)})
-                           :on-success [::wfs-search-res]
-                           :on-failure [::wfs-search-res]}]
+              {:dispatch
+               [:http {:profiles [:wfs-get-feature]
+                       :params {}
+                       :body body
+                       :headers {"Content-Type" "application/json"}
+                       :on-success [::wfs-search-res]
+                       :on-failure [::wfs-search-res]}]
+               #_[:ged.evs/request
+                  {:method :post
+                   :params {}
+                   :body body
+                   :headers {"Content-Type" "application/json"}
+                   :path (str proxy-path "/wfs")
+                   :response-format
+                   (ajax/json-response-format {:keywords? true})
+                   #_(ajax/transit-response-format {:reader (t/reader :json)})
+                   :on-success [::wfs-search-res]
+                   :on-failure [::wfs-search-res]}]
                :db (merge db {:ged.map/wfs-search-last-filter wfs-filter
                               :ged.map/search-table-mdata
                               (merge table-mdata {:pagination (merge pag {:current 1})})})})))
