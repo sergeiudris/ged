@@ -12,8 +12,11 @@
             [ged.view]
             [tools.core]
             [ged.core]
-            [ged.notepad]
-            [devtools.core :as devtools]))
+            [ged.http]
+            [ged.async]
+            [devtools.core :as devtools]
+            ;dev
+            [ged.notepad]))
 
 (devtools/install!)
 (enable-console-print!)

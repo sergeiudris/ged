@@ -2,9 +2,8 @@
   (:require [re-frame.core :as rf]
             [clojure.string :as str]
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
-            [ged.map.core :as core]
             [ajax.core :as ajax]
-            [ged.core :refer [wfs-tx-jsons-str wfs-get-features-body-str]]
+            [ged.wfs :refer [wfs-tx-jsons-str wfs-get-features-body-str]]
             [cognitect.transit :as t]))
 
 (rf/reg-event-fx
@@ -140,7 +139,6 @@
 (rf/reg-event-db
  ::wfs-search-res
  (fn-traced [db [_ ea]]
-            (js/console.log "res" ea)
             (assoc db :ged.map/wfs-search-res ea)))
 
 (rf/reg-event-fx

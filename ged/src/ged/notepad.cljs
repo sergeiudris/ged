@@ -4,7 +4,6 @@
             [ged.core :refer [deep-merge]]
             ["ol/format/filter" :as OlFilter]))
 
-
 #_(OlFilter/like "name" "Mississippi*")
 
 #_(OlFilter/ilike "name" "Mississippi*")
@@ -130,5 +129,21 @@
     {:method "get"})
    (.then (fn [r] (js/console.log r))))
 
+#_(->>
+   (wfs-get-features-body {:offset 0
+                           :limit 10
+                           :featurePrefix "dev"
+                           :featureTypes ["usa_major_cities"]})
+   (.serializeToString (js/XMLSerializer.)))
 
-
+#_(->
+   (fetch-geosrv-edn
+    "/wfs"
+    {:method "post"
+     :body (->
+            (wfs-get-features-body {:offset 0
+                                    :limit 10
+                                    :featurePrefix "dev"
+                                    :featureTypes ["usa_major_cities"]})
+            (xml->str))})
+   (.then (fn [r] (js/console.log r))))

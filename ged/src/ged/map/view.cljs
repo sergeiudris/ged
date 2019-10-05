@@ -5,6 +5,7 @@
              [re-frame.core :as rf]
              [ged.map.subs :as subs]
              [ged.map.evs :as evs]
+             [ged.map.core]
              ["antd/lib/button" :default AntButton]
              ["antd/lib/button/button-group" :default AntButtonGroup]
              ["antd/lib/radio" :default AntRadio]

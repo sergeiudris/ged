@@ -2,7 +2,7 @@
   (:require [re-frame.core :as rf]
             [clojure.repl :as repl]
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
-            [ged.core :refer [wfs-tx-jsons-str wfs-get-features-body-str]]
+            [ged.wfs :refer [wfs-tx-jsons-str wfs-get-features-body-str]]
             [ajax.core :as ajax]
             [clojure.string :as str]
             ["ol/format/filter" :as olf]))
