@@ -42,7 +42,9 @@
 
          :rest {:entries [ged.rest.view]
                 :depends-on #{:main}}
-         }
+
+         :log {:entries [ged.log.view]
+               :depends-on #{:main}}}
 
         :compiler-options
         {:infer-externs    :auto

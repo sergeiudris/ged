@@ -56,6 +56,9 @@
        [ant-menu-item {:key "auth-panel"}
         [ant-icon {:type "user"}]
         [:span "auth"]]
+       [ant-menu-item {:key "log-panel"}
+        [ant-icon {:type "history"}]
+        [:span "log"]]
        #_[ant-menu-item {:key "monitor-panel"}
           [ant-icon {:type "monitor"}]
           [:span "monitor"]]])))

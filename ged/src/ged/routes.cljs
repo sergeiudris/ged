@@ -18,7 +18,8 @@
                   "map" :map
                   "feats" :feats
                   "rest" :rest
-                  "auth" :auth}])
+                  "auth" :auth
+                  "log" :log}])
 
 #_(def _ (events/listen history EventType.NAVIGATE
                       (fn [e]

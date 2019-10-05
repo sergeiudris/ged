@@ -39,6 +39,7 @@
     "feats" {:panel [(resolve 'ged.feats.view/panel)]}
     "rest" {:panel [(resolve 'ged.rest.view/panel)]}
     "auth" {:panel [(resolve 'ged.auth.view/panel)]}
+    "log" {:panel [(resolve 'ged.log.view/panel)]}
     [:div (str "no panel for module: " module-name)]))
 
 (defn module->panel
@@ -103,6 +104,7 @@
     :feats-panel [panel-defered "feats"]
     :auth-panel [panel-defered "auth"]
     :rest-panel [panel-defered "rest"]
+    :log-panel [panel-defered "log"]
     nil [:div "loading..."]
     [not-found-panel panel-name]))
 
