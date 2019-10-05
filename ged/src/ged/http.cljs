@@ -67,7 +67,9 @@
    :resources {:gs.rest.ns/id {:resolve-http (fn [ctx])
                                :resolve-db (fn [{:keys [db]} [id _]]
                                              (get-in db [:ged.db.core/namespaces id]))
-                               :expire 10000}}
+                               :expire 10000
+                               :requires []
+                               }}
    })
 
 (defn reverse-distinct
