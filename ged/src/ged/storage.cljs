@@ -107,7 +107,8 @@
         pfs (assoc (:ged.db.core/profiles db) k pf)]
     (do
       (assoc-in-store! [:profiles] pfs))
-    {:db (assoc db :ged.db.core/profiles pfs)})))
+    {:db (assoc db :ged.db.core/profiles pfs)
+     })))
 
 (rf/reg-event-fx
  ::remove-profile
@@ -139,12 +140,14 @@
   (let [apk (aget ea "key")
         profile-db (read-profile-db apk)
         profiles (read-profiles)]
-    (do (assoc-in-store! [:ged.db.core/active-profile-key] apk))
+    (do (assoc-in-store! [:active-profile-key] apk))
     {:db (merge
           db
           (or profile-db ged.db/default-db)
           {:ged.db.core/active-profile-key apk
-           :ged.db.core/profiles (merge (:ged.db.core/profiles db) profiles)})})))
+           :ged.db.core/profiles (merge (:ged.db.core/profiles db) profiles)})
+     :dispatch [:ant-message {:msg "profile activated"}]
+     })))
 
 (rf/reg-event-fx
  ::update-profiles
@@ -153,6 +156,6 @@
   (let [pfs (deep-merge (:ged.db.core/profiles db) ea)]
     (do
       (assoc-in-store! [:profiles] pfs))
-    {:db (update-in db [:ged.db.core/profiles] assoc pfs)
+    {:db (assoc-in db [:ged.db.core/profiles] pfs)
      :dispatch-n (list
                   [:ant-message {:msg "profiles updated" :dur 1}])})))

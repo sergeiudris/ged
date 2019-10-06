@@ -48,7 +48,8 @@
     :render (fn [t r i] (when t
                           (r/as-element
                            [ant-input
-                            {:defaultValue t}])))}
+                            {:ref (fn [el] (add-cell-ref el r :proxy-host))
+                             :defaultValue t}])))}
    {:title "username"
     :key :username
     :align "center"
@@ -56,14 +57,16 @@
     :render (fn [t r i] (when t
                           (r/as-element
                            [ant-input
-                            {:defaultValue t}])))}
+                            {:ref (fn [el] (add-cell-ref el r :username))
+                             :defaultValue t}])))}
    {:title "password"
     :key :password
     :dataIndex :password
     :render (fn [t r i] (when t
                           (r/as-element
                            [ant-input-password
-                            {:visibilityToggle true
+                            {:ref (fn [el] (add-cell-ref el r :password))
+                             :visibilityToggle true
                              :defaultValue t}])))}
    {:title ""
     :key :active?
@@ -112,9 +115,10 @@
   [refs]
   (reduce (fn [a [k v]]
             (let [nv (reduce (fn [a1 [k1 v1]]
-                               (if (.-state v1)
-                                 (assoc a1 k1 (.. v1 -state -value))
-                                 (assoc a1 k1 v1))) {} (seq v))]
+                               (if (.-input v1)
+                                 (assoc a1 k1 (.. v1 -input -value))
+                                 (assoc a1 k1 v1)
+                                 )) {} (seq v))]
               (assoc a k nv))) {} (seq refs)))
 
 (defn profiles-table

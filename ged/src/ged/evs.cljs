@@ -110,6 +110,8 @@
                   apk (:ged.db.core/active-profile-key db)
                   uname (get-in db [:ged.db.core/profiles apk :username])
                   pass (get-in db [:ged.db.core/profiles apk :password])]
+              (js/console.log uname)
+              (js/console.log pass)
               {:http-xhrio {:method method
                             :uri uri
                   ;  :response-format (ajax.edn/edn-response-format)
