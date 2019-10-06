@@ -171,9 +171,8 @@
  ::activate-profile
  (fn-traced
   [{:keys [db]} [_ ea]]
-  (js/console.log ea)
-  (let []
-    {:db db})))
+  (let [k (aget ea "key")]
+    {:db (assoc db :ged.db.core/active-profile-key k)})))
 
 (rf/reg-event-fx
  ::update-profiles

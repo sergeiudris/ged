@@ -43,3 +43,8 @@
     (filterv (fn [pf]
                (:active? pf)))
     (first))))
+
+(rf/reg-sub
+ ::active-profile-key
+ (fn [db _]
+   (:ged.db.core/active-profile-key db)))

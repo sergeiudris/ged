@@ -30,7 +30,8 @@
 
 
 (defn profiles-columns
-  [{:keys [add-cell-ref]}]
+  [{:keys [add-cell-ref
+           active-profile-key]}]
   [#_{:title "key"
       :key :key
       :dataIndex :key}
@@ -67,11 +68,11 @@
    {:title ""
     :key :active?
     :align "center"
-    :dataIndex :active?
-    :render (fn [t r i] (when t
-                          (r/as-element
-                           [ant-tag {:color "green"} "active"])))}
-   
+    :render (fn [t r i] 
+              (when (= (aget r "key") active-profile-key)
+                (r/as-element
+                 [ant-tag {:color "green"} "active"]))
+              )}
    {:title ""
     :key "action"
     :width "32px"
@@ -119,10 +120,11 @@
 (defn profiles-table
   []
   (let [adata (rf/subscribe [:ged.subs/profiles])
-        refs (atom {})
-        ]
+        aapk (rf/subscribe [:ged.subs/active-profile-key])
+        refs (atom {})]
     (fn []
       (let [add-cell-ref (create-add-cell-ref refs)
+            apk @aapk
             items (vals @adata)]
         [ant-table {:show-header true
                     :size "small"
@@ -142,7 +144,8 @@
                                  :title "save changes"}]]))
                     :row-key :key
                     :style {:height "30%" :overflow-y "auto"}
-                    :columns (profiles-columns {:add-cell-ref add-cell-ref})
+                    :columns (profiles-columns {:active-profile-key apk
+                                                :add-cell-ref add-cell-ref})
                     :dataSource items
                     :bordered true
                     :scroll {;  :x "max-content" 
@@ -199,6 +202,8 @@
   (let []
     (fn []
       [:section
+       [ant-row "profiles"]
+       [:br]
        [profiles-table]
        [:br]
        [:br]
