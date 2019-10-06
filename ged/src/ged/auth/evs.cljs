@@ -17,6 +17,6 @@
          password (:password ea)]
      {:dispatch [:ant-message {:msg "credentials applied"}]
       :db
-      (merge db {:ged.core/username username
-                 :ged.core/password password})})))
+      (merge db {:ged.db.core/username username
+                 :ged.db.core/password password})})))
 

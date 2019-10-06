@@ -49,7 +49,7 @@
            [ant-input {:value @proxy-path
                        :on-change
                        #(rf/dispatch [:ged.settings.events/set
-                                      :ged.settings/proxy-path
+                                      :ged.db.auth/proxy-path
                                       (.. % -target -value)])}]]
           [ant-col {:span 4}
            [ant-button
@@ -64,7 +64,7 @@
            [ant-input {:value @proxy-geoserver-host
                        :on-change
                        #(rf/dispatch [::evs/set
-                                      :ged.settings/proxy-geoserver-host
+                                      :ged.db.auth/proxy-geoserver-host
                                       (.. % -target -value)])}]]
           [ant-col {:span 4}
            [ant-button 
@@ -82,7 +82,7 @@
            [ant-input {:value @geoserver-host
                        :on-change
                        #(rf/dispatch [::evs/set 
-                                      :ged.settings/geoserver-host
+                                      :ged.db.auth/geoserver-host
                                       (.. % -target -value)])}]]]
          ;
          ]

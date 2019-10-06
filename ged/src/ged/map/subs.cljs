@@ -4,7 +4,7 @@
 (rf/reg-sub
  ::module-count
  (fn [db _]
-   (:ged.core/module-count db)))
+   (:ged.db.core/module-count db)))
 
 
 
@@ -12,12 +12,12 @@
 (rf/reg-sub
  ::selected-layers-checked
  (fn [db _]
-   (:ged.map/selected-layers-checked db)))
+   (:ged.db.map/selected-layers-checked db)))
 
 (rf/reg-sub
  ::all-layers-checked
  (fn [db _]
-   (:ged.map/all-layers-checked db)))
+   (:ged.db.map/all-layers-checked db)))
 
 (rf/reg-sub
  ::checked-layer-ids
@@ -34,7 +34,7 @@
 (rf/reg-sub
  ::tab-button
  (fn [db _]
-   (:ged.map/tab-button db)))
+   (:ged.db.map/tab-button db)))
 
 (rf/reg-sub
  ::all-layers-visible
@@ -62,13 +62,13 @@
 (rf/reg-sub
  ::all-layers
  (fn [db _]
-   (let [data (:ged.map/fetch-all-layers-res db)]
+   (let [data (:ged.db.map/fetch-all-layers-res db)]
      (get-in data [:layers :layer]))))
 
 (rf/reg-sub
  ::selected-layers
  (fn [db _]
-   (let [ids (:ged.map/selected-layers-ids db)]
+   (let [ids (:ged.db.map/selected-layers-ids db)]
      (mapv (fn [id]
              {:name id
               :href nil}) ids))))
@@ -76,36 +76,36 @@
 (rf/reg-sub
  ::wfs-search-layer-input
  (fn [db _]
-   (:ged.map/wfs-search-layer-input db)))
+   (:ged.db.map/wfs-search-layer-input db)))
 
 (rf/reg-sub
  ::wfs-search-area-type
  (fn [db _]
-   (:ged.map/wfs-search-area-type db)))
+   (:ged.db.map/wfs-search-area-type db)))
 
 (rf/reg-sub
  ::wfs-search-res
  (fn [db _]
-   (:ged.map/wfs-search-res db)))
+   (:ged.db.map/wfs-search-res db)))
 
 (rf/reg-sub
  ::wfs-search-map-click?
  (fn [db _]
    (and
-    (= (:ged.map/wfs-search-area-type db) :area-point)
-    (= (:ged.map/tab-button db) :wfs-search))))
+    (= (:ged.db.map/wfs-search-area-type db) :area-point)
+    (= (:ged.db.map/tab-button db) :wfs-search))))
 
 (rf/reg-sub
  ::wfs-search-area-box?
  (fn [db _]
    (and
-    (= (:ged.map/wfs-search-area-type db) :area-box)
-    (= (:ged.map/tab-button db) :wfs-search))))
+    (= (:ged.db.map/wfs-search-area-type db) :area-box)
+    (= (:ged.db.map/tab-button db) :wfs-search))))
 
 (rf/reg-sub
  ::wfs-search-table-mdata
  (fn [db _]
-   (:ged.map/wfs-search-table-mdata db)))
+   (:ged.db.map/wfs-search-table-mdata db)))
 
 
 (rf/reg-sub
@@ -118,30 +118,30 @@
 (rf/reg-sub
  ::modify-layer-id
  (fn [db _]
-   (:ged.map/modify-layer-id db)))
+   (:ged.db.map/modify-layer-id db)))
 
 (rf/reg-sub
  ::modify-layer-ns
  (fn [db _]
-   (:ged.map/modify-layer-ns db)))
+   (:ged.db.map/modify-layer-ns db)))
 
 (rf/reg-sub
  ::modify-wfs-click?
  (fn [db _]
    (and
-    (not (:ged.map/modifying? db))
-    (:ged.map/modify-layer-id db)
-    (= (:ged.map/tab-button db) :modify))))
+    (not (:ged.db.map/modifying? db))
+    (:ged.db.map/modify-layer-id db)
+    (= (:ged.db.map/tab-button db) :modify))))
 
 (rf/reg-sub
  ::modify-features
  (fn [db _]
-   (let [data (:ged.map/modify-wfs-click-res db)
+   (let [data (:ged.db.map/modify-wfs-click-res db)
          fts (:features data)]
      (vec (take 1 fts)))))
 
 (rf/reg-sub
  ::modifying?
  (fn [db _]
-   (:ged.map/modifying? db)))
+   (:ged.db.map/modifying? db)))
 

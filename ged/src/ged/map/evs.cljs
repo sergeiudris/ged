@@ -10,7 +10,7 @@
  ::tab-button
  (fn-traced [{:keys [db]} [_ ea]]
             (let [kw   (keyword ea)
-                  key :ged.map/tab-button
+                  key :ged.db.map/tab-button
                   v-old (key db)
                   v (if (= kw v-old) nil kw)
                   nxdb (assoc db key v)]
@@ -21,7 +21,7 @@
  ::fetch-all-layers
  (fn-traced
   [{:keys [db]} [_ ea]]
-  (let [proxy-path (:ged.settings/proxy-path db)]
+  (let [proxy-path (:ged.db.auth/proxy-path db)]
     {:dispatch
      [:ged.evs/request
       {:method :get
@@ -36,12 +36,12 @@
 (rf/reg-event-fx
  ::fetch-all-layers-res
  (fn-traced [{:keys [db]} [_ ea]]
-            {:db (assoc db :ged.map/fetch-all-layers-res ea)}))
+            {:db (assoc db :ged.db.map/fetch-all-layers-res ea)}))
 
 (rf/reg-event-fx
  ::selected-layers-checked
  (fn-traced [{:keys [db]} [_ ea]]
-            (let [key :ged.map/selected-layers-checked
+            (let [key :ged.db.map/selected-layers-checked
                   nx (assoc db key ea)]
               {:db nx
                :dispatch [:assoc-in-store [[key] (key nx)]]})))
@@ -49,12 +49,12 @@
 (rf/reg-event-fx
  ::all-layers-checked
  (fn-traced [{:keys [db]} [_ ea]]
-            {:db (assoc db :ged.map/all-layers-checked ea)}))
+            {:db (assoc db :ged.db.map/all-layers-checked ea)}))
 
 (rf/reg-event-fx
  ::add-selected-layers-ids
  (fn-traced [{:keys [db]} [_ ea]]
-            (let [key :ged.map/selected-layers-ids
+            (let [key :ged.db.map/selected-layers-ids
                   v-old (key db)
                   nx (assoc db key
                             (->> (concat v-old ea)
@@ -67,7 +67,7 @@
 (rf/reg-event-fx
  ::remove-selected-layers-id
  (fn-traced [{:keys [db]} [_ ea]]
-            (let [k :ged.map/selected-layers-ids
+            (let [k :ged.db.map/selected-layers-ids
                   v-old (k db)
                   id ea
                   nx (assoc db k
@@ -79,7 +79,7 @@
  ::wfs-search-layer-input
  (fn-traced [{:keys [db]} [_ ea]]
             (let [v ea
-                  k :ged.map/wfs-search-layer-input]
+                  k :ged.db.map/wfs-search-layer-input]
               {:db (assoc db k v)
                :dispatch [:assoc-in-store [[k] v]]})))
 
@@ -87,7 +87,7 @@
  ::wfs-search-area-type
  (fn-traced [{:keys [db]} [_ ea]]
             (let [kw (keyword ea)
-                  k :ged.map/wfs-search-area-type
+                  k :ged.db.map/wfs-search-area-type
                   v-old (k db)
                   v (if (= kw v-old) nil kw)
                   nxdb (assoc db k v)]
@@ -98,17 +98,17 @@
  ::wfs-search
  (fn-traced [{:keys [db]} [_ ea]]
             (let [{:keys [filter]} ea
-                  ftype-input (:ged.map/wfs-search-layer-input db)
-                  last-filter (:ged.map/wfs-search-last-filter db)
+                  ftype-input (:ged.db.map/wfs-search-layer-input db)
+                  last-filter (:ged.db.map/wfs-search-last-filter db)
                   wfs-filter (or filter last-filter)
                   [fpref ftype] (try (str/split ftype-input \:)
                                      (catch js/Error e
                                        (do (js/console.warn e)
                                            ["undefined:undefined"])))
-                  table-mdata (:ged.map/wfs-search-table-mdata db)
-                  total (get-in db [:ged.map/wfs-search-res :total])
+                  table-mdata (:ged.db.map/wfs-search-table-mdata db)
+                  total (get-in db [:ged.db.map/wfs-search-res :total])
                   pag (:pagination table-mdata)
-                  proxy-path (:ged.settings/proxy-path db)
+                  proxy-path (:ged.db.auth/proxy-path db)
                   {:keys [current pageSize]} pag
                   limit (or pageSize 10)
                   offset (or (* pageSize (dec current)) 0)
@@ -139,26 +139,26 @@
                    #_(ajax/transit-response-format {:reader (t/reader :json)})
                    :on-success [::wfs-search-res]
                    :on-failure [::wfs-search-res]}]
-               :db (merge db {:ged.map/wfs-search-last-filter wfs-filter
-                              :ged.map/search-table-mdata
+               :db (merge db {:ged.db.map/wfs-search-last-filter wfs-filter
+                              :ged.db.map/search-table-mdata
                               (merge table-mdata {:pagination (merge pag {:current 1})})})})))
 
 (rf/reg-event-db
  ::wfs-search-res
  (fn-traced [db [_ ea]]
-            (assoc db :ged.map/wfs-search-res ea)))
+            (assoc db :ged.db.map/wfs-search-res ea)))
 
 (rf/reg-event-fx
  ::wfs-search-table-mdata
  (fn-traced [{:keys [db]} [_ ea]]
-            (let [key :ged.map/wfs-search-table-mdata]
+            (let [key :ged.db.map/wfs-search-table-mdata]
               {:dispatch [:ged.map.events/wfs-search {}]
                :db (assoc db key ea)})))
 
 (rf/reg-event-fx
  ::modify-layer
  (fn-traced [{:keys [db]} [_ ea]]
-            (let [key :ged.map/modify-layer-id]
+            (let [key :ged.db.map/modify-layer-id]
               {:dispatch [:ged.map.events/tab-button :modify ]
                :db (merge db
                           {key ea})})))
@@ -167,14 +167,14 @@
  ::modify-wfs-click
  (fn-traced [{:keys [db]} [_ ea]]
             (let [{:keys [filter]} ea
-                  ftype-input (:ged.map/modify-layer-id db)
-                  last-filter (:ged.map/modify-wfs-click-last-filter db)
+                  ftype-input (:ged.db.map/modify-layer-id db)
+                  last-filter (:ged.db.map/modify-wfs-click-last-filter db)
                   wfs-filter (or filter last-filter)
                   [fpref ftype] (try (str/split ftype-input \:)
                                      (catch js/Error e
                                        (do (js/console.warn e)
                                            ["undefined:undefined"])))
-                  proxy-path (:ged.settings/proxy-path db)
+                  proxy-path (:ged.db.auth/proxy-path db)
                   body (wfs-get-features-body-str
                         (merge
                          {:offset 0
@@ -193,34 +193,34 @@
                            :response-format (ajax/json-response-format {:keywords? true})
                            :on-success [::modify-wfs-click-res]
                            :on-failure [::modify-wfs-click-res]}]
-               :db (merge db {:ged.map/modify-wfs-click-last-filter wfs-filter})})))
+               :db (merge db {:ged.db.map/modify-wfs-click-last-filter wfs-filter})})))
 
 (rf/reg-event-fx
  ::modify-wfs-click-res
  (fn-traced [{:keys [db]} [_ ea]]
             (let [fts (:features ea)]
               (merge
-               {:db (assoc db :ged.map/modify-wfs-click-res ea)}
+               {:db (assoc db :ged.db.map/modify-wfs-click-res ea)}
                (when-not (empty? fts)
                  {:dispatch [::modifying? true]})))))
 
 (rf/reg-event-db
  ::modifying?
  (fn-traced [db [_ ea]]
-            (assoc db :ged.map/modifying? ea)))
+            (assoc db :ged.db.map/modifying? ea)))
 
 (rf/reg-event-fx
  ::tx-features
  [(rf/inject-cofx :ged.map.core/modify-features)]
  (fn-traced [{:keys [db modify-features]} [_ ea]]
-            (let [ftype-input (:ged.map/modify-layer-id db)
+            (let [ftype-input (:ged.db.map/modify-layer-id db)
                   [fpref ftype] (try (str/split ftype-input \:)
                                      (catch js/Error e
                                        (do (js/console.warn e)
                                            ["undefined:undefined"])))
-                  fns (:ged.map/modify-layer-ns db)
+                  fns (:ged.db.map/modify-layer-ns db)
                   {:keys [updates]} ea
-                  proxy-path (:ged.settings/proxy-path db)
+                  proxy-path (:ged.db.auth/proxy-path db)
                   updates modify-features
                   body (wfs-tx-jsons-str
                         {:deletes nil
@@ -246,10 +246,10 @@
  (fn-traced [{:keys [db]} [_ id ea]]
             {:dispatch [:ged.map.core/refetch-wms-layer id]
              :db (merge db
-                        {:ged.map/tx-res ea
-                         :ged.map/modifying? false})}))
+                        {:ged.db.map/tx-res ea
+                         :ged.db.map/modifying? false})}))
 
 (rf/reg-event-db
  ::tx-res-fail
  (fn-traced [db [_ ea]]
-            (assoc db :ged.map/tx-res ea)))
+            (assoc db :ged.db.map/tx-res ea)))

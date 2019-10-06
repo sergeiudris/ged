@@ -14,17 +14,17 @@
 (rf/reg-event-fx
  ::search
  (fn-traced [{:keys [db]} [_ ea]]
-   (let [ftype-input (:ged.feats/feature-type-input db)
+   (let [ftype-input (:ged.db.feats/feature-type-input db)
          [fpref ftype] (try (str/split ftype-input \:)
                             (catch js/Error e
                               (do (js/console.warn e)
                                   ["undefined:undefined"])))
-         input (:ged.feats/search-input db)
+         input (:ged.db.feats/search-input db)
          s (or (:input ea) input)
-         table-mdata (:ged.feats/search-table-mdata db)
-         total (get-in db [:ged.feats/search-res :total])
+         table-mdata (:ged.db.feats/search-table-mdata db)
+         total (get-in db [:ged.db.feats/search-res :total])
          pag (:pagination table-mdata)
-         proxy-path (:ged.settings/proxy-path db)
+         proxy-path (:ged.db.auth/proxy-path db)
          {:keys [current pageSize]} pag
          limit (or pageSize 10)
          offset (or (* pageSize (dec current)) 0)
@@ -47,8 +47,8 @@
                    :on-success [::search-res]
                    :on-failure [::search-res]}]
                  [:ged.feats.core/set-editor-xml [:request body]])
-      :db (merge db {:ged.feats/search-input s
-                     :ged.feats/search-table-mdata
+      :db (merge db {:ged.db.feats/search-input s
+                     :ged.db.feats/search-table-mdata
                      (if (:input ea)
                        (merge table-mdata {:pagination (merge pag {:current 1})})
                        table-mdata)})})))
@@ -56,20 +56,20 @@
 (rf/reg-event-db
  ::search-res
  (fn-traced [db [_ ea]]
-            (assoc db :ged.feats/search-res ea)))
+            (assoc db :ged.db.feats/search-res ea)))
 
 (rf/reg-event-fx
  ::tx-feature
  [(rf/inject-cofx :ged.feats.core/get-editor-val [:data])]
  (fn-traced [{:keys [db get-editor-val]} [_ ea]]
-            (let [ftype-input (:ged.feats/feature-type-input db)
+            (let [ftype-input (:ged.db.feats/feature-type-input db)
                   [fpref ftype] (try (str/split ftype-input \:)
                                      (catch js/Error e
                                        (do (js/console.warn e)
                                            ["undefined:undefined"])))
-                  fns (:ged.feats/feature-ns db)
+                  fns (:ged.db.feats/feature-ns db)
                   tx-type (:tx-type ea)
-                  proxy-path (:ged.settings/proxy-path db)
+                  proxy-path (:ged.db.auth/proxy-path db)
                   v (js/JSON.parse get-editor-val)
                   body (wfs-tx-jsons-str
                         {tx-type [v]
@@ -92,7 +92,7 @@
 (rf/reg-event-fx
  ::tx-res-succ
  (fn-traced [{:keys [db]} [_ id ea]]
-            {:db (assoc db :ged.feats/tx-res ea)
+            {:db (assoc db :ged.db.feats/tx-res ea)
              :dispatch-n (list
                           [:ged.feats.core/set-editor-xml [:response ea]]
                           [:ged.map.core/refetch-wms-layer id])}))
@@ -101,13 +101,13 @@
 (rf/reg-event-fx
  ::tx-res-fail
  (fn-traced [{:keys [db]} [_ ea]]
-            {:db (assoc db :ged.feats/tx-res ea)
+            {:db (assoc db :ged.db.feats/tx-res ea)
              :dispatch [:ged.feats.core/set-editor-xml [:response ea]]}))
 
 (rf/reg-event-fx
  ::search-input
  (fn-traced [{:keys [db]} [_ ea]]
-            (let [k :ged.feats/search-input
+            (let [k :ged.db.feats/search-input
                   v ea]
               {:db (assoc db k v)
                })))
@@ -115,14 +115,14 @@
 (rf/reg-event-fx
  ::search-table-mdata
  (fn-traced [{:keys [db]} [_ ea]]
-   (let [key :ged.feats/search-table-mdata]
+   (let [key :ged.db.feats/search-table-mdata]
      {:dispatch [:ged.feats.events/search {}]
       :db (assoc db key ea)})))
 
 (rf/reg-event-fx
  ::select-feature
  (fn-traced [{:keys [db]} [_ ea]]
-            (let [key :ged.feats/select-feature]
+            (let [key :ged.db.feats/select-feature]
               {:db (assoc db key ea)
                :dispatch [:ged.feats.core/set-editor-json [:data ea]]})))
 
@@ -130,13 +130,13 @@
  ::feature-type-input
  (fn-traced [{:keys [db]} [_ ea]]
    (let [v ea
-         k :ged.feats/feature-type-input]
+         k :ged.db.feats/feature-type-input]
      {:db (assoc db k v)
       :dispatch [:assoc-in-store [[k] v]]})))
 
 (rf/reg-event-fx
  ::feature-ns
  (fn-traced [{:keys [db]} [_ ea]]
-            (let [key :ged.feats/feature-ns]
+            (let [key :ged.db.feats/feature-ns]
               {:db (assoc db key ea)})))
 

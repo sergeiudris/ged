@@ -37,7 +37,7 @@
 (rf/reg-event-db
  ::set-active-panel
  (fn-traced [db [_ active-panel]]
-            (assoc db :ged.core/active-panel active-panel)))
+            (assoc db :ged.db.core/active-panel active-panel)))
 
 (rf/reg-event-fx
  :ant-message
@@ -54,14 +54,14 @@
 (rf/reg-event-db
  ::inc-module-count
  (fn-traced [db [_ active-panel]]
-            (let [kw :ged.core/module-count]
+            (let [kw :ged.db.core/module-count]
               (assoc db kw (inc (kw db))))))
 
 (rf/reg-event-fx
  ::apply-server-settings
  (fn-traced [{:keys [db]} [_ eargs]]
-   (let [geoserver-host (:ged.settings/proxy-geoserver-host db)
-         proxy-path (:ged.settings/proxy-path db)
+   (let [geoserver-host (:ged.db.auth/proxy-geoserver-host db)
+         proxy-path (:ged.db.auth/proxy-path db)
          body (str  {:proxy-geoserver-host geoserver-host
                      :proxy-path proxy-path})]
      {:dispatch [:ged.evs/request
@@ -89,14 +89,14 @@
 ;  [(re-frame/)]
  ;[(rf/inject-cofx ::inject/sub [:entity-request-data])]
  (fn-traced [{:keys [db event] :as ctx} [_ eargs]]
-            (let [base-url (get-in db [:ged.core/api :base-url])
+            (let [base-url (get-in db [:ged.db.core/api :base-url])
                   {:keys [method path on-success on-fail
                           params url-params body headers response-format]} eargs
                   uri (str base-url path)
-                  proxy-path (:ged.settings/proxy-path db)
+                  proxy-path (:ged.db.auth/proxy-path db)
                   geoserver-req? (str/starts-with? uri proxy-path)
-                  uname (:ged.core/username db)
-                  pass (:ged.core/password db)]
+                  uname (:ged.db.core/username db)
+                  pass (:ged.db.core/password db)]
               {:http-xhrio {:method method
                             :uri uri
                   ;  :response-format (ajax.edn/edn-response-format)

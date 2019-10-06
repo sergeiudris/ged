@@ -6,6 +6,6 @@
 (rf/reg-event-db
  ::inc-module-count
  (fn-traced [db [_ active-panel]]
-            (let [kw :ged.core/module-count]
+            (let [kw :ged.db.core/module-count]
               (assoc db kw (inc (kw db))))
             ))

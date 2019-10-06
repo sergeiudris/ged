@@ -6,24 +6,24 @@
 (rf/reg-sub
  ::search-res
  (fn [db _]
-   (:ged.feats/search-res db)))
+   (:ged.db.feats/search-res db)))
 
 (rf/reg-sub
  ::search-input
  (fn [db _]
-   (:ged.feats/search-input db)))
+   (:ged.db.feats/search-input db)))
 
 (rf/reg-sub
  ::search-table-mdata
  (fn [db _]
-   (:ged.feats/search-table-mdata db)))
+   (:ged.db.feats/search-table-mdata db)))
 
 (rf/reg-sub
  ::feature-type-input
  (fn [db _]
-   (:ged.feats/feature-type-input db)))
+   (:ged.db.feats/feature-type-input db)))
 
 (rf/reg-sub
  ::feature-ns
  (fn [db _]
-   (:ged.feats/feature-ns db)))
+   (:ged.db.feats/feature-ns db)))

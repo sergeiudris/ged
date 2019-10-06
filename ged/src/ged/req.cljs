@@ -62,7 +62,7 @@
    :profiles {:json {:default? true
                      :headers {"Content-Type" "application/json"}}
               :proxy-path
-              {:url (fn [{:keys [db]}] (:ged.settings/proxy-path db))}
+              {:url (fn [{:keys [db]}] (:ged.db.auth/proxy-path db))}
 
               :wfs-get-feature
               {:profiles [:json :proxy-path]

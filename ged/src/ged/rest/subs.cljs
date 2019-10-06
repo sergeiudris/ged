@@ -6,7 +6,7 @@
 (rf/reg-sub
  ::fetch-selected-url-list
  (fn [db _]
-   (let [res (:ged.rest/fetch-selected-url-res db)]
+   (let [res (:ged.db.rest/fetch-selected-url-res db)]
      (cond
        (:featureTypes res)
        (get-in res [:featureTypes :featureType])))))
@@ -14,13 +14,13 @@
 (rf/reg-sub
  ::selected-url
  (fn [db _]
-   (:ged.rest/selected-url db)))
+   (:ged.db.rest/selected-url db)))
 
 
 (rf/reg-sub
  ::search-table-mdata
  (fn [db _]
-   (:ged.rest/search-table-mdata db)))
+   (:ged.db.rest/search-table-mdata db)))
 
 
 

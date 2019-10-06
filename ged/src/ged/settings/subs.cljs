@@ -4,7 +4,7 @@
 (rf/reg-sub
  ::settings
  (fn [db _]
-   (:ged.settings/settings db)))
+   (:ged.db.settings/settings db)))
 
 
 

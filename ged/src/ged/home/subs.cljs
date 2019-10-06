@@ -4,4 +4,4 @@
 (rf/reg-sub
  ::module-count
  (fn [db _]
-   (:ged.core/module-count db)))
+   (:ged.db.core/module-count db)))

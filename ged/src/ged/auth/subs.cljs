@@ -4,7 +4,11 @@
 (rf/reg-sub
  ::auth
  (fn [db _]
-   (:ged.auth/auth db)))
+   (:ged.db.auth/auth db)))
 
 
 
+(rf/reg-sub
+ ::profiles-table-mdata
+ (fn [db _]
+   (:ged.db.auth/profiles-table-mdata db)))

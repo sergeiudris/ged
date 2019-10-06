@@ -5,17 +5,17 @@
 (rf/reg-sub
  ::active-panel
  (fn [db _]
-   (:ged.core/active-panel db)))
+   (:ged.db.core/active-panel db)))
 
 (rf/reg-sub
  ::module-count
  (fn [db _]
-   (:ged.core/module-count db)))
+   (:ged.db.core/module-count db)))
 
 (rf/reg-sub
  ::api
  (fn [db _]
-   (get-in db [:ged.core/api])))
+   (get-in db [:ged.db.core/api])))
 
 
 #_(fn [_ _]  [(rf/subscribe [:active-attribute]) (rf/subscribe [:entities-table-state])] )
@@ -31,24 +31,24 @@
 (rf/reg-sub
  ::proxy-path
  (fn [db _]
-   (:ged.settings/proxy-path db)))
+   (:ged.db.auth/proxy-path db)))
 
 (rf/reg-sub
  ::proxy-geoserver-host
  (fn [db _]
-   (:ged.settings/proxy-geoserver-host db)))
+   (:ged.db.auth/proxy-geoserver-host db)))
 
 (rf/reg-sub
  ::geoserver-host
  (fn [db _]
-   (:ged.settings/geoserver-host db)))
+   (:ged.db.auth/geoserver-host db)))
 
 (rf/reg-sub
  ::username
  (fn [db _]
-   (:ged.core/username db)))
+   (:ged.db.core/username db)))
 
 (rf/reg-sub
  ::password
  (fn [db _]
-   (:ged.core/password db)))
+   (:ged.db.core/password db)))
