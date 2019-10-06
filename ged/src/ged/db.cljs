@@ -86,6 +86,7 @@
                                                       :pageSizeOptions  ["5" "10" "20"]
                                                       :position "top"
                                                       :total 0
+                                                      :showLessItems true
                                                       :current 1
                                                       :pageSize 25}
                                          :filters {}

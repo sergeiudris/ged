@@ -273,7 +273,7 @@
              :columns all-layers-colums
              :dataSource items
              :on-change (fn [pag fil sor ext]
-                          (rf/dispatch [:ged.feats.events/all-layers-table-mdata
+                          (rf/dispatch [::evs/all-layers-table-mdata
                                         (js->clj {:pagination pag
                                                   :filters fil
                                                   :sorter sor
@@ -286,7 +286,9 @@
                                          (rf/dispatch
                                           [::evs/all-layers-checked keys])
                                          #_(js/console.log keys rows ea))}
-             :pagination (merge pagination {:total total})}]])))))
+             :pagination (merge pagination {:total total
+                                            :showTotal (fn [t rng] t)
+                                            })}]])))))
 
 ; selected layers
 
@@ -360,12 +362,6 @@
              :style {:overflow-y "auto" :max-height "94%"}
              :columns selected-layers-colums
              :dataSource data
-             :on-change (fn [pag fil sor ext]
-                          (rf/dispatch [:ged.feats.events/search-table-mdata
-                                        (js->clj {:pagination pag
-                                                  :filters fil
-                                                  :sorter sor
-                                                  :extra ext} :keywordize-keys true)]))
              :scroll {;  :x "max-content" 
                                 ;  :y 256
                       }
