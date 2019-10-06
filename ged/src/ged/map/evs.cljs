@@ -36,10 +36,7 @@
 (rf/reg-event-fx
  ::fetch-all-layers-res
  (fn-traced [{:keys [db]} [_ ea]]
-            (js/console.log ea)
-            (js/console.log (-> ea :layers :layer count))
-            {}
-            #_{:db (assoc db :ged.db.map/fetch-all-layers-res ea)}))
+            {:db (assoc db :ged.db.map/fetch-all-layers-res ea)}))
 
 (rf/reg-event-fx
  ::selected-layers-checked
@@ -172,6 +169,12 @@
             (let [key :ged.db.map/wfs-search-table-mdata]
               {:dispatch [:ged.map.events/wfs-search {}]
                :db (assoc db key ea)})))
+
+(rf/reg-event-fx
+ ::all-layers-table-mdata
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [key :ged.db.map/all-layers-table-mdata]
+              {:db (assoc db key ea)})))
 
 (rf/reg-event-fx
  ::modify-layer

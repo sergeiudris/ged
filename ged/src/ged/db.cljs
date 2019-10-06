@@ -80,6 +80,18 @@
      :ged.db.map/tab-button nil
      :ged.db.map/fetch-all-layers-res nil
 
+     :ged.db.map/all-layers-table-mdata {:pagination {:showSizeChanger false
+                                                      :showQuickJumper true
+                                                      :defaultPageSize 5
+                                                      :pageSizeOptions  ["5" "10" "20"]
+                                                      :position "top"
+                                                      :total 0
+                                                      :current 1
+                                                      :pageSize 25}
+                                         :filters {}
+                                         :sorter {}
+                                         :extra {:currentDataSource []}}
+
      :ged.db.map/selected-layers-ids ["dev:usa_major_cities"
                                       "dev:usa_major_highways"
                                       #_"dev:world_cities"
@@ -100,6 +112,9 @@
                                          :filters {}
                                          :sorter {}
                                          :extra {:currentDataSource []}}
+
+
+
      :ged.db.map/wfs-search-res nil
      :ged.db.map/wfs-search-last-filter nil
 

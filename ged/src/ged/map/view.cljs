@@ -246,13 +246,15 @@
 (defn all-layers
   []
   (let [avisible (rf/subscribe [::subs/all-layers-visible])
-        all-layers (rf/subscribe [::subs/all-layers])
+        adata (rf/subscribe [::subs/all-layers])
         achecked (rf/subscribe [::subs/all-layers-checked])
-        ]
+        table-mdata (rf/subscribe [::subs/all-layers-table-mdata])]
     (fn []
       (let [visible? @avisible
-            lrs @all-layers
-            checked @achecked]
+            total (:total @adata)
+            items (:items @adata)
+            checked @achecked
+            pagination (:pagination @table-mdata)]
         (when visible?
           [:section {:class "all-layers-container"}
            [ant-row "all layers"]
@@ -267,11 +269,11 @@
             {:show-header true
              :size "small"
              :row-key :name
-             :className ""
+             :style {:overflow-y "auto" :max-height "94%"}
              :columns all-layers-colums
-             :dataSource lrs
+             :dataSource items
              :on-change (fn [pag fil sor ext]
-                          (rf/dispatch [:ged.feats.events/search-table-mdata
+                          (rf/dispatch [:ged.feats.events/all-layers-table-mdata
                                         (js->clj {:pagination pag
                                                   :filters fil
                                                   :sorter sor
@@ -284,7 +286,7 @@
                                          (rf/dispatch
                                           [::evs/all-layers-checked keys])
                                          #_(js/console.log keys rows ea))}
-             :pagination false}]])))))
+             :pagination (merge pagination {:total total})}]])))))
 
 ; selected layers
 
@@ -355,7 +357,7 @@
             {:show-header true
              :size "small"
              :row-key :name
-             :className ""
+             :style {:overflow-y "auto" :max-height "94%"}
              :columns selected-layers-colums
              :dataSource data
              :on-change (fn [pag fil sor ext]

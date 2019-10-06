@@ -62,8 +62,12 @@
 (rf/reg-sub
  ::all-layers
  (fn [db _]
-   (let [data (:ged.db.map/fetch-all-layers-res db)]
-     (get-in data [:layers :layer]))))
+   (let [data (:ged.db.map/fetch-all-layers-res db)
+         pag (get-in db [:ged.db.map/all-layers-table-mdata :pagination])
+         {:keys [current pageSize]} pag
+         xs (->> data :layers :layer)]
+     {:total (count xs)
+      :items (->> xs (drop (* (dec current) pageSize)) (take pageSize) (vec))})))
 
 (rf/reg-sub
  ::selected-layers
@@ -106,6 +110,11 @@
  ::wfs-search-table-mdata
  (fn [db _]
    (:ged.db.map/wfs-search-table-mdata db)))
+
+(rf/reg-sub
+ ::all-layers-table-mdata
+ (fn [db _]
+   (:ged.db.map/all-layers-table-mdata db)))
 
 
 (rf/reg-sub
