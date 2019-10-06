@@ -63,11 +63,13 @@
 
 ; re-frame events
 
+(def default-active-profile-key 0)
+
 (rf/reg-cofx
  :stored-db
  (fn [{:keys [db] :as cofx} ea]
    (let [stored-db  (read-db)
-         apk (:active-profile-key stored-db)
+         apk (or (:active-profile-key stored-db) default-active-profile-key)
          profile-dbs  (:profile-dbs stored-db)
          profiles  (:profiles stored-db)
          profile-db (get-in stored-db [:profile-dbs apk])]

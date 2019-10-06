@@ -41,15 +41,29 @@
 (rf/reg-event-fx
  ::selected-layers-checked
  (fn-traced [{:keys [db]} [_ ea]]
-            (let [key :ged.db.map/selected-layers-checked
-                  nx (assoc db key ea)]
+            (let [v (js->clj ea)
+                  key :ged.db.map/selected-layers-checked
+                  nx (assoc db key v)]
               {:db nx
                :dispatch [:assoc-in-store [[key] (key nx)]]})))
 
 (rf/reg-event-fx
+ ::selected-layers-checked-remove-ids
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [ids ea
+                  k :ged.db.map/selected-layers-checked
+                  v (k db)
+                  nv (filterv (fn [id] (not (some #(= % id) ids)))  v)
+                  nx (assoc db k nv)]
+              {:db nx
+               :dispatch [:assoc-in-store [[k] nv]]})))
+
+(rf/reg-event-fx
  ::all-layers-checked
  (fn-traced [{:keys [db]} [_ ea]]
-            {:db (assoc db :ged.db.map/all-layers-checked ea)}))
+            (let [v (js->clj ea)]
+              {:db (assoc db :ged.db.map/all-layers-checked v)})
+            ))
 
 (rf/reg-event-fx
  ::add-selected-layers-ids
@@ -73,7 +87,9 @@
                   nx (assoc db k
                             (filterv #(not= % id) v-old))]
               {:db nx
-               :dispatch [:assoc-in-store [[k] (k nx)]]})))
+               :dispatch-n (list
+                            [:assoc-in-store [[k] (k nx)]]
+                            [::selected-layers-checked-remove-ids [id]])})))
 
 (rf/reg-event-fx
  ::wfs-search-layer-input
