@@ -54,4 +54,8 @@ tagpush(){
 
 }
 
+hostip(){
+    getent hosts unix.stackexchange.com | awk '{ print $1 }'
+}
+
 "$@"

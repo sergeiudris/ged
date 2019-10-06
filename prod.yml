@@ -14,7 +14,6 @@ services:
       - "25434:5432"
     env_file:
     - geoserver/docker-env/db.env
-    restart: no
     healthcheck:
       test: "exit 0"
 
@@ -25,7 +24,6 @@ services:
       - ./geoserver/.data:/opt/data
     ports:
       - "8600:8080"
-    restart: no
     env_file:
       - geoserver/docker-env/geoserver.env
     depends_on:
@@ -44,7 +42,6 @@ services:
     - db-backups:/backups
     env_file:
     - geoserver/docker-env/db-backups.env
-    restart: no
     depends_on:
       db:
         condition: service_healthy

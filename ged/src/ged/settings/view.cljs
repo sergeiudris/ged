@@ -53,7 +53,7 @@
                                       (.. % -target -value)])}]]
           [ant-col {:span 4}
            [ant-button
-            {:on-click (fn [] (rf/dispatch [:ged.evs/apply-server-settings]) )}
+            {:on-click (fn [] (rf/dispatch [:ged.evs/apply-server-settings]))}
             "apply"]]]
          [:br]
          [ant-row

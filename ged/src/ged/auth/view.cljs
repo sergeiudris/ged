@@ -10,9 +10,7 @@
              ["antd/lib/select" :default AntSelect]
              ["antd/lib/input" :default AntInput]
              ["antd/lib/button" :default AntButton]
-
-             #_["antd/lib/button" :default ant-Button]
-             #_["antd/lib/table" :default AntTable]))
+             ["antd/lib/table" :default AntTable]))
 
 
 (def ant-row (r/adapt-react-class AntRow ))
