@@ -51,18 +51,21 @@
      :ged.db.auth/proxy-geoserver-host "http://geoserver:8080"
      :ged.db.auth/geoserver-host "http://localhost:8600"
 
-     :ged.db.auth/profiles-table-mdata {:pagination {:showSizeChanger false
-                                                     :showQuickJumper true
-                                                     :defaultPageSize 5
-                                                     :pageSizeOptions  ["5" "10" "20"]
-                                                     :position "top"
-                                                     :total 0
-                                                     :current 1
-                                                     :pageSize 10}
-                                        :filters {}
-                                        :sorter {}
-                                        :extra {:currentDataSource []}}
-
+     :ged.db.auth/profiles (into (sorted-map)
+                                 {0 {:key 0
+                                     :host "http://localhost:8600/geoserver"
+                                     :proxy-host  "http://geoserver:8080/geoserver"
+                                     :username "admin"
+                                     :password "myawesomegeoserver"
+                                     :active? true}
+                                  1 {:key 1
+                                     :host "https://example.com/geoserver"
+                                     :proxy-host  "https://example.com/geoserver"
+                                     :username "admin"
+                                     :password "geoserver"
+                                     :active? false}})
+     
+     
      ; map
 
      :ged.db.map/checked-layer-ids ["dev:usa_major_cities"

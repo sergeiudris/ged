@@ -10,7 +10,10 @@
              ["antd/lib/select" :default AntSelect]
              ["antd/lib/input" :default AntInput]
              ["antd/lib/button" :default AntButton]
-             ["antd/lib/table" :default AntTable]))
+             ["antd/lib/table" :default AntTable]
+             ["antd/lib/tag" :default AntTag]
+             ["antd/lib/popconfirm" :default AntPopconfirm]
+   ))
 
 
 (def ant-row (r/adapt-react-class AntRow ))
@@ -22,22 +25,40 @@
 
 (def ant-button (r/adapt-react-class AntButton))
 (def ant-table (r/adapt-react-class AntTable))
-
+(def ant-tag (r/adapt-react-class AntTag))
+(def ant-popconfirm (r/adapt-react-class AntPopconfirm))
 
 
 (def profiles-base-columns
-  [{:title "host"
-    :key "host"
-    :dataIndex "host"}
-   {:title "user"
-    :key "user"
-    :dataIndex "user"}
-   {:title "pass"
-    :key "pass"
-    :dataIndex "pass"}
-   {:title "active"
-    :key "active?"
-    :dataIndex :active?}])
+  [#_{:title "key"
+    :key :key
+    :dataIndex :key}
+   {:title "host"
+    :key :host
+    :dataIndex :host}
+   {:title "proxy-host"
+    :key :proxy-host
+    :dataIndex :proxy-host}
+   {:title "username"
+    :key :username
+    :align "center"
+    :dataIndex :username}
+   {:title "password"
+    :key :password
+    :dataIndex :password
+    :render (fn [t r i] (when t
+                          (r/as-element
+                           [ant-input-password
+                            {:visibilityToggle true
+                             :value t}])))
+    }
+   {:title ""
+    :key :active?
+    :align "center"
+    :dataIndex :active?
+    :render (fn [t r i] (when t
+                          (r/as-element
+                           [ant-tag {:color "green"} "active"])))}])
 
 (def profiles-extra-columns
   [{:title ""
@@ -45,80 +66,77 @@
     :width "32px"
     :render
     (fn [txt rec idx]
-      (let [on-click (fn [ea]
-                       (let [key (keyword (.-key ea))
-                             name (aget rec "name")]
-                         (cond
-                           (= key :remove)
-                           (rf/dispatch
-                            [::evs/remove-selected-layers-id name]))))]
+      (let [on-activate (fn [ea]
+                          (let []
+                            (rf/dispatch
+                             [::evs/activate-profile rec])))
+            on-remove (fn [ea]
+                        (let []
+                          (rf/dispatch
+                           [::evs/remove-profile rec])))]
         (r/as-element
-         [ant-button
-          {:size "small"
-           :icon "down"}])))}])
+         [:section {:style {:display "flex"}}
+          [ant-button
+           {:size "small"
+            :on-click on-activate
+            :type "primary"}
+           "activate"]
+          [ant-popconfirm 
+           {:title "remove profile?" :on-confirm on-remove :okText "yes" :cancelText "no"}
+           [ant-button
+            {:size "small"
+             :type "default"}
+            "del"]
+           ]
+          ]
+         )))}])
 
 (def profiles-columns
   (vec (concat
         profiles-base-columns
         profiles-extra-columns)))
 
+(defn profiles-table-title
+  [data]
+  (r/as-element
+   [ant-button {:on-click #(rf/dispatch [::evs/add-profile])
+                :icon "plus" :size "small"
+                :title "add profile"}]))
+
 (defn profiles-table
   []
-  (let [adata (rf/subscribe [::subs/wfs-search-res])
-        table-mdata (rf/subscribe [::subs/wfs-search-table-mdata])]
+  (let [adata (rf/subscribe [::subs/profiles])]
     (fn []
-      (let [items (:features @adata)
-            total (:totalFeatures @adata)
-            ents items
-            #_(mapv #(-> % :entity (dissoc :db/id)) items)
-            pagination (:pagination @table-mdata)
-            first-item (first items)]
+      (let [items (vals @adata)]
         #_(js/console.log first-item)
         [ant-table {:show-header true
                     :size "small"
-                    :row-key :id
-                    :style {:height "91%" :overflow-y "auto"}
+                    :title profiles-table-title
+                    :row-key :key
+                    :style {:height "30%" :overflow-y "auto"}
                     :columns profiles-columns
-                    :dataSource ents
-                    ; :defaultExpandedRowKeys [(:id first-item)]
-                    :on-change (fn [pag fil sor ext]
-                                 (rf/dispatch [::evs/wfs-search-table-mdata
-                                               (js->clj {:pagination pag
-                                                         :filters fil
-                                                         :sorter sor
-                                                         :extra ext} :keywordize-keys true)]))
+                    :dataSource items
+                    :bordered true
                     :scroll {;  :x "max-content" 
                                 ;  :y 256
                              }
-                        ; :rowSelection {:on-change (fn [keys rows]
-                        ;                             (prn keys)
-                        ;                             )}
-                    :defaultExpandAllRows false
-                    :expandedRowRender
-                    (fn [rec]
-                      (r/as-element
-                       [:div {:style {:max-height "50vh" :overflow-y "auto"}}
-                        (js/JSON.stringify (aget rec "properties") nil "\t")
-                        #_(str (js->clj (aget rec "properties")))]))
-                    :pagination (merge pagination
-                                       {:total total
-                                            ; :on-change #(js/console.log %1 %2)
-                                        })}]))))
+                    :pagination false}]))))
 
 
-(defn panel []
-  (let [username (rf/subscribe [:ged.subs/username])
-        password (rf/subscribe [:ged.subs/password])
+(defn profile-form
+  []
+  (let [apf (rf/subscribe [::subs/active-profile])
         uname (r/atom nil)
         pass (r/atom nil)]
     (fn []
-      (let []
+      (let [username (:user @apf)
+            password (:pass @apf)]
         [:section
          #_[:div "auth"]
          [ant-row
           [ant-col {:span 4} "username"]
           [ant-col {:span 8}
-           [ant-input {:value (or @uname @username)
+           [ant-input {:value (or @uname username)
                        :on-change
                        #(reset! uname (.. % -target -value))}]]]
          [:br]
@@ -126,12 +144,12 @@
           [ant-col {:span 4} "password"]
           [ant-col {:span 8}
            [ant-input-password {:visibilityToggle true
-                                :value (or @pass @password)
+                                :value (or @pass password)
                                 :on-change
                                 #(reset! pass (.. % -target -value))}]]]
 
          [:br]
-         
+
          [ant-row
           [ant-col {:span 12}
            [ant-row {:type "flex" :justify "end"}
@@ -140,11 +158,23 @@
               {:title "Geoserver auth is stateless, credentials will be used in every request"
                :on-click (fn [] (rf/dispatch
                                  [::evs/login
-                                  {:username (or @uname @username)
-                                   :password (or @pass @password)}]))}
+                                  {:username (or @uname username)
+                                   :password (or @pass password)}]))}
               "apply"]]]]]
          ;
          ]
         ;
-        ))))
+        )))
+  )
+
+(defn panel []
+  (let []
+    (fn []
+      [:section
+       [profiles-table]
+       [:br]
+       [:br]
+       #_[profile-form]]
+      
+      )))
 
