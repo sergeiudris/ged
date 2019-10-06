@@ -19,6 +19,8 @@
    ["ol/layer/Vector" :default OlVectorLayer]
    ["ol/interaction/Select" :default OlInteractionSelect]
    ["ol/interaction/Modify" :default OlInteractionModify]
+   ["ol/TileState" :default OlTileState]
+   
    
    )
   )
@@ -69,24 +71,48 @@
                    (set! (.. r -onerror) reject)
                    (.readAsDataURL r blob)))))))))
   
+(defn basic-creds
+  [uname pass]
+  (str "Basic " (js/btoa (str uname ":" pass))))
 
-(defn tile-loader-from-string-body
+(defn url->params-string
+  [url]
+  (->
+   (.-search (js/URL. url))
+   (js/URLSearchParams.)
+   (.toString)))
+
+#_(defn tileLoadFunction
   [tile src]
   (->
-   (to-data-url src)
-   (.then (fn [durl]
-            (js/console.log durl)
-            (set! (.. (.getImage tile) -src) durl))))
-  #_(->
-     (js/fetch src
-               (clj->js {;"headers" {"Authorization"  (auth-creds)}
-                         :method "get"}))
-     (.then (fn [res] (.text res)))
-     (.then (fn [r] (let []
-                      #_(js/console.log r)
-                      #_(set! (.. (.getImage tile) -src) url)
-                      (set! (.. (.getImage tile) -src) (str "data:image/png;" r)))))))
+   (js/fetch src
+         (clj->js
+          {"method" "get"
+           "referer" "no-referer"
+           "headers" {"Authorization" (basic-creds "admin" "hello")}})
+             )
+   (.then (fn [r] (.blob r)))
+   (.then (fn [r]
+            (let [durl (js/URL.createObjectURL  r)]
+              (do (aset (.getImage tile) "src" durl)))))))
 
+
+(defn tileLoadFunction
+  [tile src]
+  (let [xhr (js/XMLHttpRequest.)]
+    (aset xhr "responseType" "blob")
+    (.addEventListener xhr "loadend"
+                       (fn [ev]
+                         (let [data (.-response xhr)]
+                           (if data
+                             (do (aset (.getImage tile) "src"
+                                       (js/URL.createObjectURL  data)))
+                             (do (.setState tile (.-ERROR OlTileState)))))))
+    (.addEventListener xhr "error"
+                       (fn [ev]
+                         (do (.setState tile (.-ERROR OlTileState)))))
+    (.open xhr "GET" src)
+    (.send  xhr)))
 (defn wms-source
   [geoserver-host opts]
   (TileWMS.
@@ -96,7 +122,7 @@
      #_"http://localhost:8801/geoserver/wms" ; works... unclear how
       (str geoserver-host "/wms")
       #_"/geoserver/wms"
-      ; :tileLoadFunction tile-loader-from-string-body
+      :tileLoadFunction tileLoadFunction
       :params {;"LAYERS" "dev:usa_major_cities"
                "TILED" true
                "SRS" "EPSG:3857"
