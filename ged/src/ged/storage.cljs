@@ -146,8 +146,7 @@
           (or profile-db ged.db/default-db)
           {:ged.db.core/active-profile-key apk
            :ged.db.core/profiles (merge (:ged.db.core/profiles db) profiles)})
-     :dispatch [:ant-message {:msg "profile activated"}]
-     })))
+     :dispatch [:ged.evs/apply-server-settings]})))
 
 (rf/reg-event-fx
  ::update-profiles

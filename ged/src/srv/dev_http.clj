@@ -110,7 +110,7 @@
 
 #_(do (pp/pprint @rawrsp))
 
-
+#_(do (count (:body @rawrsp)))
 
 
 
@@ -151,18 +151,23 @@
      :body "world!!"}
 
     (str/starts-with? uri "/geoserver")
-    (let [; path (subs uri (count (get-proxy-path)))
-          path uri
+    (let [ path (subs uri (count (get-proxy-path)))
+          ;path uri
           url (if (not-empty query-string)   (str path "?" query-string) path)
-          req-opts {:throw-entire-message? true
-                    :throw-exceptions false
-                    :method request-method
-                    :url (str (get-geoserver-host) url)
+          req-opts (dissoc
+                    {:throw-entire-message? true
+                     :throw-exceptions false
+                     :method request-method
+                     :url (str (get-geoserver-host) url)
                     ; :as :byte-array
-                    :body body
-                    :headers  (dissoc headers "content-length")
+                     :body body
+                     :headers  (dissoc headers "content-length"
+                                       "host"
+                                       "referer"
+                                       "sec-fetch-mode")
                     ; :basic-auth ["admin" "myawesomegeoserver"]
-                    }
+                     }
+                    )
           rawres (try (client/request     req-opts)
                       (catch Exception e
                         (do

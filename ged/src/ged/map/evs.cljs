@@ -36,7 +36,10 @@
 (rf/reg-event-fx
  ::fetch-all-layers-res
  (fn-traced [{:keys [db]} [_ ea]]
-            {:db (assoc db :ged.db.map/fetch-all-layers-res ea)}))
+            (js/console.log ea)
+            (js/console.log (-> ea :layers :layer count))
+            {}
+            #_{:db (assoc db :ged.db.map/fetch-all-layers-res ea)}))
 
 (rf/reg-event-fx
  ::selected-layers-checked

@@ -71,28 +71,29 @@
 
 (rf/reg-event-fx
  ::apply-server-settings
- (fn-traced [{:keys [db]} [_ eargs]]
-   (let [geoserver-host (:ged.db.auth/proxy-geoserver-host db)
-         proxy-path (:ged.db.core/proxy-path db)
-         body (str  {:proxy-geoserver-host geoserver-host
-                     :proxy-path proxy-path})]
-     {:dispatch [:ged.evs/request
-                 {:method :post
-                  :body body
-                  :headers {"Content-Type" "application/json" #_"text/html; charset=utf-8"}
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [apk (:ged.db.core/active-profile-key db)
+                  proxy-host (get-in db [:ged.db.core/profiles apk :proxy-host])
+                  proxy-path (:ged.db.core/proxy-path db)
+                  body (str  {:proxy-geoserver-host proxy-host
+                              :proxy-path proxy-path})]
+              {:dispatch [:ged.evs/request
+                          {:method :post
+                           :body body
+                           :headers {"Content-Type" "application/json" #_"text/html; charset=utf-8"}
                   ; :path "/geoserver/wfs?exceptions=application/json&outputFormat=application/json"
-                  :path "/update-settings"
-                  :response-format
-                  (ajax/raw-response-format)
+                           :path "/update-settings"
+                           :response-format
+                           (ajax/raw-response-format)
                   ; (ajax/json-response-format {:keywords? true})
-                  :on-success [::apply-server-settings-res]
-                  :on-failure [::apply-server-settings-res]}]
-      :db (merge db {})})))
+                           :on-success [::apply-server-settings-res]
+                           :on-failure [::apply-server-settings-res]}]
+               :db (merge db {})})))
 
 (rf/reg-event-fx
  ::apply-server-settings-res
- (fn-traced [{:keys [db]} [_ eargs]]
-   {:dispatch [:ant-message {:msg "settings applied"}]}))
+ (fn-traced [{:keys [db]} [_ ea]]
+            {:dispatch [:ant-message {:msg "applied"}]}))
 
 ; edn deprecated
 ; https://github.com/JulianBirch/cljs-ajax/blob/master/docs/formats.md#edn
@@ -100,10 +101,10 @@
  ::request
 ;  [(re-frame/)]
  ;[(rf/inject-cofx ::inject/sub [:entity-request-data])]
- (fn-traced [{:keys [db event] :as ctx} [_ eargs]]
+ (fn-traced [{:keys [db event] :as ctx} [_ ea]]
             (let [base-url (get-in db [:ged.db.core/api :base-url])
                   {:keys [method path on-success on-fail
-                          params url-params body headers response-format]} eargs
+                          params url-params body headers response-format]} ea
                   uri (str base-url path)
                   proxy-path (:ged.db.core/proxy-path db)
                   geoserver-req? (str/starts-with? uri proxy-path)
