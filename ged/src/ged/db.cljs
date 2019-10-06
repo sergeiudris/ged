@@ -27,6 +27,24 @@
      :ged.db.core/username "admin"
      :ged.db.core/password "myawesomegeoserver"
 
+     :ged.db.core/active-profile-key 0
+     
+     :ged.db.core/profiles (into (sorted-map)
+                                 {0 {:key 0
+                                     :host "http://localhost:8600/geoserver"
+                                     :proxy-host  "http://geoserver:8080/geoserver"
+                                     :username "admin"
+                                     :password "myawesomegeoserver"
+                                     :active? true}
+                                  1 {:key 1
+                                     :host "https://example.com/geoserver"
+                                     :proxy-host  "https://example.com/geoserver"
+                                     :username "admin"
+                                     :password "geoserver"
+                                     :active? false}})
+
+
+
       ; feats
      :ged.db.feats/search-res nil
      :ged.db.feats/search-input ""
@@ -46,26 +64,9 @@
      :ged.db.feats/feature-type-input "dev:usa_major_cities"
      :ged.db.feats/feature-ns "http://www.opengis.net/wfs/dev"
 
-    ; settings
-     :ged.db.auth/proxy-path "/geoserver"
-     :ged.db.auth/proxy-geoserver-host "http://geoserver:8080"
-     :ged.db.auth/geoserver-host "http://localhost:8600"
 
-     :ged.db.auth/profiles (into (sorted-map)
-                                 {0 {:key 0
-                                     :host "http://localhost:8600/geoserver"
-                                     :proxy-host  "http://geoserver:8080/geoserver"
-                                     :username "admin"
-                                     :password "myawesomegeoserver"
-                                     :active? true}
-                                  1 {:key 1
-                                     :host "https://example.com/geoserver"
-                                     :proxy-host  "https://example.com/geoserver"
-                                     :username "admin"
-                                     :password "geoserver"
-                                     :active? false}})
-     
-     
+
+
      ; map
 
      :ged.db.map/checked-layer-ids ["dev:usa_major_cities"

@@ -11,7 +11,7 @@
    [ged.core :refer [basic-creds]]
    ["antd/lib/message" :default AntMessage]
    [ged.storage]
-   ))
+   [ged.core :refer  [deep-merge]]))
 
 
 #_(defn my-reg-event-db            ;; a replacement for reg-event-db
@@ -27,6 +27,7 @@
     [omni-ceptor interceptors] ;; <-- inject `omni-ceptor`
     handler)))
 
+; core
 
 (rf/reg-event-fx
  ::initialize-db
@@ -42,14 +43,14 @@
 (rf/reg-event-fx
  :ant-message
  (fn-traced [{:keys [db]} [_ ea]]
-   (let [msg (:msg ea)]
-     (.info AntMessage msg 0.5)
-     {})))
+            (let [msg (:msg ea)]
+              (.info AntMessage msg 0.5)
+              {})))
 
 (rf/reg-event-db
  ::set-re-pressed-example
  (fn-traced [db [_ value]]
-   (assoc db :re-pressed-example value)))
+            (assoc db :re-pressed-example value)))
 
 (rf/reg-event-db
  ::inc-module-count
@@ -95,8 +96,9 @@
                   uri (str base-url path)
                   proxy-path (:ged.db.auth/proxy-path db)
                   geoserver-req? (str/starts-with? uri proxy-path)
-                  uname (:ged.db.core/username db)
-                  pass (:ged.db.core/password db)]
+                  apk (:ged.db.core/active-profile-key db)
+                  uname (get-in db [:ged.db.core/profiles apk :username])
+                  pass (get-in db [:ged.db.core/profiles apk :password])]
               {:http-xhrio {:method method
                             :uri uri
                   ;  :response-format (ajax.edn/edn-response-format)
@@ -135,4 +137,48 @@
  (fn-traced [db [_ db-key res]]
             (assoc db db-key res)))
 
+
+; profiles
+
+(rf/reg-event-fx
+ ::add-profile
+ (fn-traced
+  [{:keys [db]} [_ ea]]
+  (let [pfs (:ged.db.core/profiles db)
+        k (->> pfs keys (apply max) inc)
+        pf {:key k
+            :host "http://geoserver:8080/geoserver"
+            :proxy-host "http://localhost:8600/geoserver"
+            :user "admin"
+            :pass "geoserver"}]
+    {:db (update-in db [:ged.db.core/profiles] assoc k pf)})))
+
+(rf/reg-event-fx
+ ::remove-profile
+ (fn-traced
+  [{:keys [db]} [_ ea]]
+  (let [k (aget ea "key")]
+    {:db (update-in db [:ged.db.core/profiles] dissoc k)})))
+
+(rf/reg-event-fx
+ ::update-profile
+ (fn-traced
+  [{:keys [db]} [_ ea]]
+  (let [k (:key ea)]
+    {:db (update-in db [:ged.db.core/profiles k] merge ea)})))
+
+(rf/reg-event-fx
+ ::activate-profile
+ (fn-traced
+  [{:keys [db]} [_ ea]]
+  (js/console.log ea)
+  (let []
+    {:db db})))
+
+(rf/reg-event-fx
+ ::update-profiles
+ (fn-traced
+  [{:keys [db]} [_ ea]]
+  (let []
+    {:db (update-in db [:ged.db.core/profiles] deep-merge ea)})))
 

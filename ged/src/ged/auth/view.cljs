@@ -118,7 +118,7 @@
 
 (defn profiles-table
   []
-  (let [adata (rf/subscribe [::subs/profiles])
+  (let [adata (rf/subscribe [:ged.subs/profiles])
         refs (atom {})
         ]
     (fn []
@@ -153,7 +153,7 @@
 
 (defn profile-form
   []
-  (let [apf (rf/subscribe [::subs/active-profile])
+  (let [apf (rf/subscribe [:ged.subs/active-profile])
         uname (r/atom nil)
         pass (r/atom nil)]
     (fn []

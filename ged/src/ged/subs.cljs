@@ -28,27 +28,18 @@
    (get-in api [:base-url])))
 
 
-(rf/reg-sub
- ::proxy-path
- (fn [db _]
-   (:ged.db.auth/proxy-path db)))
 
 (rf/reg-sub
- ::proxy-geoserver-host
+ ::profiles
  (fn [db _]
-   (:ged.db.auth/proxy-geoserver-host db)))
+   (:ged.db.core/profiles db)))
 
 (rf/reg-sub
- ::geoserver-host
+ ::active-profile
  (fn [db _]
-   (:ged.db.auth/geoserver-host db)))
-
-(rf/reg-sub
- ::username
- (fn [db _]
-   (:ged.db.core/username db)))
-
-(rf/reg-sub
- ::password
- (fn [db _]
-   (:ged.db.core/password db)))
+   (->>
+    (:ged.db.core/profiles db)
+    (vals)
+    (filterv (fn [pf]
+               (:active? pf)))
+    (first))))
