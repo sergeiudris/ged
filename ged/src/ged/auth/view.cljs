@@ -85,7 +85,7 @@
             on-remove (fn [ea]
                         (let []
                           (rf/dispatch
-                           [:ged.evs/remove-profile rec])))]
+                           [:ged.storage/remove-profile rec])))]
         (r/as-element
          [:section {:style {:display "flex"}}
           [ant-button
@@ -132,14 +132,14 @@
                              (r/as-element
                               [:section
                                [ant-button
-                                {:on-click #(rf/dispatch [:ged.evs/add-profile])
+                                {:on-click #(rf/dispatch [:ged.storage/add-profile])
                                  :icon "plus" :size "small"
                                  :title "add profile"}]
                                [ant-button
                                 {:on-click
                                  (fn []
                                    (rf/dispatch
-                                    [:ged.evs/update-profiles (cell-refs->data @refs)]))
+                                    [:ged.storage/update-profiles (cell-refs->data @refs)]))
                                  :icon "save" :size "small"
                                  :title "save changes"}]]))
                     :row-key :key

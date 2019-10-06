@@ -149,36 +149,6 @@
             (assoc db db-key res)))
 
 
-; profiles
-
-(rf/reg-event-fx
- ::add-profile
- (fn-traced
-  [{:keys [db]} [_ ea]]
-  (let [pfs (:ged.db.core/profiles db)
-        k (->> pfs keys (apply max) inc)
-        pf {:key k
-            :host "http://geoserver:8080/geoserver"
-            :proxy-host "http://localhost:8600/geoserver"
-            :user "admin"
-            :pass "geoserver"}]
-    {:db (update-in db [:ged.db.core/profiles] assoc k pf)})))
-
-(rf/reg-event-fx
- ::remove-profile
- (fn-traced
-  [{:keys [db]} [_ ea]]
-  (let [k (aget ea "key")]
-    {:db (update-in db [:ged.db.core/profiles] dissoc k)})))
-
-(rf/reg-event-fx
- ::update-profile
- (fn-traced
-  [{:keys [db]} [_ ea]]
-  (let [k (:key ea)]
-    {:db (update-in db [:ged.db.core/profiles k] merge ea)})))
-
-
 
 
 
