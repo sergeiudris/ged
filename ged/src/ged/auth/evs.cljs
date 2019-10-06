@@ -1,7 +1,8 @@
 (ns ged.auth.evs
   (:require [re-frame.core :as rf]
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
-            [goog.dom]))
+            [goog.dom]
+            [ged.core :refer  [deep-merge]]))
 
 
 
@@ -39,4 +40,11 @@
   (js/console.log ea)
   (let []
     {:db db})))
+
+(rf/reg-event-fx
+ ::update-profiles
+ (fn-traced
+  [{:keys [db]} [_ ea]]
+  (let []
+    {:db (update-in db [:ged.db.auth/profiles] deep-merge ea)})))
 

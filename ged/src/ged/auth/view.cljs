@@ -29,20 +29,33 @@
 (def ant-popconfirm (r/adapt-react-class AntPopconfirm))
 
 
-(def profiles-base-columns
+(defn profiles-columns
+  [{:keys [add-cell-ref]}]
   [#_{:title "key"
-    :key :key
-    :dataIndex :key}
+      :key :key
+      :dataIndex :key}
    {:title "host"
     :key :host
-    :dataIndex :host}
+    :dataIndex :host
+    :render (fn [t r i] (r/as-element
+                         [ant-input
+                          {:ref (fn [el] (add-cell-ref el r :host))
+                           :defaultValue t}]))}
    {:title "proxy-host"
     :key :proxy-host
-    :dataIndex :proxy-host}
+    :dataIndex :proxy-host
+    :render (fn [t r i] (when t
+                          (r/as-element
+                           [ant-input
+                            {:defaultValue t}])))}
    {:title "username"
     :key :username
     :align "center"
-    :dataIndex :username}
+    :dataIndex :username
+    :render (fn [t r i] (when t
+                          (r/as-element
+                           [ant-input
+                            {:defaultValue t}])))}
    {:title "password"
     :key :password
     :dataIndex :password
@@ -50,18 +63,16 @@
                           (r/as-element
                            [ant-input-password
                             {:visibilityToggle true
-                             :value t}])))
-    }
+                             :defaultValue t}])))}
    {:title ""
     :key :active?
     :align "center"
     :dataIndex :active?
     :render (fn [t r i] (when t
                           (r/as-element
-                           [ant-tag {:color "green"} "active"])))}])
-
-(def profiles-extra-columns
-  [{:title ""
+                           [ant-tag {:color "green"} "active"])))}
+   
+   {:title ""
     :key "action"
     :width "32px"
     :render
@@ -81,40 +92,57 @@
             :on-click on-activate
             :type "primary"}
            "activate"]
-          [ant-popconfirm 
+          [ant-popconfirm
            {:title "remove profile?" :on-confirm on-remove :okText "yes" :cancelText "no"}
            [ant-button
             {:size "small"
              :type "default"}
-            "del"]
-           ]
-          ]
-         )))}])
+            "del"]]])))}
+   ]
+  )
 
-(def profiles-columns
-  (vec (concat
-        profiles-base-columns
-        profiles-extra-columns)))
+(defn create-add-cell-ref
+  [at]
+  (fn [el r cell-key]
+    (let [row-key (aget r "key")]
+      (swap! at update-in [row-key] assoc cell-key el))))
 
-(defn profiles-table-title
-  [data]
-  (r/as-element
-   [ant-button {:on-click #(rf/dispatch [::evs/add-profile])
-                :icon "plus" :size "small"
-                :title "add profile"}]))
+(defn cell-refs->data
+  [refs]
+  (reduce (fn [a [k v]]
+            (let [nv (reduce (fn [a1 [k1 v1]]
+                               (if (.-state v1)
+                                 (assoc a1 k1 (.. v1 -state -value))
+                                 (assoc a1 k1 v1))) {} (seq v))]
+              (assoc a k nv))) {} (seq refs)))
 
 (defn profiles-table
   []
-  (let [adata (rf/subscribe [::subs/profiles])]
+  (let [adata (rf/subscribe [::subs/profiles])
+        refs (atom {})
+        ]
     (fn []
-      (let [items (vals @adata)]
-        #_(js/console.log first-item)
+      (let [add-cell-ref (create-add-cell-ref refs)
+            items (vals @adata)]
         [ant-table {:show-header true
                     :size "small"
-                    :title profiles-table-title
+                    :title (fn [_]
+                             (r/as-element
+                              [:section
+                               [ant-button
+                                {:on-click #(rf/dispatch [::evs/add-profile])
+                                 :icon "plus" :size "small"
+                                 :title "add profile"}]
+                               [ant-button
+                                {:on-click
+                                 (fn []
+                                   (js/console.log (cell-refs->data @refs))
+                                   (rf/dispatch [::evs/update-profiles (cell-refs->data @refs)]))
+                                 :icon "save" :size "small"
+                                 :title "save changes"}]]))
                     :row-key :key
                     :style {:height "30%" :overflow-y "auto"}
-                    :columns profiles-columns
+                    :columns (profiles-columns {:add-cell-ref add-cell-ref})
                     :dataSource items
                     :bordered true
                     :scroll {;  :x "max-content" 
