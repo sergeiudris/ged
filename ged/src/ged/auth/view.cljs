@@ -80,11 +80,11 @@
       (let [on-activate (fn [ea]
                           (let []
                             (rf/dispatch
-                             [::evs/activate-profile rec])))
+                             [:ged.evs/activate-profile rec])))
             on-remove (fn [ea]
                         (let []
                           (rf/dispatch
-                           [::evs/remove-profile rec])))]
+                           [:ged.evs/remove-profile rec])))]
         (r/as-element
          [:section {:style {:display "flex"}}
           [ant-button
@@ -130,14 +130,14 @@
                              (r/as-element
                               [:section
                                [ant-button
-                                {:on-click #(rf/dispatch [::evs/add-profile])
+                                {:on-click #(rf/dispatch [:ged.evs/add-profile])
                                  :icon "plus" :size "small"
                                  :title "add profile"}]
                                [ant-button
                                 {:on-click
                                  (fn []
-                                   (js/console.log (cell-refs->data @refs))
-                                   (rf/dispatch [::evs/update-profiles (cell-refs->data @refs)]))
+                                   (rf/dispatch
+                                    [:ged.evs/update-profiles (cell-refs->data @refs)]))
                                  :icon "save" :size "small"
                                  :title "save changes"}]]))
                     :row-key :key

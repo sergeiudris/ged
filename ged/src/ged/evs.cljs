@@ -42,9 +42,9 @@
 
 (rf/reg-event-fx
  :ant-message
- (fn-traced [{:keys [db]} [_ ea]]
-            (let [msg (:msg ea)]
-              (.info AntMessage msg 0.5)
+ (fn-traced [{:keys [db]} [_ {:keys [msg dur]}]]
+            (let []
+              (.info AntMessage msg (or dur 0.5))
               {})))
 
 (rf/reg-event-db
@@ -180,5 +180,6 @@
  (fn-traced
   [{:keys [db]} [_ ea]]
   (let []
-    {:db (update-in db [:ged.db.core/profiles] deep-merge ea)})))
+    {:db (update-in db [:ged.db.core/profiles] deep-merge ea)
+     :dispatch [:ant-message {:msg "profiles updated" :dur 1}]})))
 
