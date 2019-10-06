@@ -36,6 +36,11 @@
                                      :username "admin"
                                      :password "myawesomegeoserver"}
                                   1 {:key 1
+                                     :host "http://localhost:8600/geoserver"
+                                     :proxy-host  "http://geoserver:8080/geoserver"
+                                     :username "admin"
+                                     :password "myawesomegeoserver"}
+                                  2 {:key 2
                                      :host "https://example.com/geoserver"
                                      :proxy-host  "https://example.com/geoserver"
                                      :username "admin"

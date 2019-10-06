@@ -21,13 +21,13 @@
  ::fetch-all-layers
  (fn-traced
   [{:keys [db]} [_ ea]]
-  (let [proxy-path (:ged.db.core/proxy-path db)]
+  (let []
     {:dispatch
      [:ged.evs/request
       {:method :get
        :params {}
        :headers {"Content-Type" "application/json"}
-       :path (str proxy-path "/rest/layers.json")
+       :path "/geoserver/rest/layers.json"
        :response-format (ajax/json-response-format {:keywords? true})
        :on-success [::fetch-all-layers-res]
        :on-failure [::fetch-all-layers-res]}]
@@ -108,7 +108,6 @@
                   table-mdata (:ged.db.map/wfs-search-table-mdata db)
                   total (get-in db [:ged.db.map/wfs-search-res :total])
                   pag (:pagination table-mdata)
-                  proxy-path (:ged.db.core/proxy-path db)
                   {:keys [current pageSize]} pag
                   limit (or pageSize 10)
                   offset (or (* pageSize (dec current)) 0)
@@ -174,7 +173,6 @@
                                      (catch js/Error e
                                        (do (js/console.warn e)
                                            ["undefined:undefined"])))
-                  proxy-path (:ged.db.core/proxy-path db)
                   body (wfs-get-features-body-str
                         (merge
                          {:offset 0
@@ -189,7 +187,7 @@
                            :params {}
                            :body body
                            :headers {"Content-Type" "application/json"}
-                           :path (str proxy-path "/wfs")
+                           :path "/geoserver/wfs"
                            :response-format (ajax/json-response-format {:keywords? true})
                            :on-success [::modify-wfs-click-res]
                            :on-failure [::modify-wfs-click-res]}]
@@ -220,7 +218,6 @@
                                            ["undefined:undefined"])))
                   fns (:ged.db.map/modify-layer-ns db)
                   {:keys [updates]} ea
-                  proxy-path (:ged.db.core/proxy-path db)
                   updates modify-features
                   body (wfs-tx-jsons-str
                         {:deletes nil
@@ -233,7 +230,7 @@
                           {:method :post
                            :body body
                            :headers {"Content-Type" "application/json"}
-                           :path (str proxy-path "/wfs")
+                           :path "/geoserver/wfs"
                            :response-format
                            (ajax/raw-response-format)
                   ; (ajax/json-response-format {:keywords? true})

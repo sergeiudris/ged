@@ -94,7 +94,7 @@
     (deep-merge
      {:url
      #_"http://localhost:8801/geoserver/wms" ; works... unclear how
-      (str geoserver-host "/geoserver/wms")
+      (str geoserver-host "/wms")
       #_"/geoserver/wms"
       ; :tileLoadFunction tile-loader-from-string-body
       :params {;"LAYERS" "dev:usa_major_cities"

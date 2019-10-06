@@ -24,7 +24,6 @@
          table-mdata (:ged.db.feats/search-table-mdata db)
          total (get-in db [:ged.db.feats/search-res :total])
          pag (:pagination table-mdata)
-         proxy-path (:ged.db.core/proxy-path db)
          {:keys [current pageSize]} pag
          limit (or pageSize 10)
          offset (or (* pageSize (dec current)) 0)
@@ -42,7 +41,7 @@
                    :params {}
                    :body body
                    :headers {"Content-Type" "application/json"}
-                   :path (str proxy-path "/wfs")
+                   :path "/geoserver/wfs"
                    :response-format (ajax/json-response-format {:keywords? true})
                    :on-success [::search-res]
                    :on-failure [::search-res]}]
@@ -69,7 +68,6 @@
                                            ["undefined:undefined"])))
                   fns (:ged.db.feats/feature-ns db)
                   tx-type (:tx-type ea)
-                  proxy-path (:ged.db.core/proxy-path db)
                   v (js/JSON.parse get-editor-val)
                   body (wfs-tx-jsons-str
                         {tx-type [v]
@@ -81,7 +79,7 @@
                              {:method :post
                               :body body
                               :headers {"Content-Type" "application/json"}
-                              :path (str proxy-path "/wfs")
+                              :path "/geoserver/wfs"
                               :response-format
                               (ajax/raw-response-format) #_(ajax/json-response-format {:keywords? true})
                               :on-success [::tx-res-succ (str fpref ":" ftype)]

@@ -52,6 +52,5 @@
 (rf/reg-sub
  ::geoserver-host
  (fn [db _]
-   (let [apk (:ged.db.core/active-profile-key db) ]
-     (get-in db [:profiles apk :host])
-     )))
+   (let [apk (:ged.db.core/active-profile-key db)]
+     (get-in db [:ged.db.core/profiles apk :host]))))

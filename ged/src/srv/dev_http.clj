@@ -26,7 +26,7 @@
    :headers {"content-type" "text/plain"}
    :body "Not found."})
 
-(def settings (atom {:proxy-geoserver-host "http://geoserver:8080"
+(def settings (atom {:proxy-geoserver-host "http://geoserver:8080/geoserver"
                      :proxy-path "/geoserver"}))
 
 (defn update-settings!
@@ -150,13 +150,14 @@
      :headers {"content-type" "text/html; charset=utf-8"}
      :body "world!!"}
 
-    (str/starts-with? uri (get-proxy-path))
-    (let [path (subs uri (count (get-proxy-path)))
+    (str/starts-with? uri "/geoserver")
+    (let [; path (subs uri (count (get-proxy-path)))
+          path uri
           url (if (not-empty query-string)   (str path "?" query-string) path)
           req-opts {:throw-entire-message? true
                     :throw-exceptions false
                     :method request-method
-                    :url (str (get-geoserver-host) "/geoserver" url)
+                    :url (str (get-geoserver-host) url)
                     ; :as :byte-array
                     :body body
                     :headers  (dissoc headers "content-length")

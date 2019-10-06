@@ -17,15 +17,14 @@
 (rf/reg-event-fx
  ::fetch-selected-url
  (fn-traced [{:keys [db]} [_ ea]]
-            (let [proxy-path (:ged.db.core/proxy-path db)
-                  selected-url (:ged.db.rest/selected-url db)]
+            (let [selected-url (:ged.db.rest/selected-url db)]
               {:dispatch [:ged.evs/request
                           {:method :get
                            :params {}
                            :headers {"Content-Type" "application/json"
                             ; "Authorization"  (ged.api.geoserver/auth-creds)
                                      }
-                           :path (str proxy-path selected-url)
+                           :path (str "/geoserver" selected-url)
                            :response-format
                            (ajax/json-response-format {:keywords? true})
                            #_(ajax/raw-response-format)
@@ -43,7 +42,6 @@
  [(rf/inject-cofx :ged.rest.core/get-editor-val [:data])]
  (fn-traced [{:keys [db get-editor-val]} [_ ea]]
             (let [tx-type (:tx-type ea)
-                  proxy-path (:ged.db.core/proxy-path db)
                   v (js/JSON.parse get-editor-val)
                   path (:ged.db.rest/selected-item-path db)
                   body (js/JSON.stringify v)]
@@ -54,7 +52,7 @@
                             ; "Authorization"  (ged.api.geoserver/auth-creds)
                                      }
                   ; :path "/geoserver/wfs?exceptions=application/json&outputFormat=application/json"
-                           :path (str proxy-path path)
+                           :path (str "/geoserver" path)
                            :response-format
                            #_(ajax/raw-response-format)
                            (ajax/json-response-format {:keywords? true})
@@ -92,14 +90,13 @@
  (fn-traced [{:keys [db]} [_ ea]]
    (let [href (:href (js->clj ea :keywordize-keys true))]
      (if href
-       (let [path (href->path href)
-             proxy-path (:ged.db.core/proxy-path db)]
+       (let [path (href->path href)]
          {:dispatch [:ged.evs/request
                      {:method :get
                       :headers {"Content-Type" "application/json"
                             ; "Authorization"  (ged.api.geoserver/auth-creds)
                                 }
-                      :path (str proxy-path path)
+                      :path (str "/geoserver" path)
                       :response-format
                       #_(ajax/raw-response-format)
                       (ajax/json-response-format {:keywords? true})

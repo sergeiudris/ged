@@ -35,10 +35,10 @@
         nx (apply (partial deep-merge db) maps)]
     (write-db! nx)))
 
-(defn read-profile
+(defn read-profile-db
   [k]
   (let [db (read-db)]
-    (get-in db [:profiles k])))
+    (get-in db [:profile-dbs k])))
 
 (defn read-profiles
   []
@@ -68,11 +68,12 @@
  (fn [{:keys [db] :as cofx} ea]
    (let [stored-db  (read-db)
          apk (:active-profile-key stored-db)
+         profile-dbs  (:profile-dbs stored-db)
          profiles  (:profiles stored-db)
-         profile (get-in stored-db [:profiles apk])]
+         profile-db (get-in stored-db [:profile-dbs apk])]
      (assoc cofx :stored-db
             (merge db
-                   profile
+                   profile-db
                    {:ged.db.core/profiles profiles
                     :ged.db.core/active-profile-key apk})))))
 
@@ -82,7 +83,7 @@
             (do
               (let [[path v] ea
                     apk (:ged.db.core/active-profile-key db)
-                    combined-path (into [:profiles apk] path)]
+                    combined-path (into [:profile-dbs apk] path)]
                 (assoc-in-store! combined-path v)))
             {}))
 
@@ -92,18 +93,12 @@
  (fn-traced
   [{:keys [db]} [_ ea]]
   (let [apk (aget ea "key")
-        profile (read-profile apk)
+        profile-db (read-profile-db apk)
         profiles (read-profiles)]
-    (js/console.log "activating " (merge
-                                   db
-                                   (or profile ged.db/default-db)
-                                   {:ged.db.core/active-profile-key apk
-                                    :ged.db.core/profiles profiles}))
-    
     (do (assoc-in-store! [:ged.db.core/active-profile-key] apk))
     {:db (merge
           db
-          (or profile ged.db/default-db)
+          (or profile-db ged.db/default-db)
           {:ged.db.core/active-profile-key apk
            :ged.db.core/profiles (merge (:ged.db.core/profiles db) profiles)})})))
 
