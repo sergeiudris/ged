@@ -72,11 +72,6 @@
 
      ; map
 
-     :ged.db.map/checked-layer-ids ["dev:usa_major_cities"
-                                    "dev:usa_major_highways"
-                                    #_"dev:world_cities"
-                                    #_"dev:world_continents"]
-
      :ged.db.map/tab-button nil
      :ged.db.map/fetch-all-layers-res nil
 
@@ -93,8 +88,8 @@
                                          :sorter {}
                                          :extra {:currentDataSource []}}
 
-     :ged.db.map/selected-layers-ids ["dev:usa_major_cities"
-                                      "dev:usa_major_highways"
+     :ged.db.map/selected-layers-ids [#_"dev:usa_major_cities"
+                                      #_"dev:usa_major_highways"
                                       #_"dev:world_cities"
                                       #_"dev:world_continents"]
      :ged.db.map/selected-layers-checked []
