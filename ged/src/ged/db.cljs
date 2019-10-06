@@ -17,9 +17,9 @@
     {; core
 
      :ged.db.core/name "ged"
-     :ged.db.core/count 0
-     :ged.db.core/module-count 0
-     :ged.db.core/active-panel nil
+    ;  :ged.db.core/count 0
+    ;  :ged.db.core/module-count 0
+    ;  :ged.db.core/active-panel nil
      :ged.db.core/conf conf
      :ged.db.core/api {:base-url base-url
                        :search (str base-url "/usda/search")}
@@ -28,7 +28,7 @@
      :ged.db.core/password "myawesomegeoserver"
 
      :ged.db.core/active-profile-key 0
-     
+
      :ged.db.core/profiles (into (sorted-map)
                                  {0 {:key 0
                                      :host "http://localhost:8600/geoserver"
@@ -41,7 +41,7 @@
                                      :username "admin"
                                      :password "geoserver"}})
 
-
+     :ged.db.core/proxy-path "/geoserver"
 
       ; feats
      :ged.db.feats/search-res nil

@@ -81,7 +81,7 @@
       (let [on-activate (fn [ea]
                           (let []
                             (rf/dispatch
-                             [:ged.evs/activate-profile rec])))
+                             [:ged.storage/activate-profile rec])))
             on-remove (fn [ea]
                         (let []
                           (rf/dispatch

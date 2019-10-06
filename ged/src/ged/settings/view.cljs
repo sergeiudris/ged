@@ -49,7 +49,7 @@
            [ant-input {:value @proxy-path
                        :on-change
                        #(rf/dispatch [:ged.settings.events/set
-                                      :ged.db.auth/proxy-path
+                                      :ged.db.core/proxy-path
                                       (.. % -target -value)])}]]
           [ant-col {:span 4}
            [ant-button

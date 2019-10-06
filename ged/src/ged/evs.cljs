@@ -31,9 +31,20 @@
 
 (rf/reg-event-fx
  ::initialize-db
- [(inject-cofx :storagedb)]
- (fn-traced [{:keys [db storagedb] :as coef} av]
-            {:db (merge ged.db/default-db storagedb)}))
+ [(inject-cofx :stored-db)]
+ (fn-traced [{:keys [db stored-db] :as coef} av]
+            {:db (merge
+                  ged.db/default-db
+                  stored-db
+                  {:ged.db.core/profiles
+                   (merge
+                    (:ged.db.core/profiles ged.db/default-db)
+                    (:ged.db.core/profiles stored-db))
+                   :ged.db.core/active-profile-key
+                   (or
+                    (:ged.db.core/active-profile-key stored-db)
+                    (:ged.db.core/active-profile-key ged.db/default-db))}
+                  )}))
 
 (rf/reg-event-db
  ::set-active-panel
@@ -62,7 +73,7 @@
  ::apply-server-settings
  (fn-traced [{:keys [db]} [_ eargs]]
    (let [geoserver-host (:ged.db.auth/proxy-geoserver-host db)
-         proxy-path (:ged.db.auth/proxy-path db)
+         proxy-path (:ged.db.core/proxy-path db)
          body (str  {:proxy-geoserver-host geoserver-host
                      :proxy-path proxy-path})]
      {:dispatch [:ged.evs/request
@@ -94,7 +105,7 @@
                   {:keys [method path on-success on-fail
                           params url-params body headers response-format]} eargs
                   uri (str base-url path)
-                  proxy-path (:ged.db.auth/proxy-path db)
+                  proxy-path (:ged.db.core/proxy-path db)
                   geoserver-req? (str/starts-with? uri proxy-path)
                   apk (:ged.db.core/active-profile-key db)
                   uname (get-in db [:ged.db.core/profiles apk :username])
@@ -167,18 +178,7 @@
   (let [k (:key ea)]
     {:db (update-in db [:ged.db.core/profiles k] merge ea)})))
 
-(rf/reg-event-fx
- ::activate-profile
- (fn-traced
-  [{:keys [db]} [_ ea]]
-  (let [k (aget ea "key")]
-    {:db (assoc db :ged.db.core/active-profile-key k)})))
 
-(rf/reg-event-fx
- ::update-profiles
- (fn-traced
-  [{:keys [db]} [_ ea]]
-  (let []
-    {:db (update-in db [:ged.db.core/profiles] deep-merge ea)
-     :dispatch [:ant-message {:msg "profiles updated" :dur 1}]})))
+
+
 

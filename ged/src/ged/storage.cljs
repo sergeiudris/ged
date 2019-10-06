@@ -2,7 +2,8 @@
   (:require [clojure.repl :as repl]
             [re-frame.core :as rf]
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
-            [ged.core :refer [deep-merge]]))
+            [ged.core :refer [deep-merge]]
+            [ged.db]))
 
 (defn ls-key
   []
@@ -34,6 +35,21 @@
         nx (apply (partial deep-merge db) maps)]
     (write-db! nx)))
 
+(defn read-profile
+  [k]
+  (let [db (read-db)]
+    (get-in db [:profiles k])))
+
+(defn read-profiles
+  []
+  (let [db (read-db)]
+    (get-in db [:profiles])))
+
+(defn read-active-profile-key
+  [k]
+  (let [db (read-db)]
+    (get-in db [:active-profile-key])))
+
 #_(deep-merge-store! {:x 3} {:y 4})
 #_(read-db)
 #_ (remove-db!)
@@ -47,15 +63,57 @@
 
 ; re-frame events
 
+(rf/reg-cofx
+ :stored-db
+ (fn [{:keys [db] :as cofx} ea]
+   (let [stored-db  (read-db)
+         apk (:active-profile-key stored-db)
+         profiles  (:profiles stored-db)
+         profile (get-in stored-db [:profiles apk])]
+     (assoc cofx :stored-db
+            (merge db
+                   profile
+                   {:ged.db.core/profiles profiles
+                    :ged.db.core/active-profile-key apk})))))
+
 (rf/reg-event-fx
  :assoc-in-store
  (fn-traced [{:keys [db]} [_ ea]]
             (do
-              (let [[path v] ea]
-                (assoc-in-store! path v)))
+              (let [[path v] ea
+                    apk (:ged.db.core/active-profile-key db)
+                    combined-path (into [:profiles apk] path)]
+                (assoc-in-store! combined-path v)))
             {}))
 
-(rf/reg-cofx
- :storagedb
- (fn [cofx ea]
-   (assoc cofx :storagedb (read-db))))
+
+(rf/reg-event-fx
+ ::activate-profile
+ (fn-traced
+  [{:keys [db]} [_ ea]]
+  (let [apk (aget ea "key")
+        profile (read-profile apk)
+        profiles (read-profiles)]
+    (js/console.log "activating " (merge
+                                   db
+                                   (or profile ged.db/default-db)
+                                   {:ged.db.core/active-profile-key apk
+                                    :ged.db.core/profiles profiles}))
+    
+    (do (assoc-in-store! [:ged.db.core/active-profile-key] apk))
+    {:db (merge
+          db
+          (or profile ged.db/default-db)
+          {:ged.db.core/active-profile-key apk
+           :ged.db.core/profiles (merge (:ged.db.core/profiles db) profiles)})})))
+
+(rf/reg-event-fx
+ ::update-profiles
+ (fn-traced
+  [{:keys [db]} [_ ea]]
+  (let [pfs (deep-merge (:ged.db.core/profiles db) ea)]
+    (do
+      (assoc-in-store! [:profiles] pfs))
+    {:db (update-in db [:ged.db.core/profiles] assoc pfs)
+     :dispatch-n (list
+                  [:ant-message {:msg "profiles updated" :dur 1}])})))

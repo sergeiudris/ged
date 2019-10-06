@@ -48,3 +48,10 @@
  ::active-profile-key
  (fn [db _]
    (:ged.db.core/active-profile-key db)))
+
+(rf/reg-sub
+ ::geoserver-host
+ (fn [db _]
+   (let [apk (:ged.db.core/active-profile-key db) ]
+     (get-in db [:profiles apk :host])
+     )))

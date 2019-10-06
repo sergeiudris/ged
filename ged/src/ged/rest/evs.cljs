@@ -17,7 +17,7 @@
 (rf/reg-event-fx
  ::fetch-selected-url
  (fn-traced [{:keys [db]} [_ ea]]
-            (let [proxy-path (:ged.db.auth/proxy-path db)
+            (let [proxy-path (:ged.db.core/proxy-path db)
                   selected-url (:ged.db.rest/selected-url db)]
               {:dispatch [:ged.evs/request
                           {:method :get
@@ -43,7 +43,7 @@
  [(rf/inject-cofx :ged.rest.core/get-editor-val [:data])]
  (fn-traced [{:keys [db get-editor-val]} [_ ea]]
             (let [tx-type (:tx-type ea)
-                  proxy-path (:ged.db.auth/proxy-path db)
+                  proxy-path (:ged.db.core/proxy-path db)
                   v (js/JSON.parse get-editor-val)
                   path (:ged.db.rest/selected-item-path db)
                   body (js/JSON.stringify v)]
@@ -93,7 +93,7 @@
    (let [href (:href (js->clj ea :keywordize-keys true))]
      (if href
        (let [path (href->path href)
-             proxy-path (:ged.db.auth/proxy-path db)]
+             proxy-path (:ged.db.core/proxy-path db)]
          {:dispatch [:ged.evs/request
                      {:method :get
                       :headers {"Content-Type" "application/json"
