@@ -146,18 +146,18 @@
                            {:filter wfs-filter})))]
               #_(do (editor-request-set! (prettify-xml body)))
               {:dispatch
-               [:ged.req/request {:profiles [:wfs-get-feature]
+               #_[:ged.req/request {:profiles [:wfs-get-feature]
                        :params {}
                        :body body
                        :headers {"Content-Type" "application/json"}
                        :on-success [::wfs-search-res]
                        :on-failure [::wfs-search-res]}]
-               #_[:ged.evs/request
+               [:ged.evs/request
                   {:method :post
                    :params {}
                    :body body
                    :headers {"Content-Type" "application/json"}
-                   :path (str proxy-path "/wfs")
+                   :path "/geoserver/wfs"
                    :response-format
                    (ajax/json-response-format {:keywords? true})
                    #_(ajax/transit-response-format {:reader (t/reader :json)})
