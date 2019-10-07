@@ -8,3 +8,7 @@
 
 
 
+(rf/reg-sub
+ ::wms-use-auth?
+ (fn [db _]
+   (:ged.db.settings/wms-use-auth? db)))

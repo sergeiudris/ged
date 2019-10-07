@@ -142,6 +142,8 @@
      :ged.db.rest/selected-item-path nil
 
 
+     ; settings 
+     :ged.db.settings/wms-use-auth? true
 
     ;
      }))

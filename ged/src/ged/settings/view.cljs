@@ -11,6 +11,7 @@
              ["antd/lib/select" :default AntSelect]
              ["antd/lib/input" :default AntInput]
              ["antd/lib/button" :default AntButton]
+             ["antd/lib/checkbox" :default AntCheckbox]
 
              #_["antd/lib/button" :default ant-Button]
              #_["antd/lib/table" :default AntTable]))
@@ -22,16 +23,15 @@
 (def ant-select-option (r/adapt-react-class (.-Option AntSelect)))
 (def ant-input (r/adapt-react-class AntInput))
 (def ant-button (r/adapt-react-class AntButton))
+(def ant-checkbox (r/adapt-react-class AntCheckbox))
+
 
 
 (defn panel []
-  (let [ 
-        proxy-path (rf/subscribe [:ged.subs/proxy-path])
-        proxy-geoserver-host (rf/subscribe [:ged.subs/proxy-geoserver-host])
-        geoserver-host (rf/subscribe [:ged.subs/geoserver-host ] )
+  (let [ awms-use-auth? (rf/subscribe [::subs/wms-use-auth?])
         ]
     (fn []
-      (let []
+      (let [wms-use-auth? @awms-use-auth?]
         [:section
          #_[:div "settings"]
          #_[:br]
@@ -44,46 +44,27 @@
               [ant-select-option {:value "hello"} "hello"]
               [ant-select-option {:value "hi"} "hi"]]]]
          #_[ant-row
-          [ant-col {:span 3} "proxy path"]
-          [ant-col {:span 8}
-           [ant-input {:value @proxy-path
-                       :on-change
-                       #(rf/dispatch [:ged.settings.events/set
-                                      :ged.db.core/proxy-path
-                                      (.. % -target -value)])}]]
-          [ant-col {:span 4}
-           [ant-button
-            {:on-click (fn [] (rf/dispatch [:ged.evs/apply-server-settings]))}
-            "apply"]]]
+            [ant-col {:span 3} "proxy path"]
+            [ant-col {:span 8}
+             [ant-input {:value @proxy-path
+                         :on-change
+                         #(rf/dispatch [:ged.settings.events/set
+                                        :ged.db.core/proxy-path
+                                        (.. % -target -value)])}]]
+            [ant-col {:span 4}
+             [ant-button
+              {:on-click (fn [] (rf/dispatch [:ged.evs/apply-server-settings]))}
+              "apply"]]]
          [:br]
          [ant-row
-          [ant-col {:span 3 
-                    :title "will be used for proxying CORS requests"
-                    } "proxy geoserver host"]
+          [ant-col {:span 4} "wms use auth?"]
           [ant-col {:span 8}
-           [ant-input {:value @proxy-geoserver-host
-                       :on-change
-                       #(rf/dispatch [::evs/set
-                                      :ged.db.auth/proxy-geoserver-host
-                                      (.. % -target -value)])}]]
-          [ant-col {:span 4}
-           [ant-button 
-            {:on-click (fn [] (rf/dispatch [:ged.evs/apply-server-settings]))}
-            "apply"]
-           ]
-          ]
-         
+           [ant-checkbox {:checked wms-use-auth?
+                          :on-change
+                          #(rf/dispatch [::evs/set
+                                         :ged.db.settings/wms-use-auth?
+                                         (.. % -target -checked)])}]]]
          [:br]
-         [ant-row
-          [ant-col {:span 3
-                    :title "will be used for wms requests (layer tiles) that do not require CORS"
-                    } "geoserver host"]
-          [ant-col {:span 8}
-           [ant-input {:value @geoserver-host
-                       :on-change
-                       #(rf/dispatch [::evs/set 
-                                      :ged.db.auth/geoserver-host
-                                      (.. % -target -value)])}]]]
          ;
          ]
         ;

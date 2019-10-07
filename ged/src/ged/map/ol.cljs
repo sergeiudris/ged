@@ -96,25 +96,27 @@
             (let [durl (js/URL.createObjectURL  r)]
               (do (aset (.getImage tile) "src" durl)))))))
 
+(defn create-tile-load-fn
+  [{:keys [wms-use-auth?]}]
+  (fn [tile src]
+    (let [xhr (js/XMLHttpRequest.)]
+      (aset xhr "responseType" "blob")
+      (.addEventListener xhr "loadend"
+                         (fn [ev]
+                           (let [data (.-response xhr)]
+                             (if data
+                               (do (aset (.getImage tile) "src"
+                                         (js/URL.createObjectURL  data)))
+                               (do (.setState tile (.-ERROR OlTileState)))))))
+      (.addEventListener xhr "error"
+                         (fn [ev]
+                           (do (.setState tile (.-ERROR OlTileState)))))
+      (.open xhr "GET" src)
+      (.send  xhr))))
 
-(defn tileLoadFunction
-  [tile src]
-  (let [xhr (js/XMLHttpRequest.)]
-    (aset xhr "responseType" "blob")
-    (.addEventListener xhr "loadend"
-                       (fn [ev]
-                         (let [data (.-response xhr)]
-                           (if data
-                             (do (aset (.getImage tile) "src"
-                                       (js/URL.createObjectURL  data)))
-                             (do (.setState tile (.-ERROR OlTileState)))))))
-    (.addEventListener xhr "error"
-                       (fn [ev]
-                         (do (.setState tile (.-ERROR OlTileState)))))
-    (.open xhr "GET" src)
-    (.send  xhr)))
+
 (defn wms-source
-  [geoserver-host opts]
+  [{:keys [geoserver-host wms-use-auth?]} src-opts]
   (TileWMS.
    (clj->js
     (deep-merge
@@ -123,7 +125,7 @@
       #_(str geoserver-host "/wms")
       "/geoserver/wms"
       #_"/geoserver/wms"
-      :tileLoadFunction tileLoadFunction
+      :tileLoadFunction (create-tile-load-fn {:wms-use-auth? wms-use-auth?})
       :params {;"LAYERS" "dev:usa_major_cities"
                "TILED" true
                "SRS" "EPSG:3857"
@@ -135,19 +137,20 @@
                "VERSION" "1.1.1"
                "SERVICE" "WMS"}
       :serverType "geoserver"}
-     opts))))
+     src-opts))))
 
 (defn wms-layer
-  ([geoserver-host id]
-   (wms-layer geoserver-host {:id id} {:params  {"LAYERS" id}}))
-  ([geoserver-host opts src-opts]
-   (let [lr (OlTileLayer.
-             (clj->js
-              (deep-merge
-               {:source (wms-source geoserver-host src-opts)}
-               opts)))]
-     #_(do (.set lr "id" (:id opts)))
-     lr)))
+  [{:keys [geoserver-host id wms-use-auth?] } lr-opts src-opts]
+  (let [lr (OlTileLayer.
+            (clj->js
+             (deep-merge
+              {:source (wms-source
+                        {:geoserver-host geoserver-host
+                         :wms-use-auth? wms-use-auth?}
+                        (deep-merge {:params  {"LAYERS" id}}  src-opts))}
+              lr-opts)))]
+    #_(do (.set lr "id" (:id opts)))
+    lr))
 
 
 
@@ -183,15 +186,15 @@
    (.getSource)
    (.updateParams #js {})))
 
-(defn add-wms-layer
-  [olmap geoserver-host id]
-  (.addLayer olmap (wms-layer geoserver-host id)))
 
 (defn upsert-wms-layer
-  [olmap geoserver-host id]
+  [olmap {:keys [geoserver-host id wms-use-auth?]}]
   (let [lr (id->layer olmap id)]
     (when-not lr
-      (add-wms-layer olmap geoserver-host id))))
+      (.addLayer olmap (wms-layer
+                        {:geoserver-host geoserver-host
+                         :wms-use-auth? wms-use-auth?
+                         :id id} {} {})))))
 
 
 (defn remove-layer

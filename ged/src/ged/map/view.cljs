@@ -130,13 +130,15 @@
      {:display-name "ol-map-layers"
       :component-did-mount
       (fn [this]
-        (let [{:keys [ids geoserver-host]} (r/props this)]
-          (rf/dispatch [:ged.map.core/sync-layer-ids [ids geoserver-host]])))
+        (let [{:keys [ids geoserver-host wms-use-auth?]} (r/props this)]
+          (rf/dispatch [:ged.map.core/sync-layer-ids [ids {:geoserver-host geoserver-host
+                                                           :wms-use-auth? wms-use-auth?}]])))
       :component-did-update
       (fn [this old-argv]
         (let [new-argv (rest (r/argv this))
-              {:keys [ids geoserver-host]} (r/props this)]
-          (rf/dispatch [:ged.map.core/sync-layer-ids [ids geoserver-host]])
+              {:keys [ids geoserver-host wms-use-auth?]} (r/props this)]
+          (rf/dispatch [:ged.map.core/sync-layer-ids [ids {:geoserver-host geoserver-host
+                                                           :wms-use-auth? wms-use-auth?}]])
           #_(js/console.log new-argv old-argv)))
       :component-will-unmount
       (fn [this])
@@ -147,11 +149,15 @@
 (defn ol-map-layers
   []
   (let [geoserver-host (rf/subscribe [:ged.subs/geoserver-host])
-        ids-ref (rf/subscribe [::subs/checked-layer-ids])]
+        ids-ref (rf/subscribe [::subs/checked-layer-ids])
+        awms-use-auth? (rf/subscribe [:ged.settings.subs/wms-use-auth?])
+        ]
     (fn []
       (let [host @geoserver-host
-            ids @ids-ref]
+            ids @ids-ref
+            wms-use-auth? @awms-use-auth?]
         [ol-map-layers-inner {:ids ids
+                              :wms-use-auth? wms-use-auth?
                               :geoserver-host host}]))))
 
 (defn action-buttons

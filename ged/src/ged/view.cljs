@@ -7,6 +7,7 @@
             [shadow.loader :as loader]
             [ged.subs :as subs]
             [ged.home.view]
+            [ged.settings.view]
             [cljs.core.async :refer [<! timeout]]
             [ged.config :as config]
             [clojure.string]
@@ -99,7 +100,7 @@
 (defn- panels [panel-name]
   (case panel-name
     :home-panel [ged.home.view/panel]
-    :settings-panel [panel-defered "settings"]
+    :settings-panel [ged.settings.view/panel]
     :map-panel [panel-defered "map"]
     :feats-panel [panel-defered "feats"]
     :auth-panel [panel-defered "auth"]

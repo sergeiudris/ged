@@ -30,8 +30,6 @@
                           #_routing-example.core
                           #_conduit.core]}
 
-         :settings {:entries [ged.settings.view]
-                    :depends-on #{:main}}
          :map {:entries [ged.map.view]
                :depends-on #{:main}}
          :feats {:entries [ged.feats.view]

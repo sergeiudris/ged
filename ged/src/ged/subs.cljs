@@ -54,3 +54,4 @@
  (fn [db _]
    (let [apk (:ged.db.core/active-profile-key db)]
      (get-in db [:ged.db.core/profiles apk :host]))))
+
