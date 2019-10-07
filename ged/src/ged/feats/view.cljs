@@ -124,7 +124,7 @@
        {
         :style {:width "100%"}
         :size "small"
-        :placeholder "search"
+        :placeholder "search text attributes (select below)"
         :on-search on-change
         :on-select on-select
         :option-label-prop "text"}
