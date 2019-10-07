@@ -135,6 +135,7 @@
 (rf/reg-event-fx
  ::feature-ns
  (fn-traced [{:keys [db]} [_ ea]]
-            (let [key :ged.db.feats/feature-ns]
-              {:db (assoc db key ea)})))
+            (let [k :ged.db.feats/feature-ns]
+              {:db (assoc db k ea)
+               :dispatch [:assoc-in-store [[k] ea]]})))
 
