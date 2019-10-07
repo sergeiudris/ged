@@ -176,7 +176,7 @@
  ::wfs-search-table-mdata
  (fn-traced [{:keys [db]} [_ ea]]
             (let [key :ged.db.map/wfs-search-table-mdata]
-              {:dispatch [:ged.map.events/wfs-search {}]
+              {:dispatch [:ged.map.evs/wfs-search {}]
                :db (assoc db key ea)})))
 
 (rf/reg-event-fx
@@ -189,7 +189,7 @@
  ::modify-layer
  (fn-traced [{:keys [db]} [_ ea]]
             (let [key :ged.db.map/modify-layer-id]
-              {:dispatch [:ged.map.events/tab-button :modify ]
+              {:dispatch [:ged.map.evs/tab-button :modify ]
                :db (merge db
                           {key ea})})))
 
@@ -225,6 +225,32 @@
                :db (merge db {:ged.db.map/modify-wfs-click-last-filter wfs-filter})})))
 
 (rf/reg-event-fx
+ ::infer-feature-ns
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [
+                  ftype-input (:ged.db.map/modify-layer-id db)
+                  [fpref ftype] (try (str/split ftype-input \:)
+                                     (catch js/Error e
+                                       (do (js/console.warn e)
+                                           ["undefined:undefined"])))
+                  path (str  "/geoserver/rest/namespaces/" fpref ".json")
+                  ]
+              {:dispatch [:ged.evs/request
+                          {:method :get
+                           :params {}
+                           :headers {"Content-Type" "application/json"}
+                           :path path
+                           :response-format (ajax/json-response-format {:keywords? true})
+                           :on-success [::infer-feature-ns-res]
+                           :on-failure [::infer-feature-ns-res]}]
+               :db db})))
+
+(rf/reg-event-fx
+ ::infer-feature-ns-res
+ (fn-traced [{:keys [db]} [_ ea]]
+            {:db (assoc db :ged.db.map/infer-feature-ns-res ea)}))
+
+(rf/reg-event-fx
  ::modify-wfs-click-res
  (fn-traced [{:keys [db]} [_ ea]]
             (let [fts (:features ea)]
@@ -247,7 +273,7 @@
                                      (catch js/Error e
                                        (do (js/console.warn e)
                                            ["undefined:undefined"])))
-                  fns (:ged.db.map/modify-layer-ns db)
+                  fns (get-in db [:ged.db.map/infer-feature-ns-res :namespace :uri])
                   {:keys [updates]} ea
                   updates modify-features
                   body (wfs-tx-jsons-str

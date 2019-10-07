@@ -29,9 +29,11 @@
 
 (defn panel []
   (let [ awms-use-auth? (rf/subscribe [::subs/wms-use-auth?])
+        ageometry-name (rf/subscribe [::subs/geometry-name])
         ]
     (fn []
-      (let [wms-use-auth? @awms-use-auth?]
+      (let [wms-use-auth? @awms-use-auth?
+            geometry-name @ageometry-name]
         [:section
          #_[:div "settings"]
          #_[:br]
@@ -57,13 +59,24 @@
               "apply"]]]
          [:br]
          [ant-row
-          [ant-col {:span 4} "wms use auth?"]
+          [ant-col {:span 4} "use auth with /wms requests"]
           [ant-col {:span 8}
-           [ant-checkbox {:checked wms-use-auth?
+           [ant-checkbox {:size "small"
+                          :checked wms-use-auth?
                           :on-change
                           #(rf/dispatch [::evs/set
                                          :ged.db.settings/wms-use-auth?
                                          (.. % -target -checked)])}]]]
+         [:br]
+         [ant-row
+          [ant-col {:span 4} "geometry property name"]
+          [ant-col {:span 8}
+           [ant-input {:size "small"
+                       :value geometry-name
+                       :on-change
+                       #(rf/dispatch [::evs/set
+                                      :ged.db.settings/geometry-name
+                                      (.. % -target -value)])}]]]
          [:br]
          ;
          ]

@@ -149,7 +149,7 @@
 (rf/reg-sub
  ::modify-layer-ns
  (fn [db _]
-   (:ged.db.map/modify-layer-ns db)))
+   (get-in db [:ged.db.map/infer-feature-ns-res :namespace :uri])))
 
 (rf/reg-sub
  ::modify-wfs-click?
@@ -170,4 +170,6 @@
  ::modifying?
  (fn [db _]
    (:ged.db.map/modifying? db)))
+
+
 

@@ -45,10 +45,10 @@
   (:modify-session @astate))
 
 (defn get-modify-features
-  []
+  [opts]
   (->
    (.getFeatures (:source (get-modify-session)))
-   (ol/features->geojson)
+   (ol/features->geojson opts)
    (aget "features")))
 
 
@@ -151,8 +151,9 @@
   (do
     (let [[ev] ea
           coords (.. ev -coordinate)
+          geom-name (:ged.db.settings/geometry-name db)
           geom (ol/point->cir-poly-geom (get-olmap) coords 16)
-          filter (olf/intersects "the_geom"  geom)
+          filter (olf/intersects geom-name  geom)
                     ; wkt (ol/point->wkt-cir-poly {:coords coords :radius 8})
           ]
       {:dispatch [:ged.map.evs/wfs-search {:filter filter}]}))))
@@ -164,8 +165,9 @@
   (do
     (let [[ev] ea
           coords (.. ev -coordinate)
+          geom-name (:ged.db.settings/geometry-name db)
           geom (ol/point->cir-poly-geom (get-olmap) coords 16)
-          filter (olf/intersects "the_geom"  geom)
+          filter (olf/intersects geom-name  geom)
                     ; wkt (ol/point->wkt-cir-poly {:coords coords :radius 8})
           ]
       {:dispatch [:ged.map.evs/modify-wfs-click {:filter filter}]}))))
@@ -198,7 +200,9 @@
   (do
     (let [[ev] ea
           geom (.getGeometry (.-feature ev))
-          filter (olf/intersects "the_geom"  geom)]
+          geom-name (:ged.db.settings/geometry-name db)
+          filter (olf/intersects geom-name  geom)
+          ]
       {:dispatch [:ged.map.evs/wfs-search {:filter filter}]}))))
 
 (rf/reg-event-fx
@@ -230,5 +234,8 @@
 
 (rf/reg-cofx
  ::modify-features
- (fn [cofx [k]]
-   (assoc cofx :modify-features (do (get-modify-features)))))
+ (fn [{:keys [db] :as cofx} [k]]
+   (let [geom-name (:ged.db.settings/geometry-name db)]
+     (assoc cofx :modify-features (do (get-modify-features {:geometry-name geom-name})))
+     )
+   ))

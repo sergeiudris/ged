@@ -64,8 +64,8 @@
                                        :filters {}
                                        :sorter {}
                                        :extra {:currentDataSource []}}
-     :ged.db.feats/feature-type-input "dev:usa_major_cities"
-     :ged.db.feats/feature-ns "http://www.opengis.net/wfs/dev"
+     :ged.db.feats/feature-type-input "" #_"dev:usa_major_cities"
+     :ged.db.feats/feature-ns "" #_"http://www.opengis.net/wfs/dev"
 
 
 
@@ -114,14 +114,15 @@
      :ged.db.map/wfs-search-res nil
      :ged.db.map/wfs-search-last-filter nil
 
-     :ged.db.map/modify-layer-id "dev:usa_major_cities"
-     :ged.db.map/modify-layer-ns "http://www.opengis.net/wfs/dev"
+     :ged.db.map/modify-layer-id "" #_"dev:usa_major_cities"
+     :ged.db.map/modify-layer-ns "" #_"http://www.opengis.net/wfs/dev"
      :ged.db.map/modify-wfs-click-last-filter nil
      :ged.db.map/modify-wfs-click-res nil
      :ged.db.map/modifying? false
      :ged.db.map/tx-res nil
      :ged.db.map/all-layers-search-input ""
-
+     :ged.db.map/infer-feature-ns-res nil
+     
      ; rest
      :ged.db.rest/fetch-selected-url-res nil
      :ged.db.rest/selected-url "/rest/workspaces/dev/featuretypes.json"
@@ -145,6 +146,8 @@
 
      ; settings 
      :ged.db.settings/wms-use-auth? true
+     :ged.db.settings/geometry-name "the_geom"
+
 
     ;
      }))

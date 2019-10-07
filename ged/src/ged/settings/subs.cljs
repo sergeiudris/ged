@@ -12,3 +12,8 @@
  ::wms-use-auth?
  (fn [db _]
    (:ged.db.settings/wms-use-auth? db)))
+
+(rf/reg-sub
+ ::geometry-name
+ (fn [db _]
+   (:ged.db.settings/geometry-name db)))

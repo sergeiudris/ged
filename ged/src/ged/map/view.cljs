@@ -596,6 +596,12 @@
     (fn []
       (let [modifying? @amodifying?]
         [ant-button-group {:size "small"}
+         [ant-button {:title "infer feature namespace"
+                      :icon "api"
+                      :on-click
+                      (fn []
+                        (rf/dispatch [::evs/infer-feature-ns ]))
+                      :type "default"}]
          [ant-button {:title "commit changes"
                       :icon "save"
                       :on-click 
@@ -673,25 +679,28 @@
            ]
         (when visible?
           [:section {:class "all-layers-container"}
-           [:div "modify"]
+           #_[:div "modify"]
            [ant-row
             [ant-col {:style {:text-align "right"}}
              [modify-buttons]]]
            [ant-row
-            [ant-col 
+            [ant-col
              [:span "layer:  "]
              [:b {:style {;:border-bottom "1px solid #dedede"
-                            }} input]
-             [:div layer-ns]
+                          }}input]
+
+
              #_[ant-input {:value input
-                         :read-only true
+                           :read-only true
                         ;  :disabled true
-                         :placeholder "topp:states"
-                         :style {:width "100%"}}]
-             ]]
+                           :placeholder "topp:states"
+                           :style {:width "100%"}}]]]
+           [ant-row
+            [ant-col
+             [:span "feature-ns:  "]
+             [:span layer-ns]]]
            [modify-wfs-click]
-           [modify-features]
-           ])))))
+           [modify-features]])))))
 
 
 (defn panel []

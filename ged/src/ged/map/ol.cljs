@@ -251,7 +251,8 @@
    (.writeFeature ft)))
 
 (defn features->geojson
-  [fts]
+  [fts {:keys [geometry-name]}]
+  (js/console.log geometry-name)
   (let [json (->
             (OlFormatGeoJSON.
              #js {"extractGeometryName" true
@@ -259,7 +260,7 @@
             (.writeFeaturesObject fts))
         edn (js->clj json :keywordize-keys true)
         fts (mapv
-             (fn [ft] (assoc ft :geometry_name "the_geom"))
+             (fn [ft] (assoc ft :geometry_name geometry-name))
              (:features edn))]
     (clj->js (merge
               edn
