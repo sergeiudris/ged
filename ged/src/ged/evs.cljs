@@ -94,7 +94,10 @@
 (rf/reg-event-fx
  ::apply-server-settings-res
  (fn-traced [{:keys [db]} [_ ea]]
-            {:dispatch [:ant-message {:msg "applied"}]}))
+            {
+            ;  :dispatch [:ant-message {:msg "applied"}]
+             
+             }))
 
 ; edn deprecated
 ; https://github.com/JulianBirch/cljs-ajax/blob/master/docs/formats.md#edn
@@ -247,5 +250,4 @@
     (do
       (storage/assoc-in-store! [:profiles] pfs))
     {:db (assoc-in db [:ged.db.core/profiles] pfs)
-     :dispatch-n (list
-                  [:ant-message {:msg "profiles updated" :dur 1}])})))
+     :dispatch-n (list [:ant-message {:msg "profiles updated" :dur 1}])})))

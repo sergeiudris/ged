@@ -42,6 +42,7 @@
   (routes/app-routes)
   (rf/dispatch-sync [::evs/initialize-db])
   (rf/dispatch-sync [::rp/add-keyboard-event-listener "keydown"])
+  (rf/dispatch-sync [::evs/apply-server-settings])
   (dev-setup)
   (mount-root))
 

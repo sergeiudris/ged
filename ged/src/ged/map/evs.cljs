@@ -248,7 +248,8 @@
 (rf/reg-event-fx
  ::infer-feature-ns-res
  (fn-traced [{:keys [db]} [_ ea]]
-            {:db (assoc db :ged.db.map/infer-feature-ns-res ea)}))
+            {:db (assoc db :ged.db.map/infer-feature-ns-res ea)
+             :dispatch [:assoc-in-store [[:ged.db.map/infer-feature-ns-res] ea]]}))
 
 (rf/reg-event-fx
  ::modify-wfs-click-res
