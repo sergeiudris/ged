@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@ant-design/aliyun-theme": "0.0.3",
-    "antd": "3.23.4",
+    "antd": "3.23.6",
     "create-react-class": "15.6.3",
     "highlight.js": "9.15.8",
     "less": "3.10.3",

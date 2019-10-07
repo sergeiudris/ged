@@ -39,6 +39,11 @@
             {:db (assoc db :ged.db.map/fetch-all-layers-res ea)}))
 
 (rf/reg-event-fx
+ ::all-layers-search-input
+ (fn-traced [{:keys [db]} [_ ea]]
+            {:db (assoc db :ged.db.map/all-layers-search-input ea)}))
+
+(rf/reg-event-fx
  ::selected-layers-checked
  (fn-traced [{:keys [db]} [_ ea]]
             (let [v (js->clj ea)
@@ -173,6 +178,7 @@
 (rf/reg-event-fx
  ::all-layers-table-mdata
  (fn-traced [{:keys [db]} [_ ea]]
+            (js/console.log "::all-layers-table-mdata" ea)
             (let [key :ged.db.map/all-layers-table-mdata]
               {:db (assoc db key ea)})))
 

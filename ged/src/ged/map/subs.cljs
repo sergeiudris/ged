@@ -1,5 +1,6 @@
 (ns ged.map.subs
-  (:require [re-frame.core :as rf]))
+  (:require [re-frame.core :as rf]
+            [clojure.string :as str]))
 
 (rf/reg-sub
  ::module-count
@@ -65,9 +66,20 @@
    (let [data (:ged.db.map/fetch-all-layers-res db)
          pag (get-in db [:ged.db.map/all-layers-table-mdata :pagination])
          {:keys [current pageSize]} pag
-         xs (->> data :layers :layer)]
-     {:total (count xs)
-      :items (->> xs (drop (* (dec current) pageSize)) (take pageSize) (vec))})))
+         xs (->> data :layers :layer)
+         input (str/lower-case (:ged.db.map/all-layers-search-input db))
+         xs-flt (if-not (empty? input)
+                  (filterv
+                   #(str/includes? (str/lower-case (:name %)) input)
+                  ;  #(re-find (js/RegExp. input "i") (:name %))
+                   xs)
+                  xs)
+         ]
+     {:total (count xs-flt)
+      :items (->> xs-flt
+                  (drop (* (dec current) pageSize))
+                  (take pageSize)
+                  (vec))})))
 
 (rf/reg-sub
  ::selected-layers
@@ -115,6 +127,11 @@
  ::all-layers-table-mdata
  (fn [db _]
    (:ged.db.map/all-layers-table-mdata db)))
+
+(rf/reg-sub
+ ::all-layers-search-input
+ (fn [db _]
+   (:ged.db.map/all-layers-search-input db)))
 
 
 (rf/reg-sub

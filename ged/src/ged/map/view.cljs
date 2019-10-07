@@ -31,7 +31,7 @@
 (def ant-menu-item (r/adapt-react-class (.-Item AntMenu)))
 (def ant-menu-divider (r/adapt-react-class (.-Divider AntMenu)))
 (def ant-input (r/adapt-react-class AntInput))
-
+(def ant-input-search (r/adapt-react-class (.-Search AntInput)))
 
 #_(js/console.log
    (js/document.getElementById
@@ -259,16 +259,19 @@
   (let [avisible (rf/subscribe [::subs/all-layers-visible])
         adata (rf/subscribe [::subs/all-layers])
         achecked (rf/subscribe [::subs/all-layers-checked])
-        table-mdata (rf/subscribe [::subs/all-layers-table-mdata])]
+        table-mdata (rf/subscribe [::subs/all-layers-table-mdata])
+        ainput (rf/subscribe [::subs/all-layers-search-input])]
     (fn []
       (let [visible? @avisible
             total (:total @adata)
+            input @ainput
             items (:items @adata)
             checked @achecked
             pagination (:pagination @table-mdata)]
+        #_(js/console.log "items" items)
         (when visible?
           [:section {:class "all-layers-container"}
-           [ant-row "all layers"]
+           #_[ant-row "all layers"]
            [ant-row
             [ant-col {:style {:text-align "right"}}
              [ant-button-group {:size "small"}
@@ -276,14 +279,23 @@
                            :on-click
                            #(rf/dispatch
                              [::evs/fetch-all-layers])}]]]]
+
+           [:br]
+           [ant-row
+            [ant-col
+             [ant-input-search {:size "small"
+                                :enterButton true
+                                :on-search (fn [s] (rf/dispatch
+                                                    [::evs/all-layers-search-input s]))}]]]
            [ant-table
             {:show-header true
              :size "small"
              :row-key :name
-             :style {:overflow-y "auto" :max-height "94%"}
+             :style {:overflow-y "auto" :max-height "90%"}
              :columns all-layers-colums
              :dataSource items
              :on-change (fn [pag fil sor ext]
+                          (js/console.log "change" pag)
                           (rf/dispatch [::evs/all-layers-table-mdata
                                         (js->clj {:pagination pag
                                                   :filters fil
@@ -297,9 +309,9 @@
                                          (rf/dispatch
                                           [::evs/all-layers-checked keys])
                                          #_(js/console.log keys rows ea))}
-             :pagination (merge pagination {:total total
-                                            :showTotal (fn [t rng] t)
-                                            })}]])))))
+             :pagination (clj->js
+                          (merge pagination {:total total
+                                             :showTotal (fn [t rng] t)}))}]])))))
 
 ; selected layers
 

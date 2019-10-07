@@ -76,14 +76,14 @@
      :ged.db.map/fetch-all-layers-res nil
 
      :ged.db.map/all-layers-table-mdata {:pagination {:showSizeChanger false
-                                                      :showQuickJumper true
+                                                      :showQuickJumper false
                                                       :defaultPageSize 5
                                                       :pageSizeOptions  ["5" "10" "20"]
                                                       :position "top"
                                                       :total 0
                                                       :showLessItems true
                                                       :current 1
-                                                      :pageSize 25}
+                                                      :pageSize 24}
                                          :filters {}
                                          :sorter {}
                                          :extra {:currentDataSource []}}
@@ -120,6 +120,7 @@
      :ged.db.map/modify-wfs-click-res nil
      :ged.db.map/modifying? false
      :ged.db.map/tx-res nil
+     :ged.db.map/all-layers-search-input ""
 
      ; rest
      :ged.db.rest/fetch-selected-url-res nil
