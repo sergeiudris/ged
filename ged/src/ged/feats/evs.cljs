@@ -48,6 +48,7 @@
                                "version" "2.0.0"
                                     ;  "version" "1.1.0"
                                "request" "GetFeature"
+                               "srsName" "EPSG:3857"
                                "count" 10
                                "typeNames" "dev:usa_major_cities"
                                "exceptions" "application/json"
