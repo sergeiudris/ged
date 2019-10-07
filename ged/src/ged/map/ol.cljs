@@ -39,10 +39,10 @@
     (merge {:projection "EPSG:3857"
             :maxZoom 28
 
-            ; :center [0 0]
-            ; :zoom 0
-            :center [-11000000, 4600000]
-            :zoom 4
+            :center [0 0]
+            :zoom 0
+            ; :center [-11000000, 4600000]
+            ; :zoom 4
             }
            opts))))
 
@@ -156,7 +156,10 @@
                          :wms-use-auth? wms-use-auth?
                          :credentials credentials}
                         (deep-merge {:params  {"LAYERS" id}}  src-opts))}
-              lr-opts)))]
+              (merge
+               lr-opts
+               {"id" id})
+              )))]
     #_(do (.set lr "id" (:id opts)))
     lr))
 
