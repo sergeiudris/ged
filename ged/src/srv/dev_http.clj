@@ -31,6 +31,7 @@
 
 (defn update-settings!
   [m]
+  (prn "updating settings")
   (prn m)
   (reset! settings
           (merge @settings m)))
@@ -60,10 +61,17 @@
 
   (Class/forName "[B")
   (respond [body ^HttpServerExchange exchange]
-    (do
+    #_(do
+      (prn "protocol RespondBody reposponding to [B")
       (reset! ut-body body)
       (reset! ut-exchange exchange)
-      (.send ^Sender (.getResponseSender exchange) body)))
+      (.send ^Sender (.getResponseSender exchange) body)
+      )
+    (do 
+      (with-open [^InputStream b (io/input-stream body)]
+        (io/copy b (.getOutputStream exchange)))
+      )
+    )
 
   ; String
   ; (respond [body ^HttpServerExchange exchange]
@@ -159,7 +167,7 @@
                      :throw-exceptions false
                      :method request-method
                      :url (str (get-geoserver-host) url)
-                    ; :as :byte-array
+                     :as (if (str/includes? url "/wms") :byte-array :string)
                      :body body
                      :headers  (dissoc headers "content-length"
                                        "host"
@@ -172,7 +180,7 @@
                       (catch Exception e
                         (do
                           (reset! ex e)
-                          {:status 500
+                          {:status 600
                            :headers {"content-type" "text/html; charset=utf-8"}
                            :body (str (.getMessage e))})))
           hdrs (:headers rawres)]
