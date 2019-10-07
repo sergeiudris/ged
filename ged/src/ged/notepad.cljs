@@ -159,7 +159,7 @@
                                      "count" 10
                                      "typeNames" "dev:usa_major_cities"
                                      "exceptions" "application/json"
-                                     "cql_filter" "NAME ilike '%hono%' "
+                                     "cql_filter" "NAME ilike \n '%hono%' "
                                      "outputFormat" "application/json"} :str true))
     {:method "get"})
    (.then (fn [r] (js/console.log r))))

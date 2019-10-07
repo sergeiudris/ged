@@ -5,6 +5,7 @@
             [ged.wfs :refer [wfs-tx-jsons-str wfs-get-features-body-str]]
             [ajax.core :as ajax]
             [clojure.string :as str]
+            [ged.core :refer [url-search-params]]
             ["ol/format/filter" :as olf]))
 
 #_(repl/dir xml)
@@ -38,7 +39,30 @@
                    #_(str "NAME ILIKE " s) 
                    (olf/like "NAME" (str "*" s "*") "*" "." "!" false)})))]
      #_(js/console.log (olf/like "NAME" (str "*" "hello" "*") "*" "." "!" false))
-     {:dispatch-n (list
+     {:dispatch-n (list 
+                   [:ged.evs/request
+                    {:method :get
+                     :path "/geoserver/wfs"
+                     :params (merge
+                              {"service" "wfs"
+                               "version" "2.0.0"
+                                    ;  "version" "1.1.0"
+                               "request" "GetFeature"
+                               "count" 10
+                               "typeNames" "dev:usa_major_cities"
+                               "exceptions" "application/json"
+
+                               "outputFormat" "application/json"}
+                              (when-not (empty? s)
+                                {"cql_filter" (str "NAME ilike \n '%" s "%'")}))
+                     :headers {}
+                     :response-format (ajax/json-response-format {:keywords? true})
+                     :on-success [::search-res]
+                     :on-failure [::search-res]}
+                    ]
+                   )}
+     
+     #_{:dispatch-n (list
                  [:ged.evs/request
                   {:method :post
                    :params {}
