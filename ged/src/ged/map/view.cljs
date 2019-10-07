@@ -295,7 +295,6 @@
              :columns all-layers-colums
              :dataSource items
              :on-change (fn [pag fil sor ext]
-                          (js/console.log "change" pag)
                           (rf/dispatch [::evs/all-layers-table-mdata
                                         (js->clj {:pagination pag
                                                   :filters fil
