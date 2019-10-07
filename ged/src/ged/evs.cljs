@@ -11,7 +11,8 @@
    [ged.core :refer [basic-creds]]
    ["antd/lib/message" :default AntMessage]
    [ged.storage]
-   [ged.core :refer  [deep-merge]]))
+   [ged.core :refer  [deep-merge]]
+   [ged.storage :as storage]))
 
 
 #_(defn my-reg-event-db            ;; a replacement for reg-event-db
@@ -111,8 +112,6 @@
                   apk (:ged.db.core/active-profile-key db)
                   uname (get-in db [:ged.db.core/profiles apk :username])
                   pass (get-in db [:ged.db.core/profiles apk :password])]
-              (js/console.log uname)
-              (js/console.log pass)
               {:http-xhrio {:method method
                             :uri uri
                   ;  :response-format (ajax.edn/edn-response-format)
@@ -153,5 +152,100 @@
 
 
 
+; local storage
 
 
+(def default-active-profile-key 0)
+
+(rf/reg-cofx
+ :stored-db
+ (fn [{:keys [db] :as cofx} ea]
+   (let [stored-db  (storage/read-db)
+         apk (or (:active-profile-key stored-db) default-active-profile-key)
+         profile-dbs  (:profile-dbs stored-db)
+         profiles  (:profiles stored-db)
+         profile-db (get-in stored-db [:profile-dbs apk])]
+     (assoc cofx :stored-db
+            (merge db
+                   profile-db
+                   {:ged.db.core/profiles profiles
+                    :ged.db.core/active-profile-key apk})))))
+
+(rf/reg-event-fx
+ :assoc-in-store
+ (fn-traced [{:keys [db]} [_ ea]]
+            (do
+              (let [[path v] ea
+                    apk (:ged.db.core/active-profile-key db)
+                    combined-path (into [:profile-dbs apk] path)]
+                (storage/assoc-in-store! combined-path v)))
+            {}))
+
+
+
+; profiles
+
+(rf/reg-event-fx
+ ::add-profile
+ (fn-traced
+  [{:keys [db]} [_ ea]]
+  (let [pfs (:ged.db.core/profiles db)
+        k (->> pfs keys (apply max) inc)
+        pf {:key k
+            :host "http://geoserver:8080/geoserver"
+            :proxy-host "http://localhost:8600/geoserver"
+            :username "admin"
+            :password "geoserver"}
+        pfs (assoc (:ged.db.core/profiles db) k pf)]
+    (do
+      (storage/assoc-in-store! [:profiles] pfs))
+    {:db (assoc db :ged.db.core/profiles pfs)})))
+
+(rf/reg-event-fx
+ ::remove-profile
+ (fn-traced
+  [{:keys [db]} [_ ea]]
+  (let [k (aget ea "key")
+        pfs (dissoc (:ged.db.core/profiles db) k)]
+    (do
+      (storage/assoc-in-store! [:profiles] pfs))
+    {:db (assoc db :ged.db.core/profiles pfs)})))
+
+(rf/reg-event-fx
+ ::update-profile
+ (fn-traced
+  [{:keys [db]} [_ ea]]
+  (let [k (:key ea)
+        v (:ged.db.core/profiles db)
+        pfs (update-in v [k] merge ea)]
+    (do
+      (storage/assoc-in-store! [:profiles] pfs))
+    {:db (assoc db :ged.db.core/profiles pfs)})))
+
+
+
+(rf/reg-event-fx
+ ::activate-profile
+ (fn-traced
+  [{:keys [db]} [_ ea]]
+  (let [apk (aget ea "key")
+        profile-db (storage/read-profile-db apk)
+        profiles (storage/read-profiles)]
+    (do (storage/assoc-in-store! [:active-profile-key] apk))
+    {:db (merge
+          db
+          (or profile-db ged.db/default-db)
+          {:ged.db.core/active-profile-key apk
+           :ged.db.core/profiles (merge (:ged.db.core/profiles db) profiles)})
+     :dispatch [:ged.evs/apply-server-settings]})))
+
+(rf/reg-event-fx
+ ::update-profiles
+ (fn-traced
+  [{:keys [db]} [_ ea]]
+  (let [pfs (deep-merge (:ged.db.core/profiles db) ea)]
+    (do
+      (storage/assoc-in-store! [:profiles] pfs))
+    {:db (assoc-in db [:ged.db.core/profiles] pfs)
+     :dispatch-n (list
+                  [:ant-message {:msg "profiles updated" :dur 1}])})))
