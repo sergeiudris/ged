@@ -130,15 +130,17 @@
      {:display-name "ol-map-layers"
       :component-did-mount
       (fn [this]
-        (let [{:keys [ids geoserver-host wms-use-auth?]} (r/props this)]
+        (let [{:keys [ids geoserver-host wms-use-auth? credentials]} (r/props this)]
           (rf/dispatch [:ged.map.core/sync-layer-ids [ids {:geoserver-host geoserver-host
-                                                           :wms-use-auth? wms-use-auth?}]])))
+                                                           :wms-use-auth? wms-use-auth?
+                                                           :credentials credentials}]])))
       :component-did-update
       (fn [this old-argv]
         (let [new-argv (rest (r/argv this))
-              {:keys [ids geoserver-host wms-use-auth?]} (r/props this)]
+              {:keys [ids geoserver-host wms-use-auth? credentials]} (r/props this)]
           (rf/dispatch [:ged.map.core/sync-layer-ids [ids {:geoserver-host geoserver-host
-                                                           :wms-use-auth? wms-use-auth?}]])
+                                                           :wms-use-auth? wms-use-auth?
+                                                           :credentials credentials}]])
           #_(js/console.log new-argv old-argv)))
       :component-will-unmount
       (fn [this])
@@ -151,14 +153,17 @@
   (let [geoserver-host (rf/subscribe [:ged.subs/geoserver-host])
         ids-ref (rf/subscribe [::subs/checked-layer-ids])
         awms-use-auth? (rf/subscribe [:ged.settings.subs/wms-use-auth?])
+        acredentials (rf/subscribe [:ged.subs/credentials])
         ]
     (fn []
       (let [host @geoserver-host
             ids @ids-ref
-            wms-use-auth? @awms-use-auth?]
+            wms-use-auth? @awms-use-auth?
+            credentials @acredentials]
         [ol-map-layers-inner {:ids ids
                               :wms-use-auth? wms-use-auth?
-                              :geoserver-host host}]))))
+                              :geoserver-host host
+                              :credentials credentials}]))))
 
 (defn action-buttons
   []

@@ -97,7 +97,8 @@
               (do (aset (.getImage tile) "src" durl)))))))
 
 (defn create-tile-load-fn
-  [{:keys [wms-use-auth?]}]
+  [{:keys [wms-use-auth?
+           credentials]}]
   (fn [tile src]
     (let [xhr (js/XMLHttpRequest.)]
       (aset xhr "responseType" "blob")
@@ -112,11 +113,16 @@
                          (fn [ev]
                            (do (.setState tile (.-ERROR OlTileState)))))
       (.open xhr "GET" src)
+      (when wms-use-auth?
+        (.setRequestHeader xhr
+                           "Authorization"
+                           (basic-creds (:username credentials) (:password credentials)))
+        )
       (.send  xhr))))
 
 
 (defn wms-source
-  [{:keys [geoserver-host wms-use-auth?]} src-opts]
+  [{:keys [geoserver-host wms-use-auth? credentials]} src-opts]
   (TileWMS.
    (clj->js
     (deep-merge
@@ -125,7 +131,8 @@
       #_(str geoserver-host "/wms")
       "/geoserver/wms"
       #_"/geoserver/wms"
-      :tileLoadFunction (create-tile-load-fn {:wms-use-auth? wms-use-auth?})
+      :tileLoadFunction (create-tile-load-fn {:wms-use-auth? wms-use-auth?
+                                              :credentials credentials})
       :params {;"LAYERS" "dev:usa_major_cities"
                "TILED" true
                "SRS" "EPSG:3857"
@@ -140,13 +147,14 @@
      src-opts))))
 
 (defn wms-layer
-  [{:keys [geoserver-host id wms-use-auth?] } lr-opts src-opts]
+  [{:keys [geoserver-host id wms-use-auth? credentials] } lr-opts src-opts]
   (let [lr (OlTileLayer.
             (clj->js
              (deep-merge
               {:source (wms-source
                         {:geoserver-host geoserver-host
-                         :wms-use-auth? wms-use-auth?}
+                         :wms-use-auth? wms-use-auth?
+                         :credentials credentials}
                         (deep-merge {:params  {"LAYERS" id}}  src-opts))}
               lr-opts)))]
     #_(do (.set lr "id" (:id opts)))
@@ -188,12 +196,13 @@
 
 
 (defn upsert-wms-layer
-  [olmap {:keys [geoserver-host id wms-use-auth?]}]
+  [olmap {:keys [geoserver-host id wms-use-auth? credentials]}]
   (let [lr (id->layer olmap id)]
     (when-not lr
       (.addLayer olmap (wms-layer
                         {:geoserver-host geoserver-host
                          :wms-use-auth? wms-use-auth?
+                         :credentials credentials
                          :id id} {} {})))))
 
 

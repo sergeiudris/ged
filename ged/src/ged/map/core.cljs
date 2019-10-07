@@ -101,7 +101,7 @@
  (fn-traced
   [{:keys [db]} [_ ea]]
   (do
-    (let [[ids {:keys [geoserver-host wms-use-auth?]}] ea
+    (let [[ids {:keys [geoserver-host wms-use-auth? credentials]}] ea
           lrs (.getArray (.getLayers (get-olmap)))]
       (doseq [lr lrs]
         (let [id (.get lr "id")]
@@ -112,6 +112,7 @@
         (when-not (ol/id->layer (get-olmap) id)
           (ol/upsert-wms-layer (get-olmap) {:geoserver-host  geoserver-host
                                             :wms-use-auth? wms-use-auth?
+                                            :credentials credentials
                                             :id id})))))
   {}))
 

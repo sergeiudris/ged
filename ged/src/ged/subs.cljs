@@ -55,3 +55,12 @@
    (let [apk (:ged.db.core/active-profile-key db)]
      (get-in db [:ged.db.core/profiles apk :host]))))
 
+(rf/reg-sub
+ ::credentials
+ (fn [db _]
+   (let [apk (:ged.db.core/active-profile-key db)
+         username (get-in db [:ged.db.core/profiles apk :username])
+         password (get-in db [:ged.db.core/profiles apk :password])]
+     {:password password
+      :username username})))
+
