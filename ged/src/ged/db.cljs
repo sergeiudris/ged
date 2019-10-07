@@ -54,7 +54,7 @@
      :ged.db.feats/select-feature nil
      :ged.db.feats/tx-res nil
      :ged.db.feats/search-table-mdata {:pagination {:showSizeChanger false
-                                                    :showQuickJumper true
+                                                    :showQuickJumper false
                                                     :defaultPageSize 5
                                                     :pageSizeOptions  ["5" "10" "20"]
                                                     :position "top"
@@ -66,8 +66,10 @@
                                        :extra {:currentDataSource []}}
      :ged.db.feats/feature-type-input "" #_"dev:usa_major_cities"
      :ged.db.feats/feature-ns "" #_"http://www.opengis.net/wfs/dev"
-
-
+     :ged.db.feats/fetch-ftype-mdata-ns-res nil
+     :ged.db.feats/fetch-ftype-mdata-layer-res nil
+     
+     :ged.db.feats/selected-attrs []
 
 
      ; map
@@ -122,7 +124,7 @@
      :ged.db.map/tx-res nil
      :ged.db.map/all-layers-search-input ""
      :ged.db.map/infer-feature-ns-res nil
-     
+
      ; rest
      :ged.db.rest/fetch-selected-url-res nil
      :ged.db.rest/selected-url "/rest/workspaces/dev/featuretypes.json"

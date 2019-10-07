@@ -83,7 +83,7 @@
 
 (defn href->path
   [href]
-  (-> (str/split href "/geoserver") (second)))
+  (-> (str/split href "/geoserver/rest") (second)))
 
 (rf/reg-event-fx
  ::select-feature
@@ -96,7 +96,7 @@
                       :headers {"Content-Type" "application/json"
                             ; "Authorization"  (ged.api.geoserver/auth-creds)
                                 }
-                      :path (str "/geoserver" path)
+                      :path (str "/geoserver/rest" path)
                       :response-format
                       #_(ajax/raw-response-format)
                       (ajax/json-response-format {:keywords? true})

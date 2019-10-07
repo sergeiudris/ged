@@ -6,6 +6,7 @@
             [ajax.core :as ajax]
             [clojure.string :as str]
             [ged.core :refer [url-search-params]]
+            [ged.wfs :refer [attrs->eqcl-ilike]]
             ["ol/format/filter" :as olf]))
 
 #_(repl/dir xml)
@@ -35,9 +36,14 @@
                  :featurePrefix fpref
                  :featureTypes [ftype]}
                 (when (not-empty s)
-                  {:filter 
-                   #_(str "NAME ILIKE " s) 
-                   (olf/like "NAME" (str "*" s "*") "*" "." "!" false)})))]
+                  {:filter
+                   #_(str "NAME ILIKE " s)
+                   (olf/like "NAME" (str "*" s "*") "*" "." "!" false)})))
+         selected-attrs (:ged.db.feats/selected-attrs db)
+         attrs (get-in db [:ged.db.feats/fetch-ftype-mdata-layer-res
+                           :featureType :attributes :attribute])
+         attrs-flt (filterv (fn [x]
+                              (some #(= % (:name x)) selected-attrs)) attrs)]
      #_(js/console.log (olf/like "NAME" (str "*" "hello" "*") "*" "." "!" false))
      {:dispatch-n (list 
                    [:ged.evs/request
@@ -45,17 +51,22 @@
                      :path "/geoserver/wfs"
                      :params (merge
                               {"service" "wfs"
-                               "version" "2.0.0"
-                                    ;  "version" "1.1.0"
+                              ;  "version" "2.0.0"
+                               "version" "1.1.0"
                                "request" "GetFeature"
                                "srsName" "EPSG:3857"
-                               "count" 10
-                               "typeNames" "dev:usa_major_cities"
+                               "count" limit
+                               "startIndex" offset
+                               "typeNames" ftype-input
                                "exceptions" "application/json"
-
+                               "maxFeatures" limit
                                "outputFormat" "application/json"}
-                              (when-not (empty? s)
-                                {"cql_filter" (str "NAME ilike \n '%" s "%'")}))
+                              (when (and (not (empty? attrs-flt)) (not (empty? s)))
+                                {"cql_filter" (attrs->eqcl-ilike {:attrs attrs-flt
+                                                                  :input s
+                                                                  :joiner "OR"})})
+                              #_(when-not (empty? s)
+                                  {"cql_filter" (str "NAME ilike \n '%" s "%'")}))
                      :headers {}
                      :response-format (ajax/json-response-format {:keywords? true})
                      :on-success [::search-res]
@@ -142,7 +153,7 @@
  ::search-table-mdata
  (fn-traced [{:keys [db]} [_ ea]]
    (let [key :ged.db.feats/search-table-mdata]
-     {:dispatch [:ged.feats.events/search {}]
+     {:dispatch [:ged.feats.evs/search {}]
       :db (assoc db key ea)})))
 
 (rf/reg-event-fx
@@ -167,3 +178,50 @@
               {:db (assoc db k ea)
                :dispatch [:assoc-in-store [[k] ea]]})))
 
+(rf/reg-event-fx
+ ::fetch-ftype-mdata
+ (fn-traced [{:keys [db ]} [_ ea]]
+            (let [ftype-input (:ged.db.feats/feature-type-input db)
+                  [fpref ftype] (try (str/split ftype-input \:)
+                                     (catch js/Error e
+                                       (do (js/console.warn e)
+                                           ["undefined:undefined"])))
+                  ]
+              {:dispatch-n (list 
+                            [:ged.evs/request
+                             {:method :get
+                              :headers {"Content-Type" "application/json"}
+                              :path (str "/geoserver/rest/workspaces/" fpref "/featuretypes/" ftype ".json")
+                              :response-format
+                              (ajax/json-response-format {:keywords? true})
+                              :on-success [::fetch-ftype-mdata-layer-res]
+                              :on-failure [::fetch-ftype-mdata-layer-res]}]
+                            [:ged.evs/request
+                             {:method :get
+                              :headers {"Content-Type" "application/json"}
+                              :path (str "/geoserver/rest/namespaces/" fpref ".json")
+                              :response-format
+                              (ajax/json-response-format {:keywords? true})
+                              :on-success [::fetch-ftype-mdata-ns-res]
+                              :on-failure [::fetch-ftype-mdata-ns-res]}]
+                            )
+               })))
+
+(rf/reg-event-fx
+ ::fetch-ftype-mdata-layer-res
+ (fn-traced [{:keys [db]} [_ ea]]
+            {:db (assoc db :ged.db.feats/fetch-ftype-mdata-layer-res ea)}))
+
+(rf/reg-event-fx
+ ::fetch-ftype-mdata-ns-res
+ (fn-traced [{:keys [db]} [_ ea]]
+            {:db (assoc db :ged.db.feats/fetch-ftype-mdata-ns-res ea)}))
+
+
+(rf/reg-event-fx
+ ::selected-attrs
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [v ea]
+              (js/console.log v)
+              {:db (assoc db :ged.db.feats/selected-attrs v)})
+            ))

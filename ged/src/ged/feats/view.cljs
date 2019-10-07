@@ -23,7 +23,10 @@
              ["antd/lib/input/Search" :default AntInputSearch]
              ["antd/lib/table" :default AntTable]
              ["antd/lib/auto-complete" :default AntAutoComplete]
+             ["antd/lib/row" :default AntRow]
+             ["antd/lib/col" :default AntCol]
 
+             
              #_[ged.core.extra :refer [extra-component]]))
 
 
@@ -36,6 +39,9 @@
 (def ant-auto-complete (r/adapt-react-class AntAutoComplete))
 (def ant-auto-complete-option (r/adapt-react-class (.-Option AntAutoComplete)))
 (def ant-table (r/adapt-react-class AntTable))
+(def ant-row (r/adapt-react-class AntRow))
+(def ant-col (r/adapt-react-class AntCol))
+
 
 (def react-ace (r/adapt-react-class ReactAce))
 
@@ -48,7 +54,7 @@
                   :mode "json"
                   :theme "github"
                   :className "editor-feature"
-                  :width "32vw"
+                  :width "100%"
                     ;  :default-value default-value
                   :value @av
                   :on-load (fn [ref]
@@ -95,7 +101,7 @@
   [ant-button
    {:class "search-btn"
     :style {:margin-right "-12px"}
-    :size "default"
+    :size "small"
     :on-click on-click
     :type "default"}
    [ant-icon {:type "search"}]])
@@ -115,8 +121,9 @@
                       (on-search (.. evt -target -value))))]
     (fn [_]
       [ant-auto-complete
-       {:style {:width "32%"}
-        :size "default"
+       {
+        :style {:width "100%"}
+        :size "small"
         :placeholder "search"
         :on-search on-change
         :on-select on-select
@@ -133,7 +140,8 @@
   (let [sref (rf/subscribe
                [::subs/feature-type-input])]
     (fn []
-      [ant-input {:style {:width "16%" :margin "0 0 0 8px"}
+      [ant-input {:size "small"
+                  :style {:width "calc(100% - 25px)"  :margin "0 0 0 0px"}
                   :value @sref
                   :on-change
                   (fn [ev]
@@ -142,12 +150,23 @@
                       (.. ev -target -value)]))
                   :placeholder "topp:states"}])))
 
+(defn fetch-ftype-mdata-button
+  []
+  (let [ ]
+    (fn []
+      [ant-button {:icon "reload"
+                   :size "small"
+                   :on-click (fn []
+                               (rf/dispatch [::evs/fetch-ftype-mdata]))}])))
+
 (defn feature-ns
   []
-  (let [sref (rf/subscribe
+  (let [afns (rf/subscribe
               [::subs/feature-ns])]
     (fn []
-      [ant-input {:style {:width "16%" :margin "0 0 0 8px"}
+      (js/console.log @afns)
+      [:div  (or @afns "-")]
+      #_[ant-input {:size "small"
                   :value @sref
                   :on-change
                   (fn [ev]
@@ -162,20 +181,23 @@
     :dataIndex "id"}
    {:title "preview"
     :key "preview"
-    :width "70%"
     :render 
     (fn [txt rec idx]
-      (r/as-element
-       [:div {:style  {:white-space "nowrap"
-                       :max-width "60vw"
-                       :overflow-x "hidden"}}
-        (js/JSON.stringify (aget rec "properties")  )]))
+      (let [v (js/JSON.stringify (aget rec "properties"))]
+        (r/as-element
+         [:div {:title v
+                :style  {:white-space "nowrap"
+                         :max-width "216px"
+                         :overflow-x "hidden"}}
+          v])
+        )
+      )
     }])
 
 (def extra-columns
   [{:title "action"
     :key "action"
-    :width "64px"
+    :width "48px"
     :render (fn [txt rec idx]
               (r/as-element
                [ant-button-group
@@ -207,7 +229,7 @@
         [ant-table {:show-header true
                     :size "small"
                     :row-key :id
-                    :className "feats-table"
+                    :style {:height "50%" :width "100%"}
                     :columns columns
                     :dataSource ents
                     :on-change (fn [pag fil sor ext]
@@ -227,6 +249,36 @@
                                             ; :on-change #(js/console.log %1 %2)
                                         })}]))))
 
+(def table-attrs-columns
+  [{:title "attribute"
+    :key :name
+    :dataIndex :name
+    }
+   {:title "type"
+    :key :type
+    :dataIndex :binding}
+   ]
+  )
+
+(defn table-attrs
+  []
+  (let [adata (rf/subscribe [::subs/layer-attributes])
+        aselected (rf/subscribe [::subs/selected-attrs])]
+    (fn []
+      (let [data @adata
+            selected @aselected  ]
+        [ant-table {:show-header true
+                    :size "small"
+                    :row-key :name
+                    :style {:height "26%" :overflow-y "auto"}
+                    :columns table-attrs-columns
+                    :dataSource data
+                    :scroll {:y 196}
+                    :pagination false
+                    :rowSelection {:selectedRowKeys selected
+                                   :on-change
+                                   (fn [ks rows ea]
+                                     (rf/dispatch [::evs/selected-attrs ks]))}}]))))
 
 
 (defn panel
@@ -236,38 +288,35 @@
   #_(rf/dispatch [::evs/nhi-dri])
   (let []
     (fn []
-      [:section
-       #_[search]
-       [:div
-        [auto-complete {}]
-        [feature-type-input]
+      [:div {:style {:height "100%" :width "100%" :display "flex" }}
+       [:section {:style {:width "43%"}}
+        [:span
+         [feature-type-input]
+         [fetch-ftype-mdata-button]]
+        [:br] [:br]
         [feature-ns]
+        [:br]
+        [auto-complete {}]
+        [:br] [:br]
+        [table-attrs]
         ]
-       #_[buttons]
-       [:br]
-       [table]
-       [:br]
-       [:section {:class "editors-container" }
+       [:section {:style {:width "4%" }}]
+       [:section {:style {:width "43%"}}
+        [table]
+        [:br]
         [editor-feature]
-        [editor-request]
-        [editor-response]
-        ]
-       [:br]
-       [ant-button-group {:size "small"}
-        [ant-button {:on-click 
-                     #(rf/dispatch [::evs/tx-feature {:tx-type :inserts}])
-                     :style {:width "96px"}}
-         "insert"]
-        [ant-button {:on-click 
-                     #(rf/dispatch [::evs/tx-feature {:tx-type :updates}])
-                     :style {:width "96px"}}
-         "update"]
-        [ant-button {:on-click
-                     #(rf/dispatch [::evs/tx-feature {:tx-type :deletes}])
-                     :style {:width "96px"}}
-         "delete"]]
-       [:br]
-       
-
-       #_[ged.feats.sample/sample-table]])))
+        [ant-button-group {:size "small"}
+         [ant-button {:on-click
+                      #(rf/dispatch [::evs/tx-feature {:tx-type :inserts}])
+                      :style {:width "96px"}}
+          "insert"]
+         [ant-button {:on-click
+                      #(rf/dispatch [::evs/tx-feature {:tx-type :updates}])
+                      :style {:width "96px"}}
+          "update"]
+         [ant-button {:on-click
+                      #(rf/dispatch [::evs/tx-feature {:tx-type :deletes}])
+                      :style {:width "96px"}}
+          "delete"]]]]
+      )))
 

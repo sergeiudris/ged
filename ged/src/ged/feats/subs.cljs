@@ -26,4 +26,17 @@
 (rf/reg-sub
  ::feature-ns
  (fn [db _]
-   (:ged.db.feats/feature-ns db)))
+   (get-in db [:ged.db.feats/fetch-ftype-mdata-ns-res
+               :namespace :uri])
+   #_(:ged.db.feats/feature-ns db)))
+
+(rf/reg-sub
+ ::layer-attributes
+ (fn [db _]
+   (get-in db [:ged.db.feats/fetch-ftype-mdata-layer-res
+               :featureType :attributes :attribute])))
+
+(rf/reg-sub
+ ::selected-attrs
+ (fn [db _]
+   (:ged.db.feats/selected-attrs db)))

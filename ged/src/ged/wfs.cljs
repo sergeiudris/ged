@@ -97,3 +97,17 @@
                         )]
     (.call create-filter #js {"like" olf/like} )
     )
+
+(defn attrs->eqcl-ilike
+  [{:keys [attrs input joiner]}]
+  (let []
+    (->>
+     (mapv
+      (fn [attr]
+        (str (:name attr) " ilike " "'%" input "%'"))
+      attrs)
+     (str/join (str " " joiner " ")))))
+
+#_(attrs->eqcl-ilike {:attrs [{:name "x"} {:name "y"}]
+                      :joiner "OR"
+                      :input "hello"} )
