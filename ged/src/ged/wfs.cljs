@@ -2,6 +2,7 @@
   (:require [clojure.repl :as repl]
             [clojure.string :as str]
             ["ol/format/WFS" :default OlFormatWFS]
+            ["ol/format/filter" :as olf]
             ["ol/format/GeoJSON" :default OlFormatGeoJSON]))
 
 (defn xml->str
@@ -86,3 +87,13 @@
   (->
    (wfs-get-features-body opts)
    (xml->str)))
+
+#_(js/eval "3")
+
+#_(let [s "hono"
+        create-filter (fn []
+                        (js/eval
+                         (str "like('NAME', '" "*" s "*" "','*','!', false)"))
+                        )]
+    (.call create-filter #js {"like" olf/like} )
+    )

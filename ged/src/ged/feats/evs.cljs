@@ -34,7 +34,10 @@
                  :featurePrefix fpref
                  :featureTypes [ftype]}
                 (when (not-empty s)
-                  {:filter (olf/like "NAME" (str "*" s "*") "*" "." "!" false)})))]
+                  {:filter 
+                   #_(str "NAME ILIKE " s) 
+                   (olf/like "NAME" (str "*" s "*") "*" "." "!" false)})))]
+     #_(js/console.log (olf/like "NAME" (str "*" "hello" "*") "*" "." "!" false))
      {:dispatch-n (list
                  [:ged.evs/request
                   {:method :post

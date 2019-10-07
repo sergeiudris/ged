@@ -147,3 +147,19 @@
                                     :featureTypes ["usa_major_cities"]})
             (xml->str))})
    (.then (fn [r] (js/console.log r))))
+
+; using ecql
+
+#_(->
+   (fetch-geosrv-edn
+    (str "/wfs?" (url-search-params {"service" "wfs"
+                                     "version" "2.0.0"
+                                    ;  "version" "1.1.0"
+                                     "request" "GetFeature"
+                                     "count" 10
+                                     "typeNames" "dev:usa_major_cities"
+                                     "exceptions" "application/json"
+                                     "cql_filter" "NAME ilike '%hono%' "
+                                     "outputFormat" "application/json"} :str true))
+    {:method "get"})
+   (.then (fn [r] (js/console.log r))))
