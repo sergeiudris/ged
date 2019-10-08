@@ -27,6 +27,8 @@
              ["antd/lib/row" :default AntRow]
              ["antd/lib/col" :default AntCol]
              ["antd/lib/checkbox" :default AntCheckbox]
+             ["antd/lib/popover" :default AntPopover]
+             
              
              #_[ged.core.extra :refer [extra-component]]))
 
@@ -43,6 +45,8 @@
 (def ant-row (r/adapt-react-class AntRow))
 (def ant-col (r/adapt-react-class AntCol))
 (def ant-checkbox (r/adapt-react-class AntCheckbox))
+(def ant-popover (r/adapt-react-class AntPopover))
+
 
 
 
@@ -315,7 +319,34 @@
                                [::evs/use-eqcl-filter?
                                 (.. ev -target -checked)]))}]]
        [ant-col {:span 10} 
-        [:div "use ecql filter instead"]
+        [:div 
+         [:span "use ecql filter instead"]
+         [:span 
+          [ant-popover
+           {:content
+            (r/as-element
+             [:div
+              [:a {:target "_blank" 
+                   :href "https://docs.geoserver.org/stable/en/user/filter/ecql_reference.html#filter-ecql-reference"}
+               "eqcl reference"
+               ]
+              [:br]
+              [:a {:target "_blank"
+                   :href "https://docs.geoserver.org/stable/en/user/tutorials/cql/cql_tutorial.html#cql-tutorial" }
+               "cql-tutorial"
+               ]
+              ]
+             )}
+           [ant-button
+            {:icon "question"
+             :shape "circle"
+             :size "small"
+             :style {:margin-left "4px"
+                     :width "12px" :height "12px"
+                     :font-size "8px" :min-width "initial"}}]
+           ]
+          ]
+         ]
         [:small "use @input variable (will be replaced with the input)"]
         ]
        ])))
