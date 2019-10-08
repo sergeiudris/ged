@@ -107,7 +107,7 @@
  ;[(rf/inject-cofx ::inject/sub [:entity-request-data])]
  (fn-traced [{:keys [db event] :as ctx} [_ ea]]
             (let [base-url (get-in db [:ged.db.core/api :base-url])
-                  {:keys [method path on-success on-fail
+                  {:keys [method path on-success on-failure
                           params url-params body headers response-format]} ea
                   uri (str base-url path)
                   proxy-path (:ged.db.core/proxy-path db)
@@ -129,7 +129,7 @@
                   ;  :params {:data "{:hello 'world}"}
                             :params params
                             :url-params url-params
-                            :on-failure on-fail}}
+                            :on-failure on-failure}}
      ;
               )))
 

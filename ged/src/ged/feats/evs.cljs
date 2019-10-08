@@ -77,7 +77,9 @@
                               #_(when-not (empty? s)
                                   {"cql_filter" (str "NAME ilike \n '%" s "%'")}))
                      :headers {}
-                     :response-format (ajax/json-response-format {:keywords? true})
+                     :response-format 
+                     #_(ajax/raw-response-format)
+                     (ajax/json-response-format {:keywords? true})
                      :on-success [::search-res]
                      :on-failure [::search-res]}
                     ]
@@ -103,6 +105,7 @@
 (rf/reg-event-db
  ::search-res
  (fn-traced [db [_ ea]]
+            #_(js/console.log ea)
             (assoc db :ged.db.feats/search-res ea)))
 
 (rf/reg-event-fx

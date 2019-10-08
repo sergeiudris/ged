@@ -187,7 +187,7 @@
         [editor-response]]
        [:br]
        [ant-button-group {:size "small"}
-        [ant-button {:on-click
+        #_[ant-button {:on-click
                      #(rf/dispatch [::evs/tx-feature {:tx-type :post}])
                      :style {:width "96px"}}
          "post"]
