@@ -183,6 +183,7 @@
     (fn []
       [ant-button {:icon "reload"
                    :size "small"
+                   :title "fetch layer data"
                    :on-click (fn []
                                (rf/dispatch [::evs/fetch-ftype-mdata]))}])))
 
