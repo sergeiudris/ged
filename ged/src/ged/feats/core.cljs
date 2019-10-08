@@ -31,7 +31,9 @@
 
 (def editors (atom {:data nil
                     :response nil
-                    :request nil}))
+                    :request nil
+                    :ecql nil
+                    }))
 
 (defn get-editor
   [k]

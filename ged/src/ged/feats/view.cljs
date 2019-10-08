@@ -13,6 +13,7 @@
              ["brace/mode/graphqlschema.js"]
              ["brace/mode/json.js"]
              ["brace/mode/xml.js"]
+             ["brace/mode/sql.js"]
              ["brace/theme/github.js"]
 
              ["antd/lib/icon" :default AntIcon]
@@ -25,7 +26,7 @@
              ["antd/lib/auto-complete" :default AntAutoComplete]
              ["antd/lib/row" :default AntRow]
              ["antd/lib/col" :default AntCol]
-
+             ["antd/lib/checkbox" :default AntCheckbox]
              
              #_[ged.core.extra :refer [extra-component]]))
 
@@ -41,6 +42,8 @@
 (def ant-table (r/adapt-react-class AntTable))
 (def ant-row (r/adapt-react-class AntRow))
 (def ant-col (r/adapt-react-class AntCol))
+(def ant-checkbox (r/adapt-react-class AntCheckbox))
+
 
 
 (def react-ace (r/adapt-react-class ReactAce))
@@ -93,6 +96,26 @@
                   :value @av
                   :on-load (fn [ref]
                              (rf/dispatch [:ged.feats.core/set-editor-preserve [:request ref]]))
+                  :on-change (fn [v ev] (reset! av v))
+                  :editor-props {"$blockScrolling" js/Infinity}}])))
+
+
+(defn editor-ecql
+  []
+  (let [default-value
+        "CITY_NAME ilike '%@input%' OR STATUS ilike '%national%capital%'"
+        av (r/atom default-value)]
+    (fn []
+      [react-ace {:name "editor-ecql"
+                  :mode "sql"
+                  :theme "github"
+                  :className "editor-ecql"
+                  :width "100%"
+                  :disabled true
+                    ;  :default-value default-value
+                  :value @av
+                  :on-load (fn [ref]
+                             (rf/dispatch [:ged.feats.core/set-editor-preserve [:ecql ref]]))
                   :on-change (fn [v ev] (reset! av v))
                   :editor-props {"$blockScrolling" js/Infinity}}])))
 
@@ -246,6 +269,7 @@
                         ;                             )}
                     :pagination (merge pagination
                                        {:total total
+                                        :showTotal (fn [t rng] t)
                                             ; :on-change #(js/console.log %1 %2)
                                         })}]))))
 
@@ -270,16 +294,31 @@
         [ant-table {:show-header true
                     :size "small"
                     :row-key :name
-                    :style {:height "26%" :overflow-y "auto"}
+                    :style {:height "30%" :overflow-y "auto"}
                     :columns table-attrs-columns
                     :dataSource data
-                    :scroll {:y 196}
+                    :scroll {:y 236}
                     :pagination false
                     :rowSelection {:selectedRowKeys selected
                                    :on-change
                                    (fn [ks rows ea]
                                      (rf/dispatch [::evs/selected-attrs ks]))}}]))))
 
+(defn use-eqcl-checkbox
+  []
+  (let []
+    (fn []
+      [ant-row
+       [ant-col {:span 2}
+        [ant-checkbox
+         {:on-change (fn [ev] (rf/dispatch
+                               [::evs/use-eqcl-filter?
+                                (.. ev -target -checked)]))}]]
+       [ant-col {:span 10} 
+        [:div "use ecql filter instead"]
+        [:small "use @input variable (will be replaced with the input)"]
+        ]
+       ])))
 
 (defn panel
   []
@@ -299,6 +338,10 @@
         [auto-complete {}]
         [:br] [:br]
         [table-attrs]
+        [:br]
+        [use-eqcl-checkbox]
+        [:br]
+        [editor-ecql]
         ]
        [:section {:style {:width "4%" }}]
        [:section {:style {:width "43%"}}

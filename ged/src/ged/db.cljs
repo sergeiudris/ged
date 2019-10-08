@@ -70,6 +70,7 @@
      :ged.db.feats/fetch-ftype-mdata-layer-res nil
      
      :ged.db.feats/selected-attrs []
+     :ged.db.feats/use-eqcl-filter? false
 
 
      ; map

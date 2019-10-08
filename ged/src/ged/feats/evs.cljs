@@ -13,9 +13,14 @@
 
 #_(xml/indent)
 
+#_(str/replace "@input" #"@input" "3")
+#_(str/replace "The color is red" #"red" "blue")
+
+
 (rf/reg-event-fx
  ::search
- (fn-traced [{:keys [db]} [_ ea]]
+ [(rf/inject-cofx :ged.feats.core/get-editor-val [:ecql])]
+ (fn-traced [{:keys [db get-editor-val]} [_ ea]]
    (let [ftype-input (:ged.db.feats/feature-type-input db)
          [fpref ftype] (try (str/split ftype-input \:)
                             (catch js/Error e
@@ -26,6 +31,8 @@
          table-mdata (:ged.db.feats/search-table-mdata db)
          total (get-in db [:ged.db.feats/search-res :total])
          pag (:pagination table-mdata)
+         use-eqcl-filter? (:ged.db.feats/use-eqcl-filter? db)
+         ecql-filter (str/replace get-editor-val #"@input" s)
          {:keys [current pageSize]} pag
          limit (or pageSize 10)
          offset (or (* pageSize (dec current)) 0)
@@ -61,10 +68,12 @@
                                "exceptions" "application/json"
                                "maxFeatures" limit
                                "outputFormat" "application/json"}
-                              (when (and (not (empty? attrs-flt)) (not (empty? s)))
+                              (when (and (not use-eqcl-filter?) (not (empty? attrs-flt)) (not (empty? s)))
                                 {"cql_filter" (attrs->eqcl-ilike {:attrs attrs-flt
                                                                   :input s
                                                                   :joiner "OR"})})
+                              (when use-eqcl-filter?
+                                {"cql_filter" ecql-filter})
                               #_(when-not (empty? s)
                                   {"cql_filter" (str "NAME ilike \n '%" s "%'")}))
                      :headers {}
@@ -123,7 +132,7 @@
                               (ajax/raw-response-format) #_(ajax/json-response-format {:keywords? true})
                               :on-success [::tx-res-succ (str fpref ":" ftype)]
                               :on-failure [::tx-res-fail]}]
-                            [:ged.feats.core/set-editor-xml [:request body]])
+                            #_[:ged.feats.core/set-editor-xml [:request body]])
                :db (merge db {})})))
 
 (rf/reg-event-fx
@@ -131,7 +140,7 @@
  (fn-traced [{:keys [db]} [_ id ea]]
             {:db (assoc db :ged.db.feats/tx-res ea)
              :dispatch-n (list
-                          [:ged.feats.core/set-editor-xml [:response ea]]
+                          #_[:ged.feats.core/set-editor-xml [:response ea]]
                           [:ged.map.core/refetch-wms-layer id])}))
 
 
@@ -139,7 +148,8 @@
  ::tx-res-fail
  (fn-traced [{:keys [db]} [_ ea]]
             {:db (assoc db :ged.db.feats/tx-res ea)
-             :dispatch [:ged.feats.core/set-editor-xml [:response ea]]}))
+            ;  :dispatch [:ged.feats.core/set-editor-xml [:response ea]]
+             }))
 
 (rf/reg-event-fx
  ::search-input
@@ -225,3 +235,9 @@
               (js/console.log v)
               {:db (assoc db :ged.db.feats/selected-attrs v)})
             ))
+
+(rf/reg-event-fx
+ ::use-eqcl-filter?
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [v ea]
+              {:db (assoc db :ged.db.feats/use-eqcl-filter? v)})))

@@ -40,3 +40,8 @@
  ::selected-attrs
  (fn [db _]
    (:ged.db.feats/selected-attrs db)))
+
+(rf/reg-sub
+ ::use-eqcl-filter?
+ (fn [db _]
+   (:ged.db.feats/use-eqcl-filter? db)))
