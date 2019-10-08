@@ -54,7 +54,6 @@
                        "featureNS" featureNS
                        "featurePrefix" featurePrefix
                        "featureType" featureType
-                       "outputFormat" "application/json"
                        "version" "1.1.0"
                       ;  "gmlOptions" { 
                       ;                "featureNS" "http://www.opengis.net/wfs/dev"
