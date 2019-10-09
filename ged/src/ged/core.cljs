@@ -60,4 +60,6 @@
 
 (defn pretty-json-str
   [v]
-  (js/JSON.stringify (js/JSON.parse v) nil "\t"))
+  (if-not (empty? v)
+    (js/JSON.stringify (js/JSON.parse v) nil "\t")
+    v))
