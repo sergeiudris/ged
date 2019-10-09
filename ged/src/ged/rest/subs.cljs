@@ -16,6 +16,11 @@
  (fn [db _]
    (:ged.db.rest/selected-url db)))
 
+(rf/reg-sub
+ ::layer-id-input
+ (fn [db _]
+   (:ged.db.rest/layer-id-input db)))
+
 
 (rf/reg-sub
  ::search-table-mdata

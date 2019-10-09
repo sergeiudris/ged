@@ -38,7 +38,7 @@
             (assoc db :ged.db.rest/fetch-selected-url-res ea)))
 
 (rf/reg-event-fx
- ::tx-feature
+ ::tx-item
  [(rf/inject-cofx :ged.rest.core/get-editor-val [:data])]
  (fn-traced [{:keys [db get-editor-val]} [_ ea]]
             (let [tx-type (:tx-type ea)
@@ -73,6 +73,12 @@
             (let [key :ged.db.rest/search-input
                   value ea]
               (assoc db key value))))
+
+(rf/reg-event-db
+ ::layer-id-input
+ (fn-traced [db [_ ea]]
+            (assoc db :ged.db.rest/layer-id-input ea)))
+
 
 (rf/reg-event-fx
  ::search-table-mdata
@@ -123,3 +129,71 @@
    "/geoserver"
    )
 
+(rf/reg-event-fx
+ ::fetch-layer
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [id (:ged.db.rest/layer-id-input db)
+                  [fpref ftype] (try (str/split id \:)
+                                     (catch js/Error e
+                                       (do (js/console.warn e)
+                                           ["undefined:undefined"])))]
+              {:dispatch [:ged.evs/request-2
+                          {:method :get
+                           :params {}
+                           :headers {"Content-Type" "application/json"
+                            ; "Authorization"  (ged.api.geoserver/auth-creds)
+                                     }
+                           :path (str "/geoserver/rest/workspaces/" fpref "/featuretypes/" ftype ".json")
+                           :response-format
+                           (ajax/raw-response-format)
+                           :expected-success-fmt :json
+                           :expected-failure-fmt :raw
+                           :expected-body-fmt :json
+                           :on-success [::fetch-layer-res]
+                           :on-failure [::fetch-layer-res]}]
+               :db (merge db {})})))
+
+(rf/reg-event-fx
+ ::fetch-layer-res
+ (fn-traced [{:keys [db]} [_ ea]]
+            {:dispatch [:ged.rest.core/set-editor-json [:data ea]]}))
+
+
+(rf/reg-event-fx
+ ::tx-item-2
+ [(rf/inject-cofx :ged.rest.core/get-editor-val [:data])]
+ (fn-traced [{:keys [db get-editor-val]} [_ ea]]
+            (let [tx-type (:tx-type ea)
+                  v (js/JSON.parse get-editor-val)
+                  path (:ged.db.rest/selected-item-path db)
+                  body (js/JSON.stringify v)
+                  id (:ged.db.rest/layer-id-input db)
+                  [fpref ftype] (try (str/split id \:)
+                                     (catch js/Error e
+                                       (do (js/console.warn e)
+                                           ["undefined:undefined"])))]
+              {:dispatch [:ged.evs/request-2
+                          {:method tx-type
+                           :body body
+                           :headers {"Content-Type" "application/json"
+                            ; "Authorization"  (ged.api.geoserver/auth-creds)
+                                     }
+                  ; :path "/geoserver/wfs?exceptions=application/json&outputFormat=application/json"
+                           :path (if (= tx-type :post)
+                                   (str "/geoserver/rest/workspaces/" fpref "/featuretypes" )
+                                   (str "/geoserver/rest/workspaces/" fpref "/featuretypes/" ftype ".json")
+                                   )
+                           :response-format
+                           (ajax/raw-response-format)
+                           #_(ajax/json-response-format {:keywords? true})
+                           :expected-success-fmt :raw
+                           :expected-failure-fmt :raw
+                           :expected-body-fmt :json
+                           :on-success [::tx-res]
+                           :on-failure [::tx-res]}]
+               :db (merge db {})})))
+
+(rf/reg-event-fx
+ ::tx-res
+ (fn-traced [{:keys [db]} [_ id ea]]
+            {:db (assoc db :ged.db.rest/tx-res ea)}))

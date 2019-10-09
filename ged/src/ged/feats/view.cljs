@@ -326,16 +326,15 @@
            {:content
             (r/as-element
              [:div
-              [:a {:target "_blank" 
-                   :href "https://docs.geoserver.org/stable/en/user/filter/ecql_reference.html#filter-ecql-reference"}
-               "eqcl reference"
-               ]
+              [:span "docs:"]
               [:br]
               [:a {:target "_blank"
-                   :href "https://docs.geoserver.org/stable/en/user/tutorials/cql/cql_tutorial.html#cql-tutorial" }
-               "cql-tutorial"
-               ]
-              ]
+                   :href "https://docs.geoserver.org/stable/en/user/filter/ecql_reference.html#filter-ecql-reference"}
+               "eqcl reference"]
+              [:br]
+              [:a {:target "_blank"
+                   :href "https://docs.geoserver.org/stable/en/user/tutorials/cql/cql_tutorial.html#cql-tutorial"}
+               "cql-tutorial"]]
              )}
            [ant-button
             {:icon "question"

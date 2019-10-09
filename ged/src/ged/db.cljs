@@ -159,7 +159,9 @@
                                       :extra {:currentDataSource []}}
      :ged.db.rest/selected-item-href nil
      :ged.db.rest/selected-item-path nil
-
+     :ged.db.rest/layer-id-input ""
+     
+     
 
      ; settings 
      :ged.db.settings/wms-use-auth? true

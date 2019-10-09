@@ -109,7 +109,7 @@ body {
 
 .rest-editor-data {
   border: 1px solid lightgrey;
-  height: 50vh !important;
+  height: 80vh !important;
   flex: 0 0 auto;
   /* display: inline-block; */
 }

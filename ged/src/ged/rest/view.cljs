@@ -25,6 +25,8 @@
              ["antd/lib/progress" :default AntProgress]
              ["antd/lib/input/Search" :default AntInputSearch]
              ["antd/lib/table" :default AntTable]
+             ["antd/lib/popover" :default AntPopover]
+             
              ["antd/lib/auto-complete" :default AntAutoComplete]))
 
 
@@ -43,6 +45,8 @@
 (def ant-auto-complete (r/adapt-react-class AntAutoComplete))
 (def ant-auto-complete-option (r/adapt-react-class (.-Option AntAutoComplete)))
 (def ant-table (r/adapt-react-class AntTable))
+(def ant-popover (r/adapt-react-class AntPopover))
+
 
 (defn editor-data
   []
@@ -53,7 +57,8 @@
                   :mode "json"
                   :theme "github"
                   :className "rest-editor-data"
-                  :width "64vw"
+                  :width "80vw"
+                  :height "80vh"
                     ;  :default-value default-value
                   :value @av
                   :on-load (fn [ref]
@@ -98,11 +103,32 @@
         "/rest/workspaces/dev/datastores/pgdb/featuretypes.json"]
        ])))
 
+
+
 (defn btn-fetch
   []
   [ant-button
    {:icon "reload"
     :on-click #(rf/dispatch [::evs/fetch-selected-url])}])
+
+(defn layer-id-input
+  []
+  (let [av (rf/subscribe [::subs/layer-id-input])]
+    (fn []
+      (let [v @av]
+        [ant-input {:value v
+                    :on-change (fn [ev]
+                                 (rf/dispatch [::evs/layer-id-input
+                                               (.. ev -target -value)]))
+                    :placeholder "topp:states"
+                    :size "small"}]))))
+
+(defn fetch-layer-button
+  []
+  [ant-button
+   {:icon "reload"
+    :size "small"
+    :on-click #(rf/dispatch [::evs/fetch-layer])}])
 
 (def base-columns
   [{:title "name"
@@ -176,27 +202,51 @@
     (fn []
       [:section
        [:div
-        [ant-row
+        #_[ant-row
          [ant-col {:span 10} [select-endpoint]]
          [ant-col {:span 2} [btn-fetch]]]]
+       [ant-row 
+        [ant-col {:span 10} [layer-id-input]]
+        [ant-col {:span 2} [fetch-layer-button]]
+        [ant-col {:span 1}
+         [ant-popover
+          {:content
+           (r/as-element
+            [:div
+             [:span "This page is for editing featuretypes (layers) via REST."]
+             [:br]
+             [:span "Docs:"]
+             [:br]
+             [:a {:target "_blank"
+                  :href "https://docs.geoserver.org/latest/en/api/#/latest/en/api/1.0.0/featuretypes.yaml"}
+              "geoserver rest featuretypes"]])}
+          [ant-button
+           {:icon "question"
+            :shape "circle"
+            :size "small"
+            :style {:margin-left "4px"
+                    :width "12px" :height "12px"
+                    :font-size "8px" :min-width "initial"}}]]
+         ]
+        ]
        [:br]
-       [table]
+       #_[table]
        [:br]
        [:section {:class "editors-container"}
         [editor-data]
-        [editor-response]]
+        #_[editor-response]]
        [:br]
        [ant-button-group {:size "small"}
-        #_[ant-button {:on-click
-                     #(rf/dispatch [::evs/tx-feature {:tx-type :post}])
+        [ant-button {:on-click
+                     #(rf/dispatch [::evs/tx-item-2 {:tx-type :post}])
                      :style {:width "96px"}}
          "post"]
         [ant-button {:on-click
-                     #(rf/dispatch [::evs/tx-feature {:tx-type :put}])
+                     #(rf/dispatch [::evs/tx-item-2 {:tx-type :put}])
                      :style {:width "96px"}}
          "put"]
         [ant-button {:on-click
-                     #(rf/dispatch [::evs/tx-feature {:tx-type :delete}])
+                     #(rf/dispatch [::evs/tx-item-2 {:tx-type :delete}])
                      :style {:width "96px"}}
          "delete"]]
        [:br]
