@@ -23,12 +23,16 @@
   [{:keys [db]} [_ ea]]
   (let []
     {:dispatch
-     [:ged.evs/request
+     [:ged.evs/request-2
       {:method :get
        :params {}
        :headers {"Content-Type" "application/json"}
        :path "/geoserver/rest/layers.json"
-       :response-format (ajax/json-response-format {:keywords? true})
+       :response-format
+       (ajax/raw-response-format)
+       :expected-success-fmt :json->edn
+       :expected-failure-fmt :raw
+       :expected-body-fmt :raw
        :on-success [::fetch-all-layers-res]
        :on-failure [::fetch-all-layers-res]}]
      :db db})))
@@ -152,15 +156,18 @@
                        :headers {"Content-Type" "application/json"}
                        :on-success [::wfs-search-res]
                        :on-failure [::wfs-search-res]}]
-               [:ged.evs/request
+               [:ged.evs/request-2
                   {:method :post
                    :params {}
                    :body body
                    :headers {"Content-Type" "application/json"}
                    :path "/geoserver/wfs"
-                   :response-format
-                   (ajax/json-response-format {:keywords? true})
                    #_(ajax/transit-response-format {:reader (t/reader :json)})
+                   :response-format
+                   (ajax/raw-response-format)
+                   :expected-success-fmt :json->edn
+                   :expected-failure-fmt :raw
+                   :expected-body-fmt :xml
                    :on-success [::wfs-search-res]
                    :on-failure [::wfs-search-res]}]
                :db (merge db {:ged.db.map/wfs-search-last-filter wfs-filter
