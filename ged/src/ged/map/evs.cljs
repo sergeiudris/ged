@@ -334,17 +334,16 @@
 
 
 (rf/reg-event-fx
- ::wfs-search-tx
- [(rf/inject-cofx :ged.feats.core/get-editor-val [:data])]
- (fn-traced [{:keys [db get-editor-val]} [_ ea]]
+ ::wfs-tx
+ (fn-traced [{:keys [db]} [_ ea]]
             (let [ftype-input (:ged.db.feats/feature-type-input db)
                   [fpref ftype] (try (str/split ftype-input \:)
                                      (catch js/Error e
                                        (do (js/console.warn e)
                                            ["undefined:undefined"])))
-                  fns (:ged.db.feats/feature-ns db)
-                  tx-type (:tx-type ea)
-                  v (js/JSON.parse get-editor-val)
+                  fns (:ged.db.map/wfs-feature-ns db)
+                  {:keys [value tx-type]} ea
+                  v (js/JSON.parse value)
                   body (wfs-tx-jsons-str
                         {tx-type [v]
                          :featureNS fns
@@ -358,27 +357,26 @@
                               :path "/geoserver/wfs"
                               :response-format
                               (ajax/raw-response-format) #_(ajax/json-response-format {:keywords? true})
-
                               :expected-success-fmt :xml
                               :expected-failure-fmt :xml
                               :expected-body-fmt :xml
-                              :on-success [::tx-res-succ (str fpref ":" ftype)]
-                              :on-failure [::tx-res-fail]}]
+                              :on-success [::wfs-tx-succ (str fpref ":" ftype)]
+                              :on-failure [::wfs-tx-fail]}]
                             #_[:ged.feats.core/set-editor-xml [:request body]])
                :db (merge db {})})))
 
 (rf/reg-event-fx
- ::wfs-search-tx-succ
+ ::wfs-tx-succ
  (fn-traced [{:keys [db]} [_ id ea]]
-            {:db (assoc db :ged.db.feats/tx-res ea)
+            {:db (assoc db :ged.db.map/wfs-tx-res ea)
              :dispatch-n (list
                           #_[:ged.feats.core/set-editor-xml [:response ea]]
                           [:ged.map.core/refetch-wms-layer id])}))
 
 
 (rf/reg-event-fx
- ::wfs-search-tx-fail
+ ::wfs-tx-fail
  (fn-traced [{:keys [db]} [_ ea]]
-            {:db (assoc db :ged.db.feats/tx-res ea)
+            {:db (assoc db :ged.db.map/wfs-tx-res ea)
             ;  :dispatch [:ged.feats.core/set-editor-xml [:response ea]]
              }))

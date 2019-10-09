@@ -421,9 +421,10 @@
               (rf/dispatch [::evs/wfs-search-layer-input
                             (.. ev -target -value)]))]
         [ant-input {:value input
+                    :size "small"
                     :on-change on-change
                     :placeholder "topp:states"
-                    :style {:width "100%"}}]
+                    }]
         )
       )
     )
