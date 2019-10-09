@@ -208,20 +208,26 @@
                                            ["undefined:undefined"])))
                   ]
               {:dispatch-n (list 
-                            [:ged.evs/request
+                            [:ged.evs/request-2
                              {:method :get
                               :headers {"Content-Type" "application/json"}
                               :path (str "/geoserver/rest/workspaces/" fpref "/featuretypes/" ftype ".json")
                               :response-format
-                              (ajax/json-response-format {:keywords? true})
+                              (ajax/raw-response-format)
+                              :expected-success-fmt :json->edn
+                              :expected-failure-fmt :raw
+                              :expected-body-fmt :raw
                               :on-success [::fetch-ftype-mdata-layer-res]
                               :on-failure [::fetch-ftype-mdata-layer-res]}]
-                            [:ged.evs/request
+                            [:ged.evs/request-2
                              {:method :get
                               :headers {"Content-Type" "application/json"}
                               :path (str "/geoserver/rest/namespaces/" fpref ".json")
                               :response-format
-                              (ajax/json-response-format {:keywords? true})
+                              (ajax/raw-response-format)
+                              :expected-success-fmt :json->edn
+                              :expected-failure-fmt :raw
+                              :expected-body-fmt :raw
                               :on-success [::fetch-ftype-mdata-ns-res]
                               :on-failure [::fetch-ftype-mdata-ns-res]}]
                             )
