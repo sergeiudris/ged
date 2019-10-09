@@ -189,11 +189,11 @@
                            :expected-success-fmt :raw
                            :expected-failure-fmt :raw
                            :expected-body-fmt :json
-                           :on-success [::tx-res]
-                           :on-failure [::tx-res]}]
+                           :on-success [::tx-res-2]
+                           :on-failure [::tx-res-2]}]
                :db (merge db {})})))
 
 (rf/reg-event-fx
- ::tx-res
+ ::tx-res-2
  (fn-traced [{:keys [db]} [_ id ea]]
             {:db (assoc db :ged.db.rest/tx-res ea)}))
