@@ -129,13 +129,17 @@
                          :featurePrefix fpref
                          :featureType ftype})]
               {:dispatch-n (list
-                            [:ged.evs/request
+                            [:ged.evs/request-2
                              {:method :post
                               :body body
                               :headers {"Content-Type" "application/json"}
                               :path "/geoserver/wfs"
                               :response-format
                               (ajax/raw-response-format) #_(ajax/json-response-format {:keywords? true})
+
+                              :expected-success-fmt :xml
+                              :expected-failure-fmt :xml
+                              :expected-body-fmt :xml
                               :on-success [::tx-res-succ (str fpref ":" ftype)]
                               :on-failure [::tx-res-fail]}]
                             #_[:ged.feats.core/set-editor-xml [:request body]])

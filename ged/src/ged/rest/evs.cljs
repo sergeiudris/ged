@@ -52,7 +52,7 @@
                             ; "Authorization"  (ged.api.geoserver/auth-creds)
                                      }
                   ; :path "/geoserver/wfs?exceptions=application/json&outputFormat=application/json"
-                           :path (str "/geoserver" path)
+                           :path (str "/geoserver/rest" path)
                            :response-format
                            #_(ajax/raw-response-format)
                            (ajax/json-response-format {:keywords? true})

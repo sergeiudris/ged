@@ -138,6 +138,17 @@
 
 #_ (subs "/geoserver/rest/layers.json" (count "/geoserver"))
 
+#_(-> (get-geoserver-host) (str/split  #"://") (second) (str/split  #"/") (first) ) 
+
+(defn geoserver-host->host
+  []
+  (-> (get-geoserver-host) 
+      (str/split  #"://") 
+      (second) 
+      (str/split  #"/") 
+      (first)
+      (str/replace #"geoserver" "localhost")
+      ))
 
 (defn handle [{:keys [uri http-roots http-config request-method
                       server-name server-port body headers query-string] :as req}]
@@ -169,10 +180,13 @@
                      :url (str (get-geoserver-host) url)
                      :as (if (str/includes? url "/wms") :byte-array :string)
                      :body body
-                     :headers  (dissoc headers "content-length"
-                                       "host"
-                                       "referer"
-                                       "sec-fetch-mode")
+                     :headers  (->
+                                (dissoc headers "content-length"
+                                        "host"
+                                        "origin"
+                                        ; "referer"
+                                        "sec-fetch-mode")
+                                #_(merge {"host" (geoserver-host->host)}))
                     ; :basic-auth ["admin" "myawesomegeoserver"]
                      }
                     )

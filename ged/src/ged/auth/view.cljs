@@ -95,7 +95,7 @@
            {:size "small"
             :on-click on-activate
             :type "primary"}
-           "select"]
+           "activate"]
           [ant-popconfirm
            {:title "remove profile?" :on-confirm on-remove :okText "yes" :cancelText "no"}
            [ant-button

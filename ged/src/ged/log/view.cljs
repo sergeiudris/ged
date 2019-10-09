@@ -55,20 +55,35 @@
   (get v :http-xhrio))
 
 
+(defn item-fmt->ace-mode
+  [fmt]
+  (case  fmt
+    :xml "xml"
+    :json "json"
+    :json->edn "json"
+    :raw "text"
+    "text"))
 
 (defn item->ace-mode-body
   [item]
-  (case  (:expected-body-fmt item)
-    :xml "xml"
-    :json "json"
-    "text"))
+  (item-fmt->ace-mode (:expected-body-fmt item)))
 
-(defn item->ace-mode-response
+(defn item->ace-mode-response-success
   [item]
-  (case  (:expected-success-fmt item)
-    :xml "xml"
-    :json "json"
-    "text"))
+  (item-fmt->ace-mode (:expected-success-fmt item)))
+
+(defn item->ace-mode-response-failure
+  [item]
+  (item-fmt->ace-mode (:expected-failure-fmt item)))
+
+(defn pretty-fmt
+  [fmt v]
+  (cond
+    (= fmt :xml)  (prettify-xml v)
+    (= fmt :json)  (pretty-json-str v)
+    (= fmt :json->edn)  (pretty-json-str v)
+    (= fmt :raw)  v
+    :else v))
 
 
 (def columns
@@ -152,11 +167,39 @@
   (let []
     (fn [{:keys [item]}]
       (let []
-        [:div (aget item "uuid")]
-        )
-      )
-    )
-  )
+        [:<>
+         [:div (get item :uuid)]
+         [react-ace {:name "editor-item"
+                     :mode "clojure"
+                     :theme "github"
+                     :className ""
+                     :width "100%"
+                     :height "31%"
+                    ;  :default-value default-value
+                     :value (pretty-edn (:result item))
+                     :editor-props {"$blockScrolling" js/Infinity}}]
+         [:div "body:"]
+         [react-ace {:name "editor-item-body"
+                     :mode (item->ace-mode-body item)
+                     :theme "github"
+                     :className ""
+                     :width "100%"
+                     :height "31%"
+                    ;  :default-value default-value
+                     :value (str (get-in item [:http-xhrio :body]))
+                     :editor-props {"$blockScrolling" js/Infinity}}]
+         [:div "response:"]
+         [react-ace {:name "editor-item-response"
+                     :mode (item->ace-mode-response-failure item)
+                     :theme "github"
+                     :className ""
+                     :width "100%"
+                     :height "31%"
+                    ;  :default-value default-value
+                     :value (pretty-fmt
+                             (:expected-failure-fmt item)
+                             (str (get-in item  [:result :response])))
+                     :editor-props {"$blockScrolling" js/Infinity}}]]))))
 
 (defn info-pane-http-success
   [opts]
@@ -182,17 +225,21 @@
                      :width "100%"
                      :height "31%"
                     ;  :default-value default-value
-                     :value (str (get-in item [:http-xhrio :body]))
+                     :value (pretty-fmt
+                             (:expected-body-fmt item)
+                             (str (get-in item [:http-xhrio :body])))
                      :editor-props {"$blockScrolling" js/Infinity}}]
          [:div "response:"]
          [react-ace {:name "editor-item-response"
-                     :mode (item->ace-mode-response item)
+                     :mode (item->ace-mode-response-success item)
                      :theme "github"
                      :className ""
                      :width "100%"
                      :height "31%"
                     ;  :default-value default-value
-                     :value (pretty-json-str (str (:response item))) 
+                     :value (pretty-fmt
+                             (:expected-success-fmt item)
+                             (str (:response item)))
                      :editor-props {"$blockScrolling" js/Infinity}}]]))))
 
 (defn info-pane-raw-edn
