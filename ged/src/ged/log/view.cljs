@@ -33,12 +33,19 @@
   [{:key :uuid
     :title "uuid"
     :dataIndex :uuid}
+   
+   {:key :ts-created
+    :title "when"
+    :dataIndex :ts-created
+    :render (fn [t r i]
+              (r/as-element
+               [:span (str (-> (js/Date.now) (- t) (/ 1000) (Math/round)  ) "s")]))
+    }
 
    {:title "tag"
     :key :tag
     :align "center"
     :render (fn [t r i]
-              (js/console.log r)
               (r/as-element
                [:div
                 (when (aget r "http-xhrio")
@@ -80,7 +87,7 @@
           :columns columns
           :dataSource data
           :on-change (fn [pag fil sor ext]
-                       (rf/dispatch [::evs/all-layers-table-mdata
+                       (rf/dispatch [::evs/log-table-mdata
                                      (js->clj {:pagination pag
                                                :filters fil
                                                :sorter sor

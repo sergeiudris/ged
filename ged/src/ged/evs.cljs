@@ -219,7 +219,8 @@
  ::log
  (fn-traced
   [{:keys [db]} [_ ea]]
-  {:db (update db :ged.db.core/log-que conj ea)}))
+  {:db (update db :ged.db.core/log-que conj
+               (assoc ea :ts-created (js/Date.now)))}))
 
 (rf/reg-event-fx
  ::clear-log

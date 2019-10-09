@@ -56,7 +56,7 @@
                                                :position "top"
                                                :total 0
                                                :current 1
-                                               :pageSize 10}
+                                               :pageSize 22}
                                        :filters {}
                                        :sorter {}
                                        :extra {:currentDataSource []}}
