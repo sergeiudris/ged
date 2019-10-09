@@ -60,6 +60,7 @@
                                        :filters {}
                                        :sorter {}
                                        :extra {:currentDataSource []}}
+     :ged.db.log/selected-item-key nil
 
       ; feats
      :ged.db.feats/search-res nil

@@ -18,3 +18,19 @@
  ::log-table-mdata
  (fn [db _]
    (:ged.db.log/log-table-mdata db)))
+
+(rf/reg-sub
+ ::selected-item-key
+ (fn [db _]
+   (:ged.db.log/selected-item-key db)))
+
+(rf/reg-sub
+ ::selected-item
+ (fn [query-v _]
+   [(rf/subscribe [::log])
+    (rf/subscribe [::selected-item-key])])
+ (fn [[log k] qv _]
+   (let []
+     (->> (:data log)
+          (filterv #(= (:uuid %) k))
+          (first)))))

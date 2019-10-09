@@ -1,33 +1,9 @@
 (ns ged.feats.core
   (:require [cljs.repl :as repl]
             [re-frame.core :as rf]
+            [ged.core :refer [prettify-xml pretty-json]]
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]])
   )
-
-(def prettify-xml
-  (fn [sourceXml]
-    (let
-     [xmlDoc (.parseFromString (new js/DOMParser) sourceXml "application/xml")
-      xsltDoc
-      (.parseFromString
-       (new js/DOMParser)
-       (.join
-        #js
-         ["<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">"
-          "  <xsl:strip-space elements=\"*\"/>"
-          "  <xsl:template match=\"para[content-style][not(text())]\">"
-          "    <xsl:value-of select=\"normalize-space(.)\"/>"
-          "  </xsl:template>" "  <xsl:template match=\"node()|@*\">"
-          "    <xsl:copy><xsl:apply-templates select=\"node()|@*\"/></xsl:copy>"
-          "  </xsl:template>" "  <xsl:output indent=\"yes\"/>"
-          "</xsl:stylesheet>"]
-        "\n")
-       "application/xml")
-      xsltProcessor (new js/XSLTProcessor)]
-      (.importStylesheet xsltProcessor xsltDoc)
-      (def resultDoc (.transformToDocument xsltProcessor xmlDoc))
-      (def resultXml (.serializeToString (new js/XMLSerializer) resultDoc))
-      resultXml)))
 
 (def editors (atom {:data nil
                     :response nil
@@ -60,7 +36,7 @@
 
 (defn set-editor-json!
   [k v]
-  (set-editor-val! k (js/JSON.stringify v nil "\t")))
+  (set-editor-val! k (pretty-json v)))
 
 (defn set-editor-xml!
   [k v]

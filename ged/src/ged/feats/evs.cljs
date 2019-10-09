@@ -83,6 +83,7 @@
                      
                      :expected-success-fmt :json->edn
                      :expected-failure-fmt :raw
+                     :expected-body-fmt :json
                      :on-success [::search-res]
                      :on-failure [::search-res]}
                     ]

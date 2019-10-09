@@ -142,6 +142,7 @@
                   {:keys [method path
                           on-success on-failure
                           expected-success-fmt expected-failure-fmt
+                          expected-body-fmt 
                           params url-params body headers response-format]} ea
                   uri (str base-url path)
                   proxy-path (:ged.db.core/proxy-path db)
@@ -167,9 +168,11 @@
 
                   on-success [::request-2-success {:on-success on-success
                                                    :http-xhrio http-xhrio
+                                                   :expected-body-fmt expected-body-fmt
                                                    :expected-success-fmt expected-success-fmt}]
                   on-failure [::request-2-failure {:on-failure on-failure
                                                    :http-xhrio http-xhrio
+                                                   :expected-body-fmt expected-body-fmt
                                                    :expected-failure-fmt expected-failure-fmt}]]
               {:http-xhrio [(merge http-xhrio {:on-failure on-failure
                                                :on-success on-success} )]}
@@ -178,7 +181,8 @@
 
 (rf/reg-event-fx
  ::request-2-success
- (fn [{:keys [db]} [_ {:keys [on-success expected-success-fmt http-xhrio]} v]]
+ (fn [{:keys [db]} [_ {:keys [on-success expected-success-fmt http-xhrio
+                              expected-body-fmt]} v]]
    (let [nv (cond
               (= expected-success-fmt :json) (->  v (js/JSON.parse))
               (= expected-success-fmt :json->edn) (->  v (js/JSON.parse) (js->clj :keywordize-keys true))
@@ -190,16 +194,18 @@
                    [::log {:uuid (str (random-uuid))
                            :response v
                            :http-xhrio http-xhrio
+                           :expected-body-fmt expected-body-fmt
                            :expected-success-fmt expected-success-fmt}]
                    )})))
 
 (rf/reg-event-fx
  ::request-2-failure
- (fn [{:keys [db]} [_ {:keys [on-failure expected-failure-fmt
+ (fn [{:keys [db]} [_ {:keys [on-failure expected-failure-fmt expected-body-fmt
                               http-xhrio]} v]]
    {:dispatch [::log {:uuid (str (random-uuid))
                       :result v
                       :http-xhrio http-xhrio
+                      :expected-body-fmt expected-body-fmt
                       :expected-failure-fmt expected-failure-fmt}]}))
 
 

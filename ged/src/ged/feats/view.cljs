@@ -359,7 +359,7 @@
   (let []
     (fn []
       [:div {:style {:height "100%" :width "100%" :display "flex" }}
-       [:section {:style {:width "43%"}}
+       [:section {:style {:width "47%"}}
         [:span
          [feature-type-input]
          [fetch-ftype-mdata-button]]
@@ -375,7 +375,7 @@
         [editor-ecql]
         ]
        [:section {:style {:width "4%" }}]
-       [:section {:style {:width "43%"}}
+       [:section {:style {:width "47%"}}
         [table]
         [:br]
         [editor-feature]
