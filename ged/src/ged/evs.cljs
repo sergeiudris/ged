@@ -133,6 +133,68 @@
      ;
               )))
 
+(rf/reg-event-fx
+ ::request-2
+;  [(re-frame/)]
+ ;[(rf/inject-cofx ::inject/sub [:entity-request-data])]
+ (fn-traced [{:keys [db event] :as ctx} [_ ea]]
+            (let [base-url (get-in db [:ged.db.core/api :base-url])
+                  {:keys [method path
+                          on-success on-failure
+                          expected-success-fmt expected-failure-fmt
+                          params url-params body headers response-format]} ea
+                  uri (str base-url path)
+                  proxy-path (:ged.db.core/proxy-path db)
+                  geoserver-req? (str/starts-with? uri proxy-path)
+                  apk (:ged.db.core/active-profile-key db)
+                  uname (get-in db [:ged.db.core/profiles apk :username])
+                  pass (get-in db [:ged.db.core/profiles apk :password])
+
+                  http-xhrio {:method method
+                              :uri uri
+                              :response-format (ajax/raw-response-format)
+
+                              :format :edn
+                              :body body
+                              :headers
+                              (merge headers
+                                     (when geoserver-req?
+                                       {"Authorization" (basic-creds uname pass)}))
+
+                              :params params
+                              :url-params url-params
+
+                              :on-success
+                              [::request-2-success {:on-success on-success
+                                                    :expected-success-fmt expected-success-fmt}]}
+
+                  on-failure [::request-2-failure {:on-failure on-failure
+                                                   :http-xhrio http-xhrio
+                                                   :expected-failure-fmt expected-failure-fmt}]]
+              {:http-xhrio [(assoc http-xhrio :on-failure on-failure)]}
+     ;
+              )))
+
+(rf/reg-event-fx
+ ::request-2-success
+ (fn [{:keys [db]} [_ {:keys [on-success expected-success-fmt]} v]]
+   (let [nv (cond
+              (= expected-success-fmt :json) (->  v (js/JSON.parse))
+              (= expected-success-fmt :json->edn) (->  v (js/JSON.parse) (js->clj :keywordize-keys true))
+              (= expected-success-fmt :xml) v
+              (= expected-success-fmt :raw) v
+              :else v)]
+     {:dispatch (conj on-success nv)})))
+
+(rf/reg-event-fx
+ ::request-2-failure
+ (fn [{:keys [db]} [_ {:keys [on-failure expected-failure-fmt
+                              http-xhrio]} v]]
+   {:dispatch [::log {:uuid (random-uuid)
+                      :result v
+                      :http-xhrio http-xhrio
+                      :expected-failure-fmt expected-failure-fmt}]}))
+
 
 (rf/reg-event-fx
  :xhrio-failure
@@ -152,6 +214,12 @@
  :request-res
  (fn-traced [db [_ db-key res]]
             (assoc db db-key res)))
+
+(rf/reg-event-fx
+ ::log
+ (fn-traced
+  [{:keys [db]} [_ ea]]
+  {:db (update db :ged.db.core/log-que conj ea)}))
 
 
 

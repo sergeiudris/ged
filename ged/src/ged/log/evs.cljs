@@ -11,3 +11,9 @@
             (let []
               {:db (assoc db key v)
                :dispatch [:assoc-in-store [[key] v]]})))
+
+(rf/reg-event-fx
+ ::log-table-mdata
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [key :ged.db.log/log-table-mdata]
+              {:db (assoc db key ea)})))

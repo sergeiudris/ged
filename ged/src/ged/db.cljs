@@ -48,6 +48,19 @@
 
      :ged.db.core/proxy-path "/geoserver"
 
+     :ged.db.core/log-que []
+     :ged.db.log/log-table-mdata {:pagination {:showSizeChanger false
+                                               :showQuickJumper false
+                                               :defaultPageSize 5
+                                               :pageSizeOptions  ["5" "10" "20"]
+                                               :position "top"
+                                               :total 0
+                                               :current 1
+                                               :pageSize 10}
+                                       :filters {}
+                                       :sorter {}
+                                       :extra {:currentDataSource []}}
+
       ; feats
      :ged.db.feats/search-res nil
      :ged.db.feats/search-input ""
@@ -68,7 +81,7 @@
      :ged.db.feats/feature-ns "" #_"http://www.opengis.net/wfs/dev"
      :ged.db.feats/fetch-ftype-mdata-ns-res nil
      :ged.db.feats/fetch-ftype-mdata-layer-res nil
-     
+
      :ged.db.feats/selected-attrs []
      :ged.db.feats/use-eqcl-filter? false
 

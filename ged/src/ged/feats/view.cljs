@@ -192,7 +192,6 @@
   (let [afns (rf/subscribe
               [::subs/feature-ns])]
     (fn []
-      (js/console.log @afns)
       [:div  (or @afns "-")]
       #_[ant-input {:size "small"
                   :value @sref

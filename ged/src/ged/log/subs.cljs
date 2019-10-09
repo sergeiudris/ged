@@ -4,7 +4,12 @@
 (rf/reg-sub
  ::log
  (fn [db _]
-   (:ged.log/log db)))
+   (let [log-que (:ged.db.core/log-que db)]
+     {:data log-que
+      :total (count log-que)})))
 
-
+(rf/reg-sub
+ ::log-table-mdata
+ (fn [db _]
+   (:ged.db.log/log-table-mdata db)))
 

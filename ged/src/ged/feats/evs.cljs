@@ -53,7 +53,7 @@
                               (some #(= % (:name x)) selected-attrs)) attrs)]
      #_(js/console.log (olf/like "NAME" (str "*" "hello" "*") "*" "." "!" false))
      {:dispatch-n (list 
-                   [:ged.evs/request
+                   [:ged.evs/request-2
                     {:method :get
                      :path "/geoserver/wfs"
                      :params (merge
@@ -80,6 +80,9 @@
                      :response-format 
                      #_(ajax/raw-response-format)
                      (ajax/json-response-format {:keywords? true})
+                     
+                     :expected-success-fmt :json->edn
+                     :expected-failure-fmt :raw
                      :on-success [::search-res]
                      :on-failure [::search-res]}
                     ]
@@ -105,7 +108,6 @@
 (rf/reg-event-db
  ::search-res
  (fn-traced [db [_ ea]]
-            #_(js/console.log ea)
             (assoc db :ged.db.feats/search-res ea)))
 
 (rf/reg-event-fx
