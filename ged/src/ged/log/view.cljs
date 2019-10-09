@@ -42,7 +42,7 @@
         [ant-table
          {:show-header true
           :size "small"
-          :row-key :name
+          :row-key :uuid
           :columns columns
           :dataSource data
           :on-change (fn [pag fil sor ext]

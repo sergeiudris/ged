@@ -55,7 +55,7 @@
      {:dispatch-n (list 
                    [:ged.evs/request-2
                     {:method :get
-                     :path "/geoserver/wfs"
+                     :path "/geoserver/wfs1"
                      :params (merge
                               {"service" "wfs"
                               ;  "version" "2.0.0"

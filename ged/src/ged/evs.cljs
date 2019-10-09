@@ -190,7 +190,7 @@
  ::request-2-failure
  (fn [{:keys [db]} [_ {:keys [on-failure expected-failure-fmt
                               http-xhrio]} v]]
-   {:dispatch [::log {:uuid (random-uuid)
+   {:dispatch [::log {:uuid (str (random-uuid))
                       :result v
                       :http-xhrio http-xhrio
                       :expected-failure-fmt expected-failure-fmt}]}))
