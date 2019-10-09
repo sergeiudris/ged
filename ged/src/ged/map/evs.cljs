@@ -325,3 +325,9 @@
  ::tx-res-fail
  (fn-traced [db [_ ea]]
             (assoc db :ged.db.map/tx-res ea)))
+
+
+(rf/reg-event-fx
+ ::wfs-search-selected-key
+ (fn-traced [{:keys [db]} [_ ea]]
+            {:db (assoc db :ged.db.map/wfs-search-selected-key ea)}))

@@ -6,6 +6,13 @@
              [ged.map.subs :as subs]
              [ged.map.evs :as evs]
              [ged.map.core]
+             [ged.core :refer [->clj  pretty-json
+                               pretty-json-str]]
+             ["react-ace/lib/index.js" :default ReactAce]
+             ["brace" :as brace]
+             ["brace/mode/json.js"]
+             ["brace/theme/github.js"]
+
              ["antd/lib/button" :default AntButton]
              ["antd/lib/button/button-group" :default AntButtonGroup]
              ["antd/lib/radio" :default AntRadio]
@@ -32,6 +39,8 @@
 (def ant-menu-divider (r/adapt-react-class (.-Divider AntMenu)))
 (def ant-input (r/adapt-react-class AntInput))
 (def ant-input-search (r/adapt-react-class (.-Search AntInput)))
+
+(def react-ace (r/adapt-react-class ReactAce))
 
 #_(js/console.log
    (js/document.getElementById
@@ -529,11 +538,14 @@
 (defn wfs-search-table
   []
   (let [adata (rf/subscribe [::subs/wfs-search-res])
-        table-mdata (rf/subscribe [::subs/wfs-search-table-mdata])]
+        table-mdata (rf/subscribe [::subs/wfs-search-table-mdata])
+        aselected-key (rf/subscribe [::subs/wfs-search-selected-key])
+        ]
     (fn []
       (let [items (:features @adata)
             total (:totalFeatures @adata)
             ents items
+            selected [@aselected-key]
             #_(mapv #(-> % :entity (dissoc :db/id)) items)
             pagination (:pagination @table-mdata)
             first-item (first items)
@@ -542,7 +554,7 @@
         [ant-table {:show-header true
                     :size "small"
                     :row-key :id
-                    :style {:height "91%" :overflow-y "auto"}
+                    :style {:height "51%" :overflow-y "auto"}
                     :columns wfs-search-columns
                     :dataSource ents
                     ; :defaultExpandedRowKeys [(:id first-item)]
@@ -555,14 +567,18 @@
                     :scroll {;  :x "max-content" 
                                 ;  :y 256
                              }
-                        ; :rowSelection {:on-change (fn [keys rows]
-                        ;                             (prn keys)
-                        ;                             )}
+                    :rowSelection {:columnWidth "28px"
+                                   :selectedRowKeys selected
+                                   :on-select (fn [row selected? rows]
+                                                (rf/dispatch [::evs/wfs-search-selected-key
+                                                              (if selected?
+                                                                (aget row "id")
+                                                                nil)]))}
                     :defaultExpandAllRows false
                     :expandedRowRender
                     (fn [rec]
                       (r/as-element
-                       [:div {:style {:max-height "50vh" :overflow-y "auto" }}
+                       [:div {:style {:max-height "50vh" :overflow-y "auto"}}
                         (js/JSON.stringify (aget rec "properties") nil "\t")
                         #_(str (js->clj (aget rec "properties")))]))
                     :pagination (merge pagination
@@ -570,6 +586,36 @@
                                             ; :on-change #(js/console.log %1 %2)
                                         })}]))))
 
+(defn wfs-search-feature-editor-inner
+  [opts]
+  (let [k-old  (r/atom (:k opts))
+        av (r/atom (:value opts))]
+    (fn [{:keys [value k]}]
+      (when-not (= k @k-old)
+        (do
+          (reset! k-old k)
+          (reset! av value)))
+      (let []
+        [react-ace {:name "wfs-search-feature-editor"
+                    :mode "json"
+                    :theme "github"
+                    :width "100%"
+                    :height "40%"
+                    ;  :default-value default-value
+                    :value @av
+                    :on-change (fn [v ev] (reset! av v))
+                    :editor-props {"$blockScrolling" js/Infinity}}]))))
+
+(defn wfs-search-feature-editor
+  []
+  (let [afeat (rf/subscribe [::subs/wfs-search-selected-feature])
+        ak (rf/subscribe [::subs/wfs-search-selected-key])
+        ]
+    (fn []
+      (let [feat @afeat
+            k @ak
+            v (if feat (pretty-json (clj->js feat)) "")]
+        [wfs-search-feature-editor-inner {:value v :k k}]))))
 
 (defn wfs-search
   []
@@ -586,6 +632,8 @@
             [ant-col
              [wfs-search-layer-input]]]
            [wfs-search-table]
+           [wfs-search-feature-editor]
+           
            [wfs-search-map-click]
            [wfs-search-area-box]
            ])))))

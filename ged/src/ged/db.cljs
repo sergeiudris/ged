@@ -121,7 +121,7 @@
                                                       :position "top"
                                                       :total 0
                                                       :current 1
-                                                      :pageSize 10}
+                                                      :pageSize 15}
                                          :filters {}
                                          :sorter {}
                                          :extra {:currentDataSource []}}
@@ -139,6 +139,7 @@
      :ged.db.map/tx-res nil
      :ged.db.map/all-layers-search-input ""
      :ged.db.map/infer-feature-ns-res nil
+     :ged.db.map/wfs-search-selected-key nil
 
      ; rest
      :ged.db.rest/fetch-selected-url-res nil

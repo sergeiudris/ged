@@ -171,5 +171,22 @@
  (fn [db _]
    (:ged.db.map/modifying? db)))
 
+(rf/reg-sub
+ ::wfs-search-selected-key
+ (fn [db _]
+   (:ged.db.map/wfs-search-selected-key db)))
+
+(rf/reg-sub
+ ::wfs-search-selected-feature
+ (fn [ea _]
+   [(rf/subscribe [::wfs-search-res])
+    (rf/subscribe [::wfs-search-selected-key])])
+ (fn [[data k] _]
+   (let [xs (:features data)]
+     (->> xs
+          (filterv
+           #(= (:id %) k))
+          (first)))))
+
 
 
