@@ -33,14 +33,13 @@
   [{:key :uuid
     :title "uuid"
     :dataIndex :uuid}
-   
+
    {:key :ts-created
     :title "when"
     :dataIndex :ts-created
     :render (fn [t r i]
               (r/as-element
-               [:span (str (-> (js/Date.now) (- t) (/ 1000) (Math/round)  ) "s")]))
-    }
+               [:span (str (-> (js/Date.now) (- t) (/ 1000) (Math/round)) "s")]))}
 
    {:title "tag"
     :key :tag
@@ -51,7 +50,9 @@
                 (when (aget r "http-xhrio")
                   [ant-tag {:color "blue"} "http"])
                 (when (and (aget r "http-xhrio") (aget r "result"))
-                  [ant-tag {:color "red"} "fail"])]))}
+                  [ant-tag {:color "red"} "fail"])
+                (when (and (aget r "http-xhrio") (aget r "response"))
+                  [ant-tag {:color "green"} "ok"])]))}
 
    {:title ""
     :key :action

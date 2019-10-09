@@ -163,28 +163,35 @@
 
                               :params params
                               :url-params url-params
+                              }
 
-                              :on-success
-                              [::request-2-success {:on-success on-success
-                                                    :expected-success-fmt expected-success-fmt}]}
-
+                  on-success [::request-2-success {:on-success on-success
+                                                   :http-xhrio http-xhrio
+                                                   :expected-success-fmt expected-success-fmt}]
                   on-failure [::request-2-failure {:on-failure on-failure
                                                    :http-xhrio http-xhrio
                                                    :expected-failure-fmt expected-failure-fmt}]]
-              {:http-xhrio [(assoc http-xhrio :on-failure on-failure)]}
+              {:http-xhrio [(merge http-xhrio {:on-failure on-failure
+                                               :on-success on-success} )]}
      ;
               )))
 
 (rf/reg-event-fx
  ::request-2-success
- (fn [{:keys [db]} [_ {:keys [on-success expected-success-fmt]} v]]
+ (fn [{:keys [db]} [_ {:keys [on-success expected-success-fmt http-xhrio]} v]]
    (let [nv (cond
               (= expected-success-fmt :json) (->  v (js/JSON.parse))
               (= expected-success-fmt :json->edn) (->  v (js/JSON.parse) (js->clj :keywordize-keys true))
               (= expected-success-fmt :xml) v
               (= expected-success-fmt :raw) v
               :else v)]
-     {:dispatch (conj on-success nv)})))
+     {:dispatch-n (list 
+                   (conj on-success nv)
+                   [::log {:uuid (str (random-uuid))
+                           :response v
+                           :http-xhrio http-xhrio
+                           :expected-success-fmt expected-success-fmt}]
+                   )})))
 
 (rf/reg-event-fx
  ::request-2-failure
