@@ -2,6 +2,7 @@
   (:require  [reagent.core :as r]
              [re-frame.core :as rf]
              [cljs.repl :as repl]
+             [clojure.string :as str]
              [cljs.pprint :as pp]
              [ged.log.evs :as evs]
              [ged.log.subs :as subs]
@@ -87,9 +88,30 @@
 
 
 (def columns
-  [{:key :uuid
-    :title "uuid"
-    :dataIndex :uuid}
+  [{:key :hint
+    :title "hint"
+    :render
+    (fn [t r i]
+      (let [v (->clj r)
+            uri (get-in v [:http-xhrio :uri])]
+        (r/as-element
+         (cond
+           (and (str/includes? (get-in v [:http-xhrio :uri]) "/wfs")
+                (= (get v :expected-success-fmt) "json->edn"))
+           [ant-tag {:color "#2db7f5"} "WFS search"]
+
+           (and (str/includes? (get-in v [:http-xhrio :uri]) "/wfs")
+                (= (get v :expected-success-fmt) "xml"))
+           [ant-tag {:color "#87d068"} "WFS transaction"]
+
+           (identity uri)
+           [:div {:title uri
+                  :style  {:white-space "nowrap"
+                           :max-width "196px"
+                           :overflow-x "hidden"}}
+            [ant-tag  uri]]
+
+           :else [ant-tag  (:uuid v)]))))}
 
    {:key :ts-created
     :title "when"
