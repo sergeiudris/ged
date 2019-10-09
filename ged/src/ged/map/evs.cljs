@@ -161,7 +161,7 @@
                    :params {}
                    :body body
                    :headers {"Content-Type" "application/json"}
-                   :path "/geoserver/wfs"
+                   :path "/geoserver/wfs?exceptions=application/json"
                    #_(ajax/transit-response-format {:reader (t/reader :json)})
                    :response-format
                    (ajax/raw-response-format)
@@ -220,13 +220,17 @@
                          (when wfs-filter
                            {:filter wfs-filter})))]
               #_(do (editor-request-set! (prettify-xml body)))
-              {:dispatch [:ged.evs/request
+              {:dispatch [:ged.evs/request-2
                           {:method :post
                            :params {}
                            :body body
                            :headers {"Content-Type" "application/json"}
-                           :path "/geoserver/wfs"
-                           :response-format (ajax/json-response-format {:keywords? true})
+                           :path "/geoserver/wfs?exceptions=application/json"
+                           :response-format
+                           (ajax/raw-response-format)
+                           :expected-success-fmt :json->edn
+                           :expected-failure-fmt :raw
+                           :expected-body-fmt :xml
                            :on-success [::modify-wfs-click-res]
                            :on-failure [::modify-wfs-click-res]}]
                :db (merge db {:ged.db.map/modify-wfs-click-last-filter wfs-filter})})))
@@ -242,12 +246,16 @@
                                            ["undefined:undefined"])))
                   path (str  "/geoserver/rest/namespaces/" fpref ".json")
                   ]
-              {:dispatch [:ged.evs/request
+              {:dispatch [:ged.evs/request-2
                           {:method :get
                            :params {}
                            :headers {"Content-Type" "application/json"}
                            :path path
-                           :response-format (ajax/json-response-format {:keywords? true})
+                           :response-format
+                           (ajax/raw-response-format)
+                           :expected-success-fmt :json->edn
+                           :expected-failure-fmt :raw
+                           :expected-body-fmt :raw
                            :on-success [::infer-feature-ns-res]
                            :on-failure [::infer-feature-ns-res]}]
                :db db})))
@@ -291,14 +299,16 @@
                          :featureNS fns
                          :featurePrefix fpref
                          :featureType ftype})]
-              {:dispatch [:ged.evs/request
+              {:dispatch [:ged.evs/request-2
                           {:method :post
                            :body body
                            :headers {"Content-Type" "application/json"}
-                           :path "/geoserver/wfs"
+                           :path "/geoserver/wfs?exceptions=application/json"
                            :response-format
                            (ajax/raw-response-format)
-                  ; (ajax/json-response-format {:keywords? true})
+                           :expected-success-fmt :xml
+                           :expected-failure-fmt :xml
+                           :expected-body-fmt :xml
                            :on-success [::tx-res-succ (str fpref ":" ftype)]
                            :on-failure [::tx-res-fail]}]
                :db (merge db {})})))
