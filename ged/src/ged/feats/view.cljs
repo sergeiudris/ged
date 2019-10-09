@@ -28,6 +28,7 @@
              ["antd/lib/col" :default AntCol]
              ["antd/lib/checkbox" :default AntCheckbox]
              ["antd/lib/popover" :default AntPopover]
+             ["antd/lib/popconfirm" :default AntPopconfirm]
              
              
              #_[ged.core.extra :refer [extra-component]]))
@@ -46,8 +47,7 @@
 (def ant-col (r/adapt-react-class AntCol))
 (def ant-checkbox (r/adapt-react-class AntCheckbox))
 (def ant-popover (r/adapt-react-class AntPopover))
-
-
+(def ant-popconfirm (r/adapt-react-class AntPopconfirm))
 
 
 (def react-ace (r/adapt-react-class ReactAce))
@@ -387,9 +387,14 @@
                       #(rf/dispatch [::evs/tx-feature {:tx-type :updates}])
                       :style {:width "96px"}}
           "update"]
-         [ant-button {:on-click
-                      #(rf/dispatch [::evs/tx-feature {:tx-type :deletes}])
-                      :style {:width "96px"}}
-          "delete"]]]]
+         [ant-popconfirm
+          {:title "deelte feature?"
+           :on-confirm #(rf/dispatch [::evs/tx-feature {:tx-type :deletes}])
+           :okText "yes" :cancelText "no"}
+          [ant-button {:ghost true
+                       :type "danger"
+                       :style {:width "96px"}}
+           "delete"]]
+         ]]]
       )))
 

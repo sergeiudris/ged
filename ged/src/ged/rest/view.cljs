@@ -26,6 +26,8 @@
              ["antd/lib/input/Search" :default AntInputSearch]
              ["antd/lib/table" :default AntTable]
              ["antd/lib/popover" :default AntPopover]
+             ["antd/lib/popconfirm" :default AntPopconfirm]
+             
              
              ["antd/lib/auto-complete" :default AntAutoComplete]))
 
@@ -46,6 +48,8 @@
 (def ant-auto-complete-option (r/adapt-react-class (.-Option AntAutoComplete)))
 (def ant-table (r/adapt-react-class AntTable))
 (def ant-popover (r/adapt-react-class AntPopover))
+(def ant-popconfirm (r/adapt-react-class AntPopconfirm))
+
 
 
 (defn editor-data
@@ -245,10 +249,17 @@
                      #(rf/dispatch [::evs/tx-item-2 {:tx-type :put}])
                      :style {:width "96px"}}
          "put"]
-        [ant-button {:on-click
-                     #(rf/dispatch [::evs/tx-item-2 {:tx-type :delete}])
-                     :style {:width "96px"}}
-         "delete"]]
+        
+        [ant-popconfirm
+         {:title "delete layer?" 
+          :on-confirm #(rf/dispatch [::evs/tx-item-2 {:tx-type :delete}])
+          :okText "yes" :cancelText "no"}
+         [ant-button {:ghost true
+                      :type "danger"
+                      :style {:width "96px"}}
+          "delete"]
+         ]
+        ]
        [:br]
 
 

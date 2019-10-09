@@ -248,7 +248,6 @@
  ::selected-attrs
  (fn-traced [{:keys [db]} [_ ea]]
             (let [v ea]
-              (js/console.log v)
               {:db (assoc db :ged.db.feats/selected-attrs v)})
             ))
 
