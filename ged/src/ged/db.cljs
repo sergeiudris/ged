@@ -115,7 +115,7 @@
      :ged.db.map/wfs-search-layer-input ""
      :ged.db.map/wfs-search-area-type nil
      :ged.db.map/wfs-search-table-mdata {:pagination {:showSizeChanger false
-                                                      :showQuickJumper true
+                                                      :showQuickJumper false
                                                       :defaultPageSize 5
                                                       :pageSizeOptions  ["5" "10" "20"]
                                                       :position "top"

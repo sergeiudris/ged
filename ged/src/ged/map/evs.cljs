@@ -290,7 +290,7 @@
                                        (do (js/console.warn e)
                                            ["undefined:undefined"])))
                   fns (get-in db [:ged.db.map/infer-feature-ns-res :namespace :uri])
-                  {:keys [updates]} ea
+                  ; {:keys [updates]} ea
                   updates modify-features
                   body (wfs-tx-jsons-str
                         {:deletes nil
@@ -331,3 +331,54 @@
  ::wfs-search-selected-key
  (fn-traced [{:keys [db]} [_ ea]]
             {:db (assoc db :ged.db.map/wfs-search-selected-key ea)}))
+
+
+(rf/reg-event-fx
+ ::wfs-search-tx
+ [(rf/inject-cofx :ged.feats.core/get-editor-val [:data])]
+ (fn-traced [{:keys [db get-editor-val]} [_ ea]]
+            (let [ftype-input (:ged.db.feats/feature-type-input db)
+                  [fpref ftype] (try (str/split ftype-input \:)
+                                     (catch js/Error e
+                                       (do (js/console.warn e)
+                                           ["undefined:undefined"])))
+                  fns (:ged.db.feats/feature-ns db)
+                  tx-type (:tx-type ea)
+                  v (js/JSON.parse get-editor-val)
+                  body (wfs-tx-jsons-str
+                        {tx-type [v]
+                         :featureNS fns
+                         :featurePrefix fpref
+                         :featureType ftype})]
+              {:dispatch-n (list
+                            [:ged.evs/request-2
+                             {:method :post
+                              :body body
+                              :headers {"Content-Type" "application/json"}
+                              :path "/geoserver/wfs"
+                              :response-format
+                              (ajax/raw-response-format) #_(ajax/json-response-format {:keywords? true})
+
+                              :expected-success-fmt :xml
+                              :expected-failure-fmt :xml
+                              :expected-body-fmt :xml
+                              :on-success [::tx-res-succ (str fpref ":" ftype)]
+                              :on-failure [::tx-res-fail]}]
+                            #_[:ged.feats.core/set-editor-xml [:request body]])
+               :db (merge db {})})))
+
+(rf/reg-event-fx
+ ::wfs-search-tx-succ
+ (fn-traced [{:keys [db]} [_ id ea]]
+            {:db (assoc db :ged.db.feats/tx-res ea)
+             :dispatch-n (list
+                          #_[:ged.feats.core/set-editor-xml [:response ea]]
+                          [:ged.map.core/refetch-wms-layer id])}))
+
+
+(rf/reg-event-fx
+ ::wfs-search-tx-fail
+ (fn-traced [{:keys [db]} [_ ea]]
+            {:db (assoc db :ged.db.feats/tx-res ea)
+            ;  :dispatch [:ged.feats.core/set-editor-xml [:response ea]]
+             }))

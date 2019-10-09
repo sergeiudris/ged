@@ -22,7 +22,8 @@
              ["antd/lib/table" :default AntTable]
              ["antd/lib/dropdown" :default AntDropdown]
              ["antd/lib/menu" :default AntMenu]
-             ["antd/lib/input" :default AntInput]))
+             ["antd/lib/input" :default AntInput]
+             ["antd/lib/popconfirm" :default AntPopconfirm]))
 
 (def ant-button (r/adapt-react-class AntButton))
 (def ant-button-group (r/adapt-react-class AntButtonGroup))
@@ -39,6 +40,12 @@
 (def ant-menu-divider (r/adapt-react-class (.-Divider AntMenu)))
 (def ant-input (r/adapt-react-class AntInput))
 (def ant-input-search (r/adapt-react-class (.-Search AntInput)))
+
+(def ant-popconfirm (r/adapt-react-class AntPopconfirm))
+
+
+
+
 
 (def react-ace (r/adapt-react-class ReactAce))
 
@@ -596,15 +603,34 @@
           (reset! k-old k)
           (reset! av value)))
       (let []
-        [react-ace {:name "wfs-search-feature-editor"
-                    :mode "json"
-                    :theme "github"
-                    :width "100%"
-                    :height "40%"
+        [:<>
+         [react-ace {:name "wfs-search-feature-editor"
+                     :mode "json"
+                     :theme "github"
+                     :width "100%"
+                     :height "37%"
                     ;  :default-value default-value
-                    :value @av
-                    :on-change (fn [v ev] (reset! av v))
-                    :editor-props {"$blockScrolling" js/Infinity}}]))))
+                     :value @av
+                     :on-change (fn [v ev] (reset! av v))
+                     :editor-props {"$blockScrolling" js/Infinity}}]
+         [ant-button-group {:size "small" :style {:margin-top 4}}
+          [ant-button {:on-click
+                       #(rf/dispatch [::evs/tx-feature {:tx-type :inserts}])
+                       :style {:width "96px"}}
+           "insert"]
+          [ant-button {:on-click
+                       #(rf/dispatch [::evs/tx-feature {:tx-type :updates}])
+                       :style {:width "96px"}}
+           "update"]
+          [ant-popconfirm
+           {:title "deelte feature?"
+            :on-confirm #(rf/dispatch [::evs/tx-feature {:tx-type :deletes}])
+            :okText "yes" :cancelText "no"}
+           [ant-button {:ghost true
+                        :type "danger"
+                        :style {:width "96px"}}
+            "delete"]]]]
+        ))))
 
 (defn wfs-search-feature-editor
   []
