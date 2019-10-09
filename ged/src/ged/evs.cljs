@@ -221,6 +221,12 @@
   [{:keys [db]} [_ ea]]
   {:db (update db :ged.db.core/log-que conj ea)}))
 
+(rf/reg-event-fx
+ ::clear-log
+ (fn-traced
+  [{:keys [db]} [_ ea]]
+  {:db (assoc db :ged.db.core/log-que [])}))
+
 
 
 ; local storage

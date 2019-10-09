@@ -12,6 +12,7 @@
              ["antd/lib/input" :default AntInput]
              ["antd/lib/button" :default AntButton]
              ["antd/lib/table" :default AntTable]
+             ["antd/lib/tag" :default AntTag]
    
 
              #_["antd/lib/button" :default ant-Button]
@@ -25,12 +26,37 @@
 (def ant-input (r/adapt-react-class AntInput))
 (def ant-button (r/adapt-react-class AntButton))
 (def ant-table (r/adapt-react-class AntTable))
+(def ant-tag (r/adapt-react-class AntTag))
 
 
 (def columns
   [{:key :uuid
     :title "uuid"
-    :dataIndex :uuid}])
+    :dataIndex :uuid}
+
+   {:title "tag"
+    :key :tag
+    :align "center"
+    :render (fn [t r i]
+              (js/console.log r)
+              (r/as-element
+               [:div
+                (when (aget r "http-xhrio")
+                  [ant-tag {:color "blue"} "http"])
+                (when (and (aget r "http-xhrio") (aget r "result"))
+                  [ant-tag {:color "red"} "fail"])]))}
+
+   {:title ""
+    :key :action
+    :width "32px"
+    :render (fn [txt rec idx]
+              (r/as-element
+               [ant-button
+                {:size "small"
+                 :type "primary"
+                 :title "select"
+                 :on-click #(rf/dispatch [])}
+                "->"]))}])
 
 (defn log-table
   []
@@ -43,6 +69,14 @@
          {:show-header true
           :size "small"
           :row-key :uuid
+          :title (fn [_]
+                   (r/as-element
+                    [:section
+                     [ant-button
+                      {:on-click #(rf/dispatch [:ged.evs/clear-log])
+                       :icon "stop" :size "small"
+                       :title "clear"}]
+                     ]))
           :columns columns
           :dataSource data
           :on-change (fn [pag fil sor ext]
@@ -66,12 +100,11 @@
   (let []
     (fn []
       (let []
-        [:section
-         [log-table]
-         ;
-         ]
-        ;
-        ))))
+        [:div {:style {:height "100%" :width "100%" :display "flex"}}
+         [:section {:style {:width "43%"}}
+          [log-table]]
+         [:section {:style {:width "4%"}}]
+         [:section {:style {:width "43%"}}]]))))
 
 (defn module-actions []
   [])
