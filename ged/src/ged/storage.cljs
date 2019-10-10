@@ -7,7 +7,7 @@
 
 (defn ls-key
   []
-  "ged-reframe-db")
+  "ged-db")
 
 (defn ^:export read-db
   []

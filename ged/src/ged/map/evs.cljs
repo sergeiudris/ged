@@ -429,7 +429,7 @@
 (rf/reg-event-fx
  ::wfs-search-fetch-ns
  (fn-traced [{:keys [db]} [_ ea]]
-            (let [ftype-input (:ged.db.feats/feature-type-input db)
+            (let [ftype-input (:ged.db.map/wfs-search-layer-input db)
                   [fpref ftype] (try (str/split ftype-input \:)
                                      (catch js/Error e
                                        (do (js/console.warn e)
