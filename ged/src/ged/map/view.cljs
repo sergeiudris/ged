@@ -422,13 +422,26 @@
                             (.. ev -target -value)]))]
         [ant-input {:value input
                     :size "small"
+                    :style {:width "calc(100% - 24px)"}
                     :on-change on-change
-                    :placeholder "topp:states"
-                    }]
-        )
-      )
-    )
-  )
+                    :placeholder "topp:states"}]))))
+
+(defn wfs-search-feature-ns
+  []
+  (let [afns (rf/subscribe
+              [::subs/wfs-search-fetch-ns])]
+    (fn []
+      [:div  (or @afns "-")])))
+
+(defn wfs-search-ns-button
+  []
+  (let []
+    (fn []
+      [ant-button {:icon "reload"
+                   :size "small"
+                   :title "resolve layer ns"
+                   :on-click (fn []
+                               (rf/dispatch [::evs/wfs-search-fetch-ns]))}])))
 
 (defn wfs-search-buttons
   []
@@ -616,16 +629,19 @@
                      :editor-props {"$blockScrolling" js/Infinity}}]
          [ant-button-group {:size "small" :style {:margin-top 4}}
           [ant-button {:on-click
-                       #(rf/dispatch [::evs/tx-feature {:tx-type :inserts}])
+                       #(rf/dispatch [::evs/wfs-tx {:tx-type :inserts
+                                                        :value @av}])
                        :style {:width "96px"}}
            "insert"]
           [ant-button {:on-click
-                       #(rf/dispatch [::evs/tx-feature {:tx-type :updates}])
+                       #(rf/dispatch [::evs/wfs-tx {:tx-type :updates
+                                                        :value @av}])
                        :style {:width "96px"}}
            "update"]
           [ant-popconfirm
            {:title "deelte feature?"
-            :on-confirm #(rf/dispatch [::evs/tx-feature {:tx-type :deletes}])
+            :on-confirm #(rf/dispatch [::evs/wfs-tx {:tx-type :deletes
+                                                         :value @av}])
             :okText "yes" :cancelText "no"}
            [ant-button {:ghost true
                         :type "danger"
@@ -651,13 +667,15 @@
       (let [visible? @avisible]
         (when visible?
           [:section {:class "all-layers-container"}
-           [:div "wfs search"]
-           [ant-row
+           #_[:div "wfs search"]
+           [ant-row {:style {:margin-bottom 8}}
             [ant-col {:style {:text-align "right"}}
              [wfs-search-buttons]]]
-           [ant-row
-            [ant-col
-             [wfs-search-layer-input]]]
+           [:div 
+            [wfs-search-layer-input]
+            [wfs-search-ns-button]
+            ]
+           [ant-row [wfs-search-feature-ns]]
            [wfs-search-table]
            [wfs-search-feature-editor]
            

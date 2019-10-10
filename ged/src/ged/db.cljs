@@ -141,6 +141,7 @@
      :ged.db.map/infer-feature-ns-res nil
      :ged.db.map/wfs-search-selected-key nil
      :ged.db.map/wfs-tx-res nil
+     :ged.db.map/wfs-search-fetch-ns-res nil
 
      ; rest
      :ged.db.rest/fetch-selected-url-res nil

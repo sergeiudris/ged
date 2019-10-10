@@ -336,12 +336,13 @@
 (rf/reg-event-fx
  ::wfs-tx
  (fn-traced [{:keys [db]} [_ ea]]
-            (let [ftype-input (:ged.db.feats/feature-type-input db)
+            (let [ftype-input (:ged.db.map/wfs-search-layer-input db)
                   [fpref ftype] (try (str/split ftype-input \:)
                                      (catch js/Error e
                                        (do (js/console.warn e)
                                            ["undefined:undefined"])))
-                  fns (:ged.db.map/wfs-feature-ns db)
+                  fns (get-in db [:ged.db.map/wfs-search-fetch-ns-res
+                                  :namespace :uri])
                   {:keys [value tx-type]} ea
                   v (js/JSON.parse value)
                   body (wfs-tx-jsons-str
@@ -371,6 +372,7 @@
             {:db (assoc db :ged.db.map/wfs-tx-res ea)
              :dispatch-n (list
                           #_[:ged.feats.core/set-editor-xml [:response ea]]
+                          [::wfs-search {}]
                           [:ged.map.core/refetch-wms-layer id])}))
 
 
@@ -380,3 +382,30 @@
             {:db (assoc db :ged.db.map/wfs-tx-res ea)
             ;  :dispatch [:ged.feats.core/set-editor-xml [:response ea]]
              }))
+
+
+(rf/reg-event-fx
+ ::wfs-search-fetch-ns
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [ftype-input (:ged.db.feats/feature-type-input db)
+                  [fpref ftype] (try (str/split ftype-input \:)
+                                     (catch js/Error e
+                                       (do (js/console.warn e)
+                                           ["undefined:undefined"])))]
+              {:dispatch-n (list
+                            [:ged.evs/request-2
+                             {:method :get
+                              :headers {"Content-Type" "application/json"}
+                              :path (str "/geoserver/rest/namespaces/" fpref ".json")
+                              :response-format
+                              (ajax/raw-response-format)
+                              :expected-success-fmt :json->edn
+                              :expected-failure-fmt :raw
+                              :expected-body-fmt :raw
+                              :on-success [::wfs-search-fetch-ns-res]
+                              :on-failure [::wfs-search-fetch-ns-res]}])})))
+
+(rf/reg-event-fx
+ ::wfs-search-fetch-ns-res
+ (fn-traced [{:keys [db]} [_ ea]]
+            {:db (assoc db :ged.db.map/wfs-search-fetch-ns-res ea)}))

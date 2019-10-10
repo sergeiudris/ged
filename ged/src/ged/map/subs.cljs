@@ -188,5 +188,9 @@
            #(= (:id %) k))
           (first)))))
 
-
+(rf/reg-sub
+ ::wfs-search-fetch-ns
+ (fn [db _]
+   (get-in db [:ged.db.map/wfs-search-fetch-ns-res
+               :namespace :uri])))
 
