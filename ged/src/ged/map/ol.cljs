@@ -259,7 +259,6 @@
 
 (defn features->geojson
   [fts {:keys [geometry-name]}]
-  (js/console.log geometry-name)
   (let [json (->
             (OlFormatGeoJSON.
              #js {"extractGeometryName" true

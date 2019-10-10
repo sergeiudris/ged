@@ -755,6 +755,32 @@
         [modify-sync-ol-features-inner {:features fts}]))))
 
 
+(defn modify-sync-modify-interactions-inner
+  []
+  (let []
+    (r/create-class
+     {:display-name "modify-sync-modify-interactions-inner"
+      :component-did-mount
+      (fn [this]
+        (let [{:keys []} (r/props this)]
+          (rf/dispatch [:ged.map.core/add-modify-interactions {}])))
+      :component-will-unmount
+      (fn [this]
+        (let [{:keys []} (r/props this)]
+          (rf/dispatch [:ged.map.core/remove-modify-interactions {}])))
+      :reagent-render
+      (fn []
+        nil)})))
+
+(defn modify-sync-modify-interactions
+  []
+  (let [amodifying? (rf/subscribe [::subs/modifying?])]
+    (fn []
+      (let [modifying? @amodifying?]
+        (when modifying?
+          [modify-sync-modify-interactions-inner {}])))))
+
+
 (defn modify-layer-input
   []
   (let [ainput (rf/subscribe [::subs/modify-layer-id])]
@@ -797,7 +823,7 @@
                           :size "small"
                           :value (name mode)
                           :default-value "searching"}
-         [ant-radio-button {:value "searching"} "searching"]
+         [ant-radio-button {:value "searching"} "selecting"]
          [ant-radio-button {:value "modifying"} "modifying"]]))))
 
 (def modify-features-table-columns
@@ -890,7 +916,9 @@
              [:span "feature-ns:  "]
              [:span layer-ns]]]
            [modify-wfs-click]
-           [modify-sync-ol-features]])))))
+           [modify-sync-ol-features]
+           [modify-sync-modify-interactions]
+           ])))))
 
 
 (defn panel []

@@ -9,7 +9,8 @@
              ["ol/source/Vector" :default OlVectorSource]
              ["ol/layer/Vector" :default OlVectorLayer]
              ["ol/format/GeoJSON" :default OlFormatGeoJSON]
-             ))
+             ["ol/interaction/Select" :default OlInteractionSelect]
+             ["ol/interaction/Modify" :default OlInteractionModify]))
 
 (def ^:export astate
   (atom {:olmap nil
@@ -210,23 +211,36 @@
       {:dispatch [:ged.map.evs/wfs-search {:filter filter}]}))))
 
 (rf/reg-event-fx
- ::start-modify-session
+ ::add-modify-interactions
  (fn-traced
   [{:keys [db]} [_ ea]]
-  (do
-    (let [[ftedn] ea]
-      (assoc-key! :modify-session (ol/add-modify-session (get-olmap) ftedn))
-      {}))))
+  (when (and (get-olmap) (-> @astate :modify-session :source))
+   (do
+     (let [source (-> @astate :modify-session :source)
+           select (OlInteractionSelect.
+                   {"features" (.getFeatures source)})
+           modify (OlInteractionModify.
+                   #js {"features" (.getFeatures select)})]
+       (do
+         (.addInteraction (get-olmap) select)
+         (.addInteraction (get-olmap) modify)
+         (swap! astate update-in [:modify-session] assoc :select select)
+         (swap! astate update-in [:modify-session] assoc :modify modify)
+         #_(.on modify "modifyend" (fn [ev] (js/console.log ev))))
+       )))
+  {}))
 
 (rf/reg-event-fx
- ::stop-modify-session
+ ::remove-modify-interactions
  (fn-traced
   [{:keys [db]} [_ ea]]
-  (do
-    (let [session (get-modify-session)]
-      (when (and (get-olmap) session)
-        (do (ol/remove-modify-session (get-olmap) session)))
-      {}))))
+  (when (get-olmap)
+    (do
+      (.removeInteraction (get-olmap) (-> @astate :modify-session :select))
+      (.removeInteraction (get-olmap) (-> @astate :modify-session :modify))
+      (swap! astate update-in [:modify-session] assoc :select nil)
+      (swap! astate update-in [:modify-session] assoc :modify nil)))
+  {}))
 
 (rf/reg-event-fx
  ::sync-modified-features

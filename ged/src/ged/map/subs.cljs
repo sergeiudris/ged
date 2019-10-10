@@ -169,7 +169,10 @@
 (rf/reg-sub
  ::modifying?
  (fn [db _]
-   (:ged.db.map/modifying? db)))
+   (and
+    (= (:ged.db.map/modify-mode db) :modifying)
+    (:ged.db.map/modify-layer-id db)
+    (= (:ged.db.map/tab-button db) :modify))))
 
 (rf/reg-sub
  ::wfs-search-selected-key
