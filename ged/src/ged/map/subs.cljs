@@ -155,7 +155,7 @@
  ::modify-wfs-click?
  (fn [db _]
    (and
-    (not (:ged.db.map/modifying? db))
+    (= (:ged.db.map/modify-mode db) :searching)
     (:ged.db.map/modify-layer-id db)
     (= (:ged.db.map/tab-button db) :modify))))
 
@@ -193,4 +193,9 @@
  (fn [db _]
    (get-in db [:ged.db.map/wfs-search-fetch-ns-res
                :namespace :uri])))
+
+(rf/reg-sub
+ ::modify-mode
+ (fn [db _]
+   (:ged.db.map/modify-mode db)))
 

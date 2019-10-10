@@ -136,6 +136,8 @@
      :ged.db.map/modify-wfs-click-last-filter nil
      :ged.db.map/modify-wfs-click-res nil
      :ged.db.map/modifying? false
+     :ged.db.map/modify-mode :searching
+     
      :ged.db.map/tx-res nil
      :ged.db.map/all-layers-search-input ""
      :ged.db.map/infer-feature-ns-res nil

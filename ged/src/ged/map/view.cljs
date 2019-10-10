@@ -41,6 +41,8 @@
 (def ant-input (r/adapt-react-class AntInput))
 (def ant-input-search (r/adapt-react-class (.-Search AntInput)))
 
+
+
 (def ant-popconfirm (r/adapt-react-class AntPopconfirm))
 
 
@@ -711,8 +713,6 @@
          ]
         ))))
 
-
-
 (defn modify-wfs-click
   []
   (let [amap-click? (rf/subscribe [::subs/modify-wfs-click?])]
@@ -789,6 +789,20 @@
                    :on-click (fn []
                                (rf/dispatch [::evs/infer-feature-ns]))}])))
 
+(defn modify-modes
+  []
+  (let [amode (rf/subscribe [::subs/modify-mode])]
+    (fn []
+      (let [mode @amode]
+        [ant-radio-group {:on-change (fn [ev]
+                                       (rf/dispatch
+                                        [::evs/modify-mode (keyword (.. ev -target -value))]))
+                          :size "small"
+                          :value (name mode)
+                          :default-value "searching"}
+         [ant-radio-button {:value "searching"} "searching"]
+         [ant-radio-button {:value "modifying"} "modifying"]]))))
+
 (defn modify
   []
   (let [avisible (rf/subscribe [::subs/modify-visible])
@@ -805,6 +819,10 @@
            [ant-row {:style {:margin-top 8}}
             [ant-col {:style {:text-align "right"}}
              [modify-buttons]]]
+           [:br]
+           [ant-row {:type "flex" :justify "center"}
+            [modify-modes]
+            ]
            #_[ant-row
             [ant-col
              [:span "layer:  "]

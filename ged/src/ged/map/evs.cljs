@@ -418,3 +418,8 @@
  ::wfs-search-fetch-ns-res
  (fn-traced [{:keys [db]} [_ ea]]
             {:db (assoc db :ged.db.map/wfs-search-fetch-ns-res ea)}))
+
+(rf/reg-event-fx
+ ::modify-mode
+ (fn-traced [{:keys [db]} [_ ea]]
+            {:db (assoc db :ged.db.map/modify-mode ea)}))
