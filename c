@@ -48,7 +48,11 @@ prod(){
 }
 
 tagpush(){
+    VERSION=$1
     docker tag seeris/ged seeris/ged:dev
+    docker tag seeris/ged seeris/ged:$VERSION
+
+    docker push seeris/ged:$VERSION
     docker push seeris/ged:dev
     docker push seeris/ged
 
