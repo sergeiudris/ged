@@ -1,25 +1,11 @@
 # ged
 
-- a geoserver feature editor
+<a>
+<img></img>
+</a>
+
 - a tool
+- a complementary geoserver UI for searching and editing features
 
-current status: development only
+current status: usable
 
-
-
-## dev
-
-- using [dev.yml](./dev.yml)
-
-```shell
-
-# start geoserver and ged
-bash c up
-
-# open shell into ged container and start dev server
-bash c term ged
-bash c dev
-
-# ui will be available at localhost:8800
-
-```

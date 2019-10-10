@@ -3,11 +3,12 @@
             [re-frame.core :as rf]
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
             [ged.core :refer [deep-merge]]
+            [cljs.reader]
             [ged.db]))
 
 (defn ls-key
   []
-  "ged-reframe-db")
+  "ged-db")
 
 (defn ^:export read-db
   []

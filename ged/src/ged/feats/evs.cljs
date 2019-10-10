@@ -120,7 +120,8 @@
                                      (catch js/Error e
                                        (do (js/console.warn e)
                                            ["undefined:undefined"])))
-                  fns (:ged.db.feats/feature-ns db)
+                  fns (get-in db [:ged.db.feats/fetch-ftype-mdata-ns-res
+                                  :namespace :uri])
                   tx-type (:tx-type ea)
                   v (js/JSON.parse get-editor-val)
                   body (wfs-tx-jsons-str
