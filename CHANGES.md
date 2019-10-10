@@ -1,6 +1,9 @@
 
+## unreleased
 
-## 0.1.0
+- 
+
+## 0.1.0 (2019-10-10)
 
 - profiles (persisted in localStorage) to work with multiple geoservers or simply different sessions
 - view geoserver layers on the map (check/uncheck multiple layers)
