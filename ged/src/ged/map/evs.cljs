@@ -244,6 +244,38 @@
                :db (merge db {:ged.db.map/modify-wfs-click-last-filter wfs-filter})})))
 
 (rf/reg-event-fx
+ ::modify-wfs-click-res
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [fts (:features ea)]
+              (merge
+               {:db (-> db
+                        (assoc :ged.db.map/modify-wfs-click-res ea))}
+               (when-not (empty? fts)
+                 {:dispatch [::modified-features-add (first fts)]})))))
+
+(rf/reg-event-fx
+ ::modified-features-add
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [ft ea
+                  k (:id ft)]
+              (merge
+               {:db (update-in db [:ged.db.map/modified-features] assoc k ft)}))))
+
+(rf/reg-event-fx
+ ::modified-features-remove
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [k ea]
+              (merge
+               {:db (update-in db [:ged.db.map/modified-features] dissoc k)}))))
+
+(rf/reg-event-fx
+ ::modified-features-selected-key
+ (fn-traced [{:keys [db]} [_ ea]]
+            {:db (assoc db :ged.db.map/modified-features-selected-key ea)}))
+
+
+
+(rf/reg-event-fx
  ::infer-feature-ns
  (fn-traced [{:keys [db]} [_ ea]]
             (let [
@@ -275,14 +307,7 @@
             ;  :dispatch [:assoc-in-store [[:ged.db.map/infer-feature-ns-res] ea]]
              }))
 
-(rf/reg-event-fx
- ::modify-wfs-click-res
- (fn-traced [{:keys [db]} [_ ea]]
-            (let [fts (:features ea)]
-              (merge
-               {:db (assoc db :ged.db.map/modify-wfs-click-res ea)}
-               (when-not (empty? fts)
-                 {:dispatch [::modifying? true]})))))
+
 
 (rf/reg-event-db
  ::modifying?

@@ -199,3 +199,13 @@
  (fn [db _]
    (:ged.db.map/modify-mode db)))
 
+(rf/reg-sub
+ ::modified-features
+ (fn [db _]
+   (:ged.db.map/modified-features db)))
+
+(rf/reg-sub
+ ::modified-features-selected-key
+ (fn [db _]
+   (:ged.db.map/modified-features-selected-key db)))
+

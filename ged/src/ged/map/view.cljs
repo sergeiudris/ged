@@ -706,10 +706,12 @@
                       :type "default"}]
          [ant-button {:title "cancel modifying"
                       :icon "close-square"
+                      :type "default"
+                      :ghost false
                       :on-click
                       (fn []
                         (rf/dispatch [::evs/modifying? false]))
-                      :type "default"}]
+                      }]
          ]
         ))))
 
@@ -803,6 +805,56 @@
          [ant-radio-button {:value "searching"} "searching"]
          [ant-radio-button {:value "modifying"} "modifying"]]))))
 
+(def modify-features-table-columns
+  [{:title "id"
+    :key :id
+    :dataIndex :id}
+   {:title ""
+    :key "action"
+    :width "32px"
+    :render
+    (fn [t r i]
+      (r/as-element
+       [ant-button
+        {:size "small"
+         :icon "minus"
+         :title "remove feature from modified"
+         :on-click (fn []
+                     (rf/dispatch [::evs/modified-features-remove
+                                   (aget r "id")]))}]))}])
+
+(defn modify-features-table
+  []
+  (let [adata (rf/subscribe [::subs/modified-features])
+        aselected-key (rf/subscribe [::subs/modified-features-selected-key])]
+    (fn []
+      (let [items (-> @adata (vals) (vec))
+            selected [@aselected-key]]
+        [ant-table {:show-header true
+                    :size "small"
+                    :row-key :id
+                    :style {:height "51%" :overflow-y "auto"}
+                    :columns modify-features-table-columns
+                    :dataSource items
+                    :scroll {;  :x "max-content" 
+                                ;  :y 256
+                             }
+                    :rowSelection {:columnWidth "28px"
+                                   :selectedRowKeys selected
+                                   :on-select (fn [row selected? rows]
+                                                (rf/dispatch [::evs/modified-features-selected-key
+                                                              (if selected?
+                                                                (aget row "id")
+                                                                nil)]))}
+                    :defaultExpandAllRows false
+                    :expandedRowRender
+                    (fn [rec]
+                      (r/as-element
+                       [:div {:style {:max-height "50vh" :overflow-y "auto"}}
+                        (js/JSON.stringify (aget rec "properties") nil "\t")
+                        #_(str (js->clj (aget rec "properties")))]))
+                    :pagination false}]))))
+
 (defn modify
   []
   (let [avisible (rf/subscribe [::subs/modify-visible])
@@ -816,13 +868,16 @@
             [modify-layer-input]
             [modify-ns-button]]
            [ant-row [modify-feature-ns]]
+           [:br]
+           [ant-row {:type "flex" :justify "center"}
+            [modify-modes]]
            [ant-row {:style {:margin-top 8}}
             [ant-col {:style {:text-align "right"}}
              [modify-buttons]]]
            [:br]
-           [ant-row {:type "flex" :justify "center"}
-            [modify-modes]
-            ]
+           [modify-features-table]
+           
+           
            #_[ant-row
             [ant-col
              [:span "layer:  "]
