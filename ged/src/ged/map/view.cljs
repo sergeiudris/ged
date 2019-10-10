@@ -710,7 +710,7 @@
                       :ghost false
                       :on-click
                       (fn []
-                        (rf/dispatch [::evs/modifying? false]))
+                        (rf/dispatch [::evs/cancel-modifying ]))
                       }]
          ]
         ))))

@@ -273,6 +273,14 @@
  (fn-traced [{:keys [db]} [_ ea]]
             {:db (assoc db :ged.db.map/modified-features-selected-key ea)}))
 
+(rf/reg-event-fx
+ ::cancel-modifying
+ (fn-traced [{:keys [db]} [_ ea]]
+            {:db (-> db
+                     (assoc  :ged.db.map/modified-features {} )
+                     )
+             }))
+
 
 
 (rf/reg-event-fx
