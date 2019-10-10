@@ -201,6 +201,14 @@
                           {key ea})})))
 
 (rf/reg-event-fx
+ ::modify-layer-id
+ (fn-traced [{:keys [db]} [_ ea]]
+            (let [v ea
+                  k :ged.db.map/modify-layer-id]
+              {:db (assoc db k v)
+               :dispatch [:assoc-in-store [[k] v]]})))
+
+(rf/reg-event-fx
  ::modify-wfs-click
  (fn-traced [{:keys [db]} [_ ea]]
             (let [{:keys [filter]} ea
@@ -264,7 +272,8 @@
  ::infer-feature-ns-res
  (fn-traced [{:keys [db]} [_ ea]]
             {:db (assoc db :ged.db.map/infer-feature-ns-res ea)
-             :dispatch [:assoc-in-store [[:ged.db.map/infer-feature-ns-res] ea]]}))
+            ;  :dispatch [:assoc-in-store [[:ged.db.map/infer-feature-ns-res] ea]]
+             }))
 
 (rf/reg-event-fx
  ::modify-wfs-click-res

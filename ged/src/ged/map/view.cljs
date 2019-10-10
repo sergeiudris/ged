@@ -668,20 +668,19 @@
         (when visible?
           [:section {:class "all-layers-container"}
            #_[:div "wfs search"]
-           [ant-row {:style {:margin-bottom 8}}
+           [:div
+            [wfs-search-layer-input]
+            [wfs-search-ns-button]]
+           [ant-row [wfs-search-feature-ns]]
+           [ant-row {:style {:margin-top 8}}
             [ant-col {:style {:text-align "right"}}
              [wfs-search-buttons]]]
-           [:div 
-            [wfs-search-layer-input]
-            [wfs-search-ns-button]
-            ]
-           [ant-row [wfs-search-feature-ns]]
+           
            [wfs-search-table]
            [wfs-search-feature-editor]
-           
+
            [wfs-search-map-click]
-           [wfs-search-area-box]
-           ])))))
+           [wfs-search-area-box]])))))
 
 (defn modify-buttons
   []
@@ -689,7 +688,7 @@
     (fn []
       (let [modifying? @amodifying?]
         [ant-button-group {:size "small"}
-         [ant-button {:title "infer feature namespace"
+         #_[ant-button {:title "infer feature namespace"
                       :icon "api"
                       :on-click
                       (fn []
@@ -759,24 +758,54 @@
             fts)])))))
 
 
+(defn modify-layer-input
+  []
+  (let [ainput (rf/subscribe [::subs/modify-layer-id])]
+    (fn []
+      (let [input @ainput
+            on-change
+            (fn [ev]
+              (rf/dispatch [::evs/modify-layer-id
+                            (.. ev -target -value)]))]
+        [ant-input {:value input
+                    :size "small"
+                    :style {:width "calc(100% - 24px)"}
+                    :on-change on-change
+                    :placeholder "topp:states"}]))))
+
+(defn modify-feature-ns
+  []
+  (let [afns (rf/subscribe [::subs/modify-layer-ns])]
+    (fn []
+      [:div  (or @afns "-")])))
+
+(defn modify-ns-button
+  []
+  (let []
+    (fn []
+      [ant-button {:icon "reload"
+                   :size "small"
+                   :title "resolve layer ns"
+                   :on-click (fn []
+                               (rf/dispatch [::evs/infer-feature-ns]))}])))
+
 (defn modify
   []
   (let [avisible (rf/subscribe [::subs/modify-visible])
-        alayer-id (rf/subscribe [::subs/modify-layer-id])
-        alayer-ns (rf/subscribe [::subs/modify-layer-ns])
         ]
     (fn []
-      (let [visible? @avisible
-            input @alayer-id
-            layer-ns @alayer-ns
-           ]
+      (let [visible? @avisible]
         (when visible?
           [:section {:class "all-layers-container"}
            #_[:div "modify"]
-           [ant-row
+           [:div
+            [modify-layer-input]
+            [modify-ns-button]]
+           [ant-row [modify-feature-ns]]
+           [ant-row {:style {:margin-top 8}}
             [ant-col {:style {:text-align "right"}}
              [modify-buttons]]]
-           [ant-row
+           #_[ant-row
             [ant-col
              [:span "layer:  "]
              [:b {:style {;:border-bottom "1px solid #dedede"
@@ -788,7 +817,7 @@
                         ;  :disabled true
                            :placeholder "topp:states"
                            :style {:width "100%"}}]]]
-           [ant-row
+           #_[ant-row
             [ant-col
              [:span "feature-ns:  "]
              [:span layer-ns]]]
