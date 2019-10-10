@@ -5,7 +5,11 @@
              [re-frame.core :as rf]
              [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
              [ged.map.ol :as ol]
-             ["ol/format/filter" :as olf]))
+             ["ol/format/filter" :as olf]
+             ["ol/source/Vector" :default OlVectorSource]
+             ["ol/layer/Vector" :default OlVectorLayer]
+             ["ol/format/GeoJSON" :default OlFormatGeoJSON]
+             ))
 
 (def ^:export astate
   (atom {:olmap nil
@@ -223,6 +227,36 @@
       (when (and (get-olmap) session)
         (do (ol/remove-modify-session (get-olmap) session)))
       {}))))
+
+(rf/reg-event-fx
+ ::sync-modified-features
+ (fn-traced
+  [{:keys [db]} [_ ea]]
+  (when (get-olmap)
+    (do
+      (when-not (-> @astate :modify-session :source)
+        (let [src (OlVectorSource. #js {"wrapX" false})
+              lr (OlVectorLayer.
+                  #js {"source" src})]
+          (.addLayer (get-olmap) lr)
+          (swap! astate update-in [:modify-session] assoc :source src)
+          (swap! astate update-in [:modify-session] assoc :layer lr))))
+    (let [{:keys [features]} ea
+          features-vec (-> features (vals) (vec))
+          ids (mapv #(:id %) features-vec)
+          source (-> @astate :modify-session :source)
+          fts (.getFeatures source)]
+      (doseq [ft fts]
+        (let [id (aget ft "id_")]
+          (when id
+            (when-not (some #(= id %) ids)
+              (.removeFeature  source ft)))))
+      (doseq [ft features-vec]
+        (when-not (ol/id->feature source (:id ft))
+          (.addFeature source
+                       (.readFeature (OlFormatGeoJSON.
+                                      #js {"extractGeometryName" true}) (clj->js ft)))))))
+  {}))
 
 
 ; re-frame iceptors

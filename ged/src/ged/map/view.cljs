@@ -726,38 +726,33 @@
         (when map-click?
           [map-click-inner {:on-click on-click}])))))
 
-(defn modify-feature
+(defn modify-sync-ol-features-inner
   []
   (let []
     (r/create-class
-     {:display-name "modify-feature"
+     {:display-name "modify-sync-ol-features-inner"
       :component-did-mount
       (fn [this]
-        (let [{:keys [ftedn]} (r/props this)]
-          (do
-            (rf/dispatch [:ged.map.core/start-modify-session [ftedn]])
-            #_(rf/dispatch [::evs/modifying? true]))))
+        (let [{:keys [features]} (r/props this)]
+          (rf/dispatch [:ged.map.core/sync-modified-features {:features features}])))
+      :component-did-update
+      (fn [this]
+        (let [{:keys [features]} (r/props this)]
+          (rf/dispatch [:ged.map.core/sync-modified-features {:features features}])))
       :component-will-unmount
       (fn [this]
-        (do (rf/dispatch [:ged.map.core/stop-modify-session])))
+        (let [{:keys [features]} (r/props this)]
+          (rf/dispatch [:ged.map.core/sync-modified-features {:features features}])))
       :reagent-render
       (fn []
         nil)})))
 
-(defn modify-features
+(defn modify-sync-ol-features
   []
-  (let [afeatures (rf/subscribe [::subs/modify-features])
-        amodifying? (rf/subscribe [::subs/modifying?])]
+  (let [afeatures (rf/subscribe [::subs/modified-features])]
     (fn []
-      (let [fts @afeatures
-            modifying? @amodifying?]
-        (when modifying?
-          [:<>
-           (map
-            (fn [ftedn]
-              [modify-feature {:key (:id ftedn)
-                               :ftedn ftedn}])
-            fts)])))))
+      (let [fts @afeatures]
+        [modify-sync-ol-features-inner {:features fts}]))))
 
 
 (defn modify-layer-input
@@ -895,7 +890,7 @@
              [:span "feature-ns:  "]
              [:span layer-ns]]]
            [modify-wfs-click]
-           [modify-features]])))))
+           [modify-sync-ol-features]])))))
 
 
 (defn panel []

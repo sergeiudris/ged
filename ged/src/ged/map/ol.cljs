@@ -189,6 +189,13 @@
    (filter (fn [lr] (= (.get lr "id") id)))
    (first)))
 
+(defn id->feature
+  [source id]
+  (->>
+   (.getFeatures source)
+   (filter (fn [ft] (= (.get ft "id") id)))
+   (first)))
+
 (defn refetch-wms-layer
   [olmap id]
   (js/console.log "update wms layer:" id)
