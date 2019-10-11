@@ -47,3 +47,22 @@
 - [ ] don't store passwords in local storage
 
 
+#### stages
+
+- [x] stage 1
+
+    * build reference implemetation to edit layer from an interface 
+    * if possible, go to stage 2
+
+- [x] stage 2
+
+    * design editing interface
+
+- [x] stage 3
+
+    * build a usable tool (minimal working product)
+
+- [ ] stage 4
+
+    * step back, redesign
+    * improve docs
