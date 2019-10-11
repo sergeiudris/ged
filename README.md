@@ -62,7 +62,7 @@ docker-compose down
 - geoserver UI covers all cases, except 
     - viewing multiple layers on the map simultaneously
     - searching and editing features using WFS
-- ged is a *tool* that complements geoserver's built-in UI providing missing features
+- ged is a *tool* that complements geoserver's built-in UI by providing missing features
 
 ## links
 
