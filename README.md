@@ -10,7 +10,8 @@
 - a tool
 - a complementary geoserver UI for searching and editing features
 
-current status: usable
+
+status: usable
 
 
 ## content
@@ -34,8 +35,12 @@ cd ged
 # start
 docker-compose up -d
 
+# stop 
+docker-compose down
+
 ```
 - open `localhost:8800` in browser
+
 
 ## features
 
