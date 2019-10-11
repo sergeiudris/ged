@@ -46,7 +46,8 @@
 - [ ] add screenshots to development guide
 - [ ] rename various *-input *-id input components to a consistent name
 - [ ] don't store passwords in local storage
-- [ ] add test
+- [ ] creating features on the map 
+- [ ] add tests
 
 
 #### stages
