@@ -13,6 +13,8 @@
              ["antd/lib/table" :default AntTable]
              ["antd/lib/tag" :default AntTag]
              ["antd/lib/popconfirm" :default AntPopconfirm]
+             ["antd/lib/popover" :default AntPopover]
+   
    ))
 
 
@@ -27,7 +29,7 @@
 (def ant-table (r/adapt-react-class AntTable))
 (def ant-tag (r/adapt-react-class AntTag))
 (def ant-popconfirm (r/adapt-react-class AntPopconfirm))
-
+(def ant-popover (r/adapt-react-class AntPopover))
 
 (defn profiles-columns
   [{:keys [add-cell-ref
@@ -206,7 +208,25 @@
   (let []
     (fn []
       [:section
-       [ant-row "profiles"]
+       [ant-row 
+        [ant-col {:span 2} "profiles"]
+        [ant-col {:span 1}
+         [ant-popover
+          {:content
+           (r/as-element
+            [:div
+             [:span "- host and proxy-host can be the same "]
+             [:br]
+             [:span "- use proxy-host only when geoserver is running inside a container, in the same network as ged "]
+             ])}
+          [ant-button
+           {:icon "question"
+            :shape "circle"
+            :size "small"
+            :style {:margin-left "4px"
+                    :width "12px" :height "12px"
+                    :font-size "8px" :min-width "initial"}}]]]
+        ]
        [:br]
        [profiles-table]
        [:br]
