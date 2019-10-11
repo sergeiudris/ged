@@ -36,6 +36,7 @@ docker-compose down
 
 ```
 - open `localhost:8800` in browser to use ged, `localhost:8600/geoserver/web` to use geoserver ui
+- [import sample layers](./doc/dev-guide.md#importing-sample-layers)
 
 
 ## features
