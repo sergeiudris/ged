@@ -1,12 +1,12 @@
 
 ## development guide
 
-- it is recommended using a unix system, MacOS or Linux (ubuntu 18.04 for example)
+- it is recommended to use a unix system, MacOS or Linux (ubuntu 18.04 for example)
 - that said, everything runs in docker, so should work on Windows
 
-#### install
+#### setup
 
-- install 
+- install
     - docker
     - docker-compose 
     - git 
