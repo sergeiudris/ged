@@ -9,6 +9,7 @@
 
 - a tool
 - a complementary geoserver UI for searching and editing features
+- pronounced *"jed"*
 
 
 status: usable
