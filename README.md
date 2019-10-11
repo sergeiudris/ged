@@ -57,6 +57,13 @@ docker-compose down
 *tried with geoserver 2.15, but in theory should work with other versions<br />
 
 
+## rationale
+
+- geoserver UI covers all cases, except 
+    - viewing multiple layers on the map simultaneously
+    - searching and editing features using WFS
+- ged is *tool* that complements geoserver's built-in UI providing missing features
+
 ## links
 
 - [features preview](./doc/features.md)
