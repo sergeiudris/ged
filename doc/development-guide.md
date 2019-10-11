@@ -29,7 +29,7 @@ code ged
 - `c` file in the root contains functions (commands) for varoius tasks
 - press `ctrl+j` to open vscode's `panel`
 - select `terminal` tab
-- press `ctrl+shift+5` to add another terminal (or use button 'split terminal')
+- press `ctrl+shift+5` to add another terminal (or use the button 'split terminal')
 - the first terminal will be used:
     - to start/stop docker containers
     - commit changes
@@ -42,24 +42,23 @@ code ged
 bash c up
 ```
 
-- once the services start, navigate to `localhost:8600/geoserver/web` 
-  to make sure geoserver has started
+- once the services have started, navigate to `localhost:8600/geoserver/web` 
+  to make sure geoserver is running
+- if not, run `docker-compose restart geoserver`
 - [import sample layers](#importing-sample-layers) into geoserver
 - in the second terminal:
 
 ```shell
 # open ged container's shell into /opt/app
 bash c term ged
-
 # start ged dev server
-
 bash c dev
 
 ```
 - wait for 'Build complelted', open `localhost:8800` in Chrome 
 - press F12 to open Chrome development tools
-- at this point, clojure/clojurescript REPLs are connected to both app running in browser and development web server (shadow-cljs dev server)
-- for better experience, you'll need a second editor window (for actaully focusing on the code, without noise files)
+- at this point, clojure/clojurescript REPLs are connected to both the app running in the browser and the development web server (shadow-cljs dev server)
+- for better experience, you'll need a second editor window (for actaully focusing on the code, without 'noise' files)
 - from system's terminal (not from vscode) open another vscode window, this time for `ged/spaces/ui`
 
 ```shell
@@ -67,14 +66,15 @@ bash c dev
 code ged/spaces/ui
 ```
 - `ged/spaces/ui` is a symbolic directory, containing links to code files specifically
-- install `Calva` extension for clojure/clojuscript support (press reload if needed)
+- install vscode's `Calva` extension for clojure/clojuscript support (press reload if needed)
 - press `ctrl+alt+c ctrl+alt+c` or press `nREPL` button (bottom left) and select 'connect to a running REPL server in your project'
 - type `localhost:8888` - this is a REPL port
 - select `[:app]` build
-- press `ctrl+j` to hide the panel - the second window is for code only
+- press `ctrl+j` to hide the panel - you won't use the panel in the second window 
 - now you can navigate between files, use REPL and hot-reload
-- use the first window to start/stop containers, commit, or start/stop ged dev server
-- use the second window (ged/spaces/ui) to actually write code
+- at this point you have two vscode windows open
+    - use the first window (repo's root) to start/stop containers, commit, start/stop ged dev server, change build files
+    - use the second window (ged/spaces/ui) (ged/spaces/ui) to actually write code
 
 #### branches
 
