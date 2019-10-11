@@ -45,7 +45,7 @@ docker-compose down
 
 ## features
 
-[preview](./doc/resources/features.md)
+[preview](./doc/features.md)
 
 - profiles (persisted in localStorage) to work with multiple geoservers or simply different sessions
 - search, view geoserver layers 
