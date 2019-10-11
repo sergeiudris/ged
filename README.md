@@ -56,3 +56,6 @@ docker-compose down
 - request proxying to solve CORS problems
 - optional /wms proxying
 - inspect /wfs transactions' body and response xml
+
+
+*tried with geoserver 2.15, but in theory should work with other versions<br />
