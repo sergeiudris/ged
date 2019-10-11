@@ -40,7 +40,7 @@ docker-compose up -d
 docker-compose down
 
 ```
-- open `localhost:8800` in browser
+- open `localhost:8800` in browser to use ged, `localhost:8600/geoserver/web` to use geoserver ui
 
 
 ## features
