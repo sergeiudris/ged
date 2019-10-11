@@ -15,11 +15,6 @@
 status: usable
 
 
-## content
-
-- [quick start](#quick-start)
-- [features](#features)
-
 ## quick start 
 
 - install [docker](https://docs.docker.com/install/), [docker-compose](https://docs.docker.com/compose/install/), [git](https://git-scm.com/) 
