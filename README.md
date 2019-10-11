@@ -1,8 +1,8 @@
 # ged
 
 <div align="center" >
-<a href="./doc/resources/tour-20191011/Peek 2019-10-11 08-16.gif?raw=true">
-<img width="80%" src="./doc/resources/tour-20191011/Peek 2019-10-11 08-16.gif" alt=" no image :(" ></img>
+<a href="./doc/resources/tour-20191011/overview-1 2019-10-11 08-16.gif?raw=true">
+<img width="80%" src="./doc/resources/tour-20191011/overview-1 2019-10-11 08-16.gif" alt=" no image :(" ></img>
 </a>
 </div>
 
@@ -45,17 +45,17 @@ docker-compose down
 
 ## features
 
+[preview](./doc/resources/features.md)
+
 - profiles (persisted in localStorage) to work with multiple geoservers or simply different sessions
-- view geoserver layers on the map (check/uncheck multiple layers)
-- search layers
-- select layers
-- search features by attributes , select on the map or specify ecql filter
-- edit feature properties
-- modify features (map editing)
+- search, view geoserver layers 
+- search features on the map (box, click)
+- search features via attributes or ecql filter directly
+- edit feature attributes
+- modify features on the map
 - edit feature types (layers) via /rest
 - request proxying to solve CORS problems
 - optional /wms proxying
 - inspect /wfs transactions' body and response xml
-
 
 *tried with geoserver 2.15, but in theory should work with other versions<br />

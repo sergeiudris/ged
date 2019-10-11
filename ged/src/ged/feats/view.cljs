@@ -301,7 +301,7 @@
                     :style {:height "30%" :overflow-y "auto"}
                     :columns table-attrs-columns
                     :dataSource data
-                    :scroll {:y 236}
+                    :scroll {:y 216}
                     :pagination false
                     :rowSelection {:selectedRowKeys selected
                                    :on-change
