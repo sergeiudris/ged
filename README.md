@@ -61,10 +61,6 @@ docker-compose down
 
 - [features preview](./doc/features.md)
 
-<br/>
-
 - [development guide](./doc/development-guide.md)
-
-<br />
 
 
