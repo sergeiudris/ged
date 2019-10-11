@@ -54,3 +54,17 @@ docker-compose down
 - inspect /wfs transactions' body and response xml
 
 *tried with geoserver 2.15, but in theory should work with other versions<br />
+
+
+## links
+
+- [features preview](./doc/features.md)
+
+<br/>
+
+- [development setup guide](./doc/dev-setup.md)
+- [dev links](./doc/links.md)
+
+<br />
+
+
