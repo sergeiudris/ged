@@ -105,7 +105,7 @@
  ::sync-layer-ids
  (fn-traced
   [{:keys [db]} [_ ea]]
-  (js/console.log ea)
+  #_(js/console.log ea)
   (do
     (let [[ids {:keys [geoserver-host wms-use-auth? credentials]}] ea
           lrs (.getArray (.getLayers (get-olmap)))]
