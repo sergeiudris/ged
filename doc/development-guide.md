@@ -82,6 +82,10 @@ code ged/spaces/ui
 - commit changes
 - create a pull request to the master branch
 
+#### links
+
+- [dev links](./links.md)
+
 #### importing sample layers
 
 - `.data` directory in the root of the repository is accessible in geoserver container at `/opt/data` path

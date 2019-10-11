@@ -63,8 +63,7 @@ docker-compose down
 
 <br/>
 
-- [development setup guide](./doc/dev-guide.md)
-- [dev links](./doc/links.md)
+- [development guide](./doc/development-guide.md)
 
 <br />
 
