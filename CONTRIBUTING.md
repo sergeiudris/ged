@@ -37,6 +37,7 @@
 - [x] add development guide doc
 - [x] add contributing doc
 - [x] add features doc
+- [ ] add clojure spec
 - [ ] build an http absctraction to resolve http dependencies lazily (or wait for https://github.com/Day8/re-frame-http-fx-2)
 - [ ] implement proper centralized error handling to prevent app from crashing (crash only a route, display a message)
 - [ ] smaller production docker image
@@ -45,6 +46,7 @@
 - [ ] add screenshots to development guide
 - [ ] rename various *-input *-id input components to a consistent name
 - [ ] don't store passwords in local storage
+- [ ] add test
 
 
 #### stages
