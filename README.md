@@ -54,7 +54,7 @@ docker-compose down
 - optional /wms proxying
 - inspect /wfs transactions' body and response xml
 
-*tried with geoserver 2.15, but in theory should work with other versions<br />
+*tested with geoserver 2.15, but in theory should work with other versions<br />
 
 
 ## rationale
