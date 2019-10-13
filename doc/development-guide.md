@@ -88,9 +88,9 @@ code ged/spaces/ui
 
 #### importing sample layers
 
-- `.data` directory in the root of the repository is accessible in geoserver container at `/opt/data` path
+- `geoserver/.data` directory in the root of the repository is accessible in geoserver container at `/opt/data` path
 
-- put layers into `.data` directory
+- put layers into `geoserver/.data` directory
 
 - use [geoserver import guide](https://docs.geoserver.org/latest/en/user/extensions/importer/using.html)
   to import files from `/opt/data`
