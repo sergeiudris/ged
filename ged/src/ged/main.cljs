@@ -19,9 +19,11 @@
             [ged.notepad]))
 
 (devtools/install!)
-(enable-console-print!)
+#_(enable-console-print!)
 
 #_(prn "3")
+#_(println "3")
+
 
 #_(sample.lib.logic/example)
 
