@@ -63,7 +63,7 @@
 
 - [x] stage 3
 
-    * build a usable tool (minimal working product)
+    * build a usable tool (minimum working product)
 
 - [ ] stage 4
 
