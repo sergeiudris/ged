@@ -25,11 +25,11 @@ COPY deps.edn .
 RUN clojure -A:shadow:dev:prod -Stree
 
 
-COPY deps.edn package.json c shadow-cljs.edn ./
+COPY deps.edn package.json f shadow-cljs.edn ./
 COPY src src
 COPY test test
 COPY resources resources  
-RUN bash c prod
+RUN bash f prod
 
 
 FROM ubuntu:18.04
@@ -58,7 +58,7 @@ COPY --from=0 /opt/app/resources resources
 COPY --from=0 /opt/app/src src
 COPY --from=0 /root/.m2 /root/.m2 
 COPY --from=0 /root/.clojure /root/.clojure
-COPY --from=0 /opt/app/shadow-cljs.edn /opt/app/c /opt/app/deps.edn ./
+COPY --from=0 /opt/app/shadow-cljs.edn /opt/app/f /opt/app/deps.edn ./
 
 EXPOSE 9500 7888 9630 8801 8899
 

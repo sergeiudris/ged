@@ -63,7 +63,7 @@ services:
       - 9630:9630
       - 8801:8801
       - 8899:8899
-    command: bash c main
+    command: bash f main
     # command: tail -f /dev/null
     environment:
       - STAGE=dev

@@ -56,6 +56,6 @@ services:
     image: seeris/ged:0.1.0
     ports:
       - 8800:9500
-    command: bash c main
+    command: bash f main
     # environment:
     #   - STAGE=dev
