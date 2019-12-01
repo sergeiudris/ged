@@ -1,6 +1,4 @@
 FROM ubuntu:18.04
-# supported tags
-# https://gitlab.com/nvidia/container-images/cuda/blob/master/doc/supported-tags.md
 
 ## core
 RUN apt-get update && \
