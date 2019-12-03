@@ -58,4 +58,4 @@ WORKDIR /opt/app
 COPY deps.edn .
 RUN clojure -A:shadow:dev -Stree
 
-EXPOSE 9500 7888 9630 8801 8899
+EXPOSE 9500 9630 8801 8899

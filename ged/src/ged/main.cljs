@@ -10,7 +10,6 @@
             [ged.config :as config]
             [ged.subs :as subs]
             [ged.view]
-            [tools.core]
             [ged.core]
             [ged.req]
             [ged.async]

@@ -53,16 +53,15 @@ services:
   #     - 8700:8080
 
   ged:
-    image: seeris/ged
+    image: seeris/playground.ged
     build:
       context: ./ged
       dockerfile: ./prod.Dockerfile
     ports:
-      - 8888:7888
+      - 8899:8899
       - 8800:9500
       - 9630:9630
       - 8801:8801
-      - 8899:8899
     command: bash f main
     # command: tail -f /dev/null
     environment:

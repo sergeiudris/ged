@@ -7,7 +7,7 @@
             [clj-http.client :as client]
             [shadow.undertow.impl :refer [RespondBody]]
             [clojure.java.io :as io]
-            #_[srv.server])
+            )
     (:import (io.undertow.util HeaderMap HeaderValues Headers HttpString)
              (io.undertow.server HttpServerExchange)
              (java.nio ByteBuffer)
@@ -125,8 +125,6 @@
 #_(prn "---dev-http")
 
 #_(not-empty "")
-
-#_(srv.server/run-dev)
 
 #_(->
    (client/request
