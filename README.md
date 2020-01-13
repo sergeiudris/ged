@@ -1,4 +1,4 @@
-# playground.ged
+# experiment.ged
 
 <div align="center" >
 <a href="./doc/resources/tour-20191011/overview-1 2019-10-11 08-16.gif?raw=true">
@@ -23,10 +23,10 @@ status: usable
 ```shell
 
 # clone repo 
-git clone https://github.com/sergeiudris/playground.ged
+git clone https://github.com/sergeiudris/experiment.ged
 
 # change directory to repo root
-cd playground.ged
+cd experiment.ged
 
 # start
 docker-compose up -d
