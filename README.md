@@ -23,7 +23,7 @@ status: usable
 ```shell
 
 # clone repo 
-git clone https://github.com/sergeiudris/playground.ged
+git clone https://github.com/seeris/playground.ged
 
 # change directory to repo root
 cd playground.ged

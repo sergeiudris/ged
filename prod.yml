@@ -53,7 +53,7 @@ services:
   #     - 8700:8080
 
   ged:
-    image: sergeiudris/playground.ged
+    image: seeris/playground.ged
     build:
       context: ./ged
       dockerfile: ./prod.Dockerfile

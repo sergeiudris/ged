@@ -15,7 +15,7 @@
 - clone the repo:
 ```shell
 # clone
-git clone https://github.com/sergeiudris/ged
+git clone https://github.com/seeris/ged
 ```
 
 #### develop
