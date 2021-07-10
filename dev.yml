@@ -64,6 +64,7 @@ services:
       context: ./ged
       dockerfile: ./Dockerfile
     ports:
+      - 8888:7888
       - 8800:9500
       - 9630:9630
       - 8801:8801

@@ -60,7 +60,7 @@ COPY --from=0 /root/.m2 /root/.m2
 COPY --from=0 /root/.clojure /root/.clojure
 COPY --from=0 /opt/app/shadow-cljs.edn /opt/app/f /opt/app/deps.edn ./
 
-EXPOSE 9500 9630 8801 8899
+EXPOSE 9500 7888 9630 8801 8899
 
 # # 64mb 
 # FROM ubuntu:18.04

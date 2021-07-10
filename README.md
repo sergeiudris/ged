@@ -23,10 +23,10 @@ status: usable
 ```shell
 
 # clone repo 
-git clone https://github.com/seeris/playground.ged
+git clone https://github.com/seeris/ged
 
 # change directory to repo root
-cd playground.ged
+cd ged
 
 # start
 docker-compose up -d
