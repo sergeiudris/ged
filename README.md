@@ -1,4 +1,4 @@
-# playground.ged
+# ged
 
 <div align="center" >
 <a href="./doc/resources/tour-20191011/overview-1 2019-10-11 08-16.gif?raw=true">
