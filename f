@@ -47,7 +47,7 @@ prod(){
 }
 
 tagpush(){
-    docker push sergeiudris/experiment.ged
+    docker push sergeiudris/playground.ged
 }
 
 hostip(){

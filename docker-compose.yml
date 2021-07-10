@@ -53,7 +53,7 @@ services:
   #     - 8700:8080
 
   ged:
-    image: sergeiudris/experiment.ged
+    image: sergeiudris/playground.ged
     ports:
       - 8800:9500
     command: bash f main
