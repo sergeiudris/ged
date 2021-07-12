@@ -3,7 +3,7 @@
 #### feedback
 
 - feedback is welcome
-- create [issues](https://github.com/seeris/ged/issues) for bugs, enhancements, questsions etc.
+- create issues for bugs, enhancements, questsions etc.
 
 #### pull requests
 

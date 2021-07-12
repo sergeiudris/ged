@@ -53,7 +53,7 @@ services:
   #     - 8700:8080
 
   ged:
-    image: seeris/ged
+    image: ged
     build:
       context: ./ged
       dockerfile: ./prod.Dockerfile
