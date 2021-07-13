@@ -5,6 +5,8 @@ ARG IMAGE_VERSION=8.0-jre8
 
 FROM tomcat:$IMAGE_VERSION
 
+MAINTAINER Tim Sutton<tim@linfiniti.com>
+
 ## The Geoserver version
 ARG GS_VERSION=2.15.0
 
