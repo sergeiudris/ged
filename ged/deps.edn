@@ -33,7 +33,7 @@
            :server {:extra-deps {clj-http {:mvn/version "3.10.0"}}}
            :local {:extra-deps {;ged {:local/root "/opt/root/..."}
                                 }}
-           :git {:extra-deps {;   ged  {:git/url "https://github.com/ged"
+           :git {:extra-deps {;   ged  {:git/url "https://github.com/seeris/ged"
                             ;         :sha "b3c593a5c70ab24981748a697fd7d839bed629e1"
                             ;         :deps/root "..."}
                               }}

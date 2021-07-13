@@ -23,6 +23,7 @@ status: usable
 ```shell
 
 # clone repo 
+git clone https://github.com/seeris/ged
 
 # change directory to repo root
 cd ged

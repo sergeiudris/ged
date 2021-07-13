@@ -49,12 +49,12 @@ prod(){
 
 tagpush(){
     VERSION=$1
-    docker tag ged ged:dev
-    docker tag ged ged:$VERSION
+    docker tag seeris/ged seeris/ged:dev
+    docker tag seeris/ged seeris/ged:$VERSION
 
-    docker push ged:$VERSION
-    docker push ged:dev
-    docker push ged
+    docker push seeris/ged:$VERSION
+    docker push seeris/ged:dev
+    docker push seeris/ged
 
 }
 
