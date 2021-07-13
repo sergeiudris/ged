@@ -15,7 +15,6 @@
 - clone the repo:
 ```shell
 # clone
-git clone https://github.com/seeris/ged
 ```
 
 #### develop
